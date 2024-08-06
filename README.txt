@@ -3,3 +3,5 @@ Inventory Management System: Developping a Python-based application to manage in
 Step 1 : Build a scetch of the ui and design
 
 Step 2 : Make a database to store all the medication names
+
+Step 3 : Figure out how to password protect the app
