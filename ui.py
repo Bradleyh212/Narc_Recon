@@ -28,12 +28,9 @@ password = tk.Entry(
 	)
 
 
-login = tk.Button(
+login = ttk.Button(
 	text = "Sign In",
-	bg = "black",
-	fg = "white",
-	width = 20,
-	height = 15
+	style='TButton',
 	)
 
 greeting.pack()
