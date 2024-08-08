@@ -1,5 +1,3 @@
-import sqlite3
-con = sqlite3.connect("tutorial.db")
 
 from tkinter import *
 from tkinter import ttk
@@ -15,10 +13,20 @@ greeting = tk.Label(
 	#background = "black", # Set the text background color
 	width = 20,
 	height = 1
-
 	)
 
-#user_name = 
+user_name = tk.Entry(
+	fg = "black",
+	bg = "white",
+	width = 30	
+)
+
+password = tk.Entry(
+	fg = "black",
+	bg = "white",
+	width = 30	
+	)
+
 
 login = tk.Button(
 	text = "Sign In",
@@ -30,14 +38,11 @@ login = tk.Button(
 
 greeting.pack()
 
+user_name.pack()
+
+password.pack()
+
 login.pack()
-
-
-narc_list = {"upc":["Sandoz-Amphetamine Xr", "5mg", "02457288", "ER Cap", "100"]} #example of first medication
-
-print(narc_list["upc"])
-
-
 
 
 #Runing the program
