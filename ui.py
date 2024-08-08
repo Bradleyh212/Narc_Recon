@@ -7,6 +7,8 @@ window = tk.Tk()
 window.title("Narcotics Management System")
 window.geometry('800x600')
 
+frame = tk.Frame(master=window, width=200, height=200)
+
 greeting = tk.Label(
 	text="Welcome back",
 	foreground = "white", # Set the text color
@@ -15,11 +17,17 @@ greeting = tk.Label(
 	height = 1
 	)
 
+greeting.pack()
+
+
 user_name = tk.Entry(
 	fg = "black",
 	bg = "white",
 	width = 30	
 )
+
+user_name.pack()
+
 
 password = tk.Entry(
 	fg = "black",
@@ -27,17 +35,13 @@ password = tk.Entry(
 	width = 30	
 	)
 
+password.pack()
+
 
 login = ttk.Button(
 	text = "Sign In",
 	style='TButton',
 	)
-
-greeting.pack()
-
-user_name.pack()
-
-password.pack()
 
 login.pack()
 
