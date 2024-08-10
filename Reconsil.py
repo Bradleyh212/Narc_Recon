@@ -5,18 +5,7 @@ import tkinter as tk
 
 window = tk.Tk()
 window.title("Narcotics Management System")
-
-w = 550 
-h = 500
-
-window_width = window.winfo_screenwidth()  # screen centering code from https://stackoverflow.com/questions/14910858/how-to-specify-where-a-tkinter-window-opens
-window_height = window.winfo_screenheight()
-
-x = (window_width/2) - (w/2)
-y = (window_height/2) - (h/2)
-
-window.geometry('%dx%d+%d+%d' % (w, h, x, y))
-
+window.geometry('800x600')
 
 frame = tk.Frame(master=window, width=200, height=200, bg="white")
 frame.pack()
