@@ -5,3 +5,13 @@ Step 1 : Build a scetch of the ui and design
 Step 2 : Make a database to store all the medication names
 
 Step 3 : Figure out how to password protect the app
+
+
+
+
+
+
+
+
+
+site i used to learn Tkinter

@@ -2,6 +2,7 @@
 from tkinter import *
 from tkinter import ttk
 import tkinter as tk
+from tkinter import font
 
 window = tk.Tk()
 window.title("Narcotics Management System")
@@ -22,66 +23,28 @@ window.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
 #end of window settin
 
-for i in range(3):
-	window.columnconfigure(i, weight=1, minsize=75)
-	window.rowconfigure(i, weight=1, minsize=50)
+window.columnconfigure(0, minsize=400)
+window.rowconfigure(0, minsize=250)
 
-	for j in range(3):
-		frame = tk.Frame(
-			master = window,
-			relief = tk.RAISED,
-			borderwidth = 1,
-			padx = 75
+# Define a font
+login_ui_font = font.Font(family="Inter", size=18, weight="bold")
 
-			)
-		frame.grid(row = i, column = j, padx = 2)
-		label = tk.Label(master = frame, text = f"{i} x {j}")
-		label.pack()
+login_lbl = tk.Label(text = "Login", relief = RAISED, width = 30, font = login_ui_font) #login label
+login_lbl.grid(row=0, column=0)
 
 
-
-"""
-greeting = tk.Label(
-	master=frame,
-	text="Welcome back",
-	foreground = "white", # Set the text color
-	#background = "black", # Set the text background color
-	width = 20,
-	height = 1
-	)
-
-greeting.pack()
+user_name = tk.Entry(fg = "black", bg = "white", width = 30) #user name entry widget
+user_name.grid(row = 2, column = 0)
 
 
-user_name = tk.Entry(
-	master=frame,
-	fg = "black",
-	bg = "white",
-	width = 30	
-)
-
-user_name.pack()
+password = tk.Entry(fg = "black", bg = "white", width = 30) #password name entry widget
+password.grid(row = 3, column = 0)
 
 
-password = tk.Entry(
-	master=frame,
-	fg = "black",
-	bg = "white",
-	width = 30	
-	)
-
-password.pack()
+login = ttk.Button(text = "Sign In", style='TButton')
+login.grid(row = 4, column = 0)
 
 
-login = ttk.Button(
-	master=frame,
-	text = "Sign In",
-	style='TButton',
-	)
-
-login.pack()
-"""
-
-#Runing the program
+#Running the program
 
 window.mainloop()
