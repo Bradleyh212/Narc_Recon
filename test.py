@@ -1,24 +1,30 @@
 #main page, will be full screen, not reziable
-from tkinter import *
-from tkinter import ttk
 import tkinter as tk
+from tkinter import ttk
 from tkinter import font
 from tkinter import messagebox
 
-window = tk.Tk()
-window.title("Narcotics Management System")
-
-window.resizable(False, False) #This stops the user from resizing the screen for the login ui
+main_page_window = tk.Tk()
+main_page_window.title("Narcotics Management System")
 
 #Window setting
-w = window.winfo_screenwidth() 
-h = window.winfo_screenheight()
+main_page_window.state('zoomed') #setting window to full screen before stopping the resizable to false
 
-#end of window setting
+main_page_window.resizable(False, False) #This stops the user from resizing the screen for the login ui
+
+
+#end of main_page_window setting
+
+
+
 
 # Define a font
+#****login_ui_font = font.Font(family="Inter", size=36, weight="bold") ******* Change font **********
+
+
+
+
 
 #Running the program
 
-window.mainloop()
-
+main_page_window.mainloop()
