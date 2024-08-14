@@ -3,6 +3,18 @@ from tkinter import *
 from tkinter import ttk
 import tkinter as tk
 from tkinter import font
+from tkinter import messagebox
+
+
+def check_password():
+	user_name = user_name_ent.get()
+	password = password_ent.get()
+
+	if user_name == "Test1" and password == "1234":
+		messagebox.showinfo("Login", "Login successful!")
+	else:
+		messagebox.showerror("Login", "Invalid username or password")
+		password_ent.delete(0, tk.END)
 
 window = tk.Tk()
 window.title("Narcotics Management System")
@@ -23,28 +35,26 @@ window.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
 #end of window settin
 
-window.columnconfigure(0, minsize=400)
-window.rowconfigure(0, minsize=250)
-
 # Define a font
-login_ui_font = font.Font(family="Inter", size=18, weight="bold")
+login_ui_font = font.Font(family="Inter", size=36, weight="bold")
 
-login_lbl = tk.Label(text = "Login", relief = RAISED, width = 30, font = login_ui_font) #login label
-login_lbl.grid(row=0, column=0)
-
-
-user_name = tk.Entry(fg = "black", bg = "white", width = 30) #user name entry widget
-user_name.grid(row = 2, column = 0)
+login_lbl = tk.Label(text = "Login", relief = RAISED, width = 0, font = login_ui_font) #login label
+login_lbl.pack(pady=50)
 
 
-password = tk.Entry(fg = "black", bg = "white", width = 30) #password name entry widget
-password.grid(row = 3, column = 0)
+user_name_ent = tk.Entry(fg = "black", bg = "white", width = 30) #user name entry widget
+user_name_ent.pack(pady=12)
 
 
-login = ttk.Button(text = "Sign In", style='TButton')
-login.grid(row = 4, column = 0)
+password_ent = tk.Entry(fg = "black", bg = "white", width = 30, show="*") #password name entry widget
+password_ent.pack(pady=12)
+
+
+login_btn = ttk.Button(text = "Sign In", style='TButton', command=check_password)
+login_btn.pack()
 
 
 #Running the program
 
 window.mainloop()
+
