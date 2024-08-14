@@ -1,21 +1,21 @@
 import tkinter as tk
 
 
-root = tk.Tk() # create a Tk root window
+window = tk.Tk()
 
-w = 800 # width for the Tk root
-h = 650 # height for the Tk root
 
-# get screen width and height
-ws = root.winfo_screenwidth() # width of the screen
-hs = root.winfo_screenheight() # height of the screen
+for i in range(3):
+	for j in range(3):
+		frame = tk.Frame(
+			master = window,
+			relief = tk.RAISED,
+			borderwidth = 1
 
-# calculate x and y coordinates for the Tk root window
-x = (ws/2) - (w/2)
-y = (hs/2) - (h/2)
+			)
+		frame.grid(row = i, column = j)
+		label = tk.Label(master = frame, text = f"{i} x {j}")
+		label.pack()
 
-# set the dimensions of the screen 
-# and where it is placed
-root.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
-root.mainloop() # starts the mainloop
+
+window.mainloop()

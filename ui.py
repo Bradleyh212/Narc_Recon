@@ -6,6 +6,9 @@ import tkinter as tk
 window = tk.Tk()
 window.title("Narcotics Management System")
 
+window.resizable(False, False) #This stops the user from resizing the screen for the login ui
+
+#Window setting
 w = 550 
 h = 500
 
@@ -17,10 +20,27 @@ y = (window_height/2) - (h/2)
 
 window.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
+#end of window settin
 
-frame = tk.Frame(master=window, width=200, height=200, bg="white")
-frame.pack()
+for i in range(3):
+	window.columnconfigure(i, weight=1, minsize=75)
+	window.rowconfigure(i, weight=1, minsize=50)
 
+	for j in range(3):
+		frame = tk.Frame(
+			master = window,
+			relief = tk.RAISED,
+			borderwidth = 1,
+			padx = 75
+
+			)
+		frame.grid(row = i, column = j, padx = 2)
+		label = tk.Label(master = frame, text = f"{i} x {j}")
+		label.pack()
+
+
+
+"""
 greeting = tk.Label(
 	master=frame,
 	text="Welcome back",
@@ -60,7 +80,7 @@ login = ttk.Button(
 	)
 
 login.pack()
-
+"""
 
 #Runing the program
 
