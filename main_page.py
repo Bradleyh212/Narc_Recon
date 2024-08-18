@@ -17,8 +17,10 @@ main_page_window.state('zoomed') #setting window to full screen before stopping 
 #end of main_page_window setting
 
 def search_meds():
-	if upc_ent.get() in narc_list:
-		name_lbl_output.config(text = narc_list[upc_ent.get()])
+	upc = upc_ent.get()
+	if upc in narc_list:
+		med_info = narc_list[upc]
+		name_lbl_output.config(text = med_info[0])
 
 
 # Define a font for the Entry widget
