@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import font
 from tkinter import messagebox
-from meds import narc_list 
+from meds import narc_list # importing the list of narcs from the file meds.py
 
 main_page_window = tk.Tk()
 main_page_window.title("Narcotics Management System")
@@ -16,7 +16,7 @@ main_page_window.state('zoomed') #setting window to full screen before stopping 
 
 #end of main_page_window setting
 
-def search_meds():
+def search_meds(): #function to find the meds in meds.py
 	upc = upc_ent.get()
 	if upc in narc_list:
 		med_info = narc_list[upc]
