@@ -21,12 +21,14 @@ def search_meds(): #function to find the meds in meds.py
 	if upc in narc_list:
 		med_info = narc_list[upc]
 		name_lbl_output.config(text = med_info[0])
+	else:
+		messagebox.showerror("Error", "UPC not found")
 
 
 # Define a font for the Entry widget
 font = font.Font(family="Inter", size=16, weight="normal")
 
-upc_ent = tk.Entry(fg = "black", bg = "white", width = 70, font = font) #upc entry widget
+upc_ent = tk.Entry(text = "Enter upc", fg = "black", bg = "white", width = 70, font = font) #upc entry widget
 upc_ent.pack(pady = 20)
 
 search_btn = ttk.Button(text = "Search", style='TButton', command=search_meds)
@@ -34,7 +36,7 @@ search_btn.pack()
 
 
 
-name_lbl_output = tk.Label(text = "Allo", bg = "white", fg = "red", width = 70, font = font)
+name_lbl_output = tk.Label(bg = "white", fg = "red", width = 70, font = font)
 name_lbl_output.pack() # this will be the label to test the output when we enter the upc
 
 
