@@ -21,6 +21,7 @@ def search_meds(): #function to find the meds in meds.py
 	if upc in narc_list:
 		med_info = narc_list[upc]
 		name_lbl_output.config(text = med_info[0])
+		strength_lbl_output.config(text = med_info[1])
 	else:
 		messagebox.showerror("Error", "UPC not found")
 
@@ -34,11 +35,17 @@ upc_ent.pack(pady = 20)
 search_btn = ttk.Button(text = "Search", style='TButton', command=search_meds)
 search_btn.pack()
 
-
+name__med_lbl = tk.Label(text = "name", bg = "white", fg = "black", width = 20, font = font)
+name__med_lbl.pack(pady = 10)
 
 name_lbl_output = tk.Label(bg = "white", fg = "red", width = 70, font = font)
 name_lbl_output.pack() # this will be the label to test the output when we enter the upc
 
+strength__med_lbl = tk.Label(text = "strength", bg = "white", fg = "black", width = 20, font = font)
+strength__med_lbl.pack(pady = 10)
+
+strength_lbl_output = tk.Label(bg = "white", fg = "red", width = 70, font = font)
+strength_lbl_output.pack()
 
 
 
