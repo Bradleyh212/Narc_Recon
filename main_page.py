@@ -21,7 +21,7 @@ def search_meds(): #function to find the meds in meds.py
 	if upc in narc_list:
 		med_info = narc_list[upc]
 		name_lbl_output.config(text = med_info[0])
-		strength_lbl_output.config(text = med_info[1])
+		#strength_lbl_output.config(text = med_info[1])
 	else:
 		messagebox.showerror("Error", "UPC not found")
 
