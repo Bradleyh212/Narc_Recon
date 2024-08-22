@@ -1,8 +1,19 @@
 import sqlite3
 con = sqlite3.connect("tutorial.db")
+import pandas as pd
 
 
-narc_list = {"057513217920":["Sandoz-Amphetamine Xr", "5mg", "02457288", "100"]} #example of first medication
+df = pd.read_excel('Sheet1.xlsx', sheet_name='Sheet1')
+upc_list = df['Upc'].fillna(1).astype(int).astype(str).tolist() #transformin to int to removing the float numbers, then going back to string
+print(upc_list)
+
+narc_list = {}
+
+for upc in upc_list:
+	narc_list[upc] = []
+
+print()
+print(narc_list)
 
 
 
