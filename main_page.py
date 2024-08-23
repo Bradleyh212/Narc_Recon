@@ -1,56 +1,59 @@
-#main page, will be full screen, not reziable
-import tkinter as tk
-from tkinter import ttk
-from tkinter import font
-from tkinter import messagebox
-from meds import narc_list # importing the list of narcs from the file meds.py
+def open_main_page():
+	#main page, will be full screen, not reziable
+	import tkinter as tk
+	from tkinter import ttk, font, messagebox
+	from meds import narc_list # importing the list of narcs from the file meds.py
 
-main_page_window = tk.Tk()
-main_page_window.title("Narcotics Management System")
+	main_page_window = tk.Tk()
+	main_page_window.title("Narcotics Management System")
 
-#Window setting
-main_page_window.state('zoomed') #setting window to full screen before stopping the resizable to false
+	#Window setting
+	main_page_window.state('zoomed') #setting window to full screen before stopping the resizable to false
 
-#main_page_window.resizable(False, False) #This stops the user from resizing the screen for the login ui
-
-
-#end of main_page_window setting
-
-def search_meds(): #function to find the meds in meds.py
-	upc = upc_ent.get()
-	if upc in narc_list:
-		med_info = narc_list[upc]
-		name_lbl_output.config(text = med_info[0])
-		#strength_lbl_output.config(text = med_info[1])
-	else:
-		messagebox.showerror("Error", "UPC not found")
+	main_page_window.resizable(False, False) #This stops the user from resizing the screen for the login ui
 
 
-# Define a font for the Entry widget
-font = font.Font(family="Inter", size=16, weight="normal")
-
-upc_ent = tk.Entry(text = "Enter upc", fg = "black", bg = "white", width = 70, font = font) #upc entry widget
-upc_ent.pack(pady = 20)
-
-search_btn = ttk.Button(text = "Search", style='TButton', command=search_meds)
-search_btn.pack()
-
-name__med_lbl = tk.Label(text = "name", bg = "white", fg = "black", width = 20, font = font)
-name__med_lbl.pack(pady = 10)
-
-name_lbl_output = tk.Label(bg = "white", fg = "red", width = 70, font = font)
-name_lbl_output.pack() # this will be the label to test the output when we enter the upc
-
-strength__med_lbl = tk.Label(text = "strength", bg = "white", fg = "black", width = 20, font = font)
-strength__med_lbl.pack(pady = 10)
-
-strength_lbl_output = tk.Label(bg = "white", fg = "red", width = 70, font = font)
-strength_lbl_output.pack()
+	#end of main_page_window setting
+	def search(search):
+		search_meds()
+	main_page_window.bind('<Return>', search)
 
 
+	def search_meds(): #function to find the meds in meds.py
+		upc = upc_ent.get()
+		if upc in narc_list:
+			med_info = narc_list[upc]
+			name_lbl_output.config(text = med_info[0])
+			strength_lbl_output.config(text = med_info[1])
+		else:
+			messagebox.showerror("Error", "UPC not found")
+
+
+	# Define a font for the Entry widget
+	font = font.Font(family="Inter", size=16, weight="normal")
+
+	upc_ent = tk.Entry(text = "Enter upc", fg = "black", bg = "white", width = 70, font = font, justify="center") #upc entry widget
+	upc_ent.pack(pady = 20)
+
+	search_btn = ttk.Button(text = "Search", style='TButton', command=search_meds)
+	search_btn.pack()
+
+	name__med_lbl = tk.Label(text = "name", bg = "white", fg = "black", width = 20, font = font)
+	name__med_lbl.pack(pady = 10)
+
+	name_lbl_output = tk.Label(bg = "white", fg = "red", width = 70, font = font)
+	name_lbl_output.pack() # this will be the label to test the output when we enter the upc
+
+	strength__med_lbl = tk.Label(text = "strength", bg = "white", fg = "black", width = 20, font = font)
+	strength__med_lbl.pack(pady = 10)
+
+	strength_lbl_output = tk.Label(bg = "white", fg = "red", width = 70, font = font)
+	strength_lbl_output.pack()
 
 
 
-#Running the program
 
-main_page_window.mainloop()
+
+	#Running the program
+
+	main_page_window.mainloop()

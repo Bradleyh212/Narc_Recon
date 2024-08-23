@@ -1,5 +1,5 @@
-import sqlite3
-con = sqlite3.connect("tutorial.db")
+#import sqlite3
+#con = sqlite3.connect("tutorial.db")
 import pandas as pd
 
 narc_list = {}
@@ -10,10 +10,12 @@ upc_list = df["Upc"].fillna(1).apply(lambda x: str(int(x)).zfill(12)).tolist()
 drug_name_list = df["Drug Name"].tolist()
 #print(drug_name_list)
 
+drug_stregth_list = df["Strength"].tolist()
+#print(drug_stregth_list)
 
 
 for i in range(len(upc_list)):
-	narc_list[upc_list[i]] = [drug_name_list[i]]
+	narc_list[upc_list[i]] = [drug_name_list[i], drug_stregth_list[i]]
 
 
 
