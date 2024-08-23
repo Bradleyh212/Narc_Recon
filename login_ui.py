@@ -1,24 +1,34 @@
 import tkinter as tk
-from tkinter import ttk
-from tkinter import font
-from tkinter import messagebox
+from tkinter import ttk, font, messagebox
+from main_page import open_main_page
+
+#password_count = 0
 
 
 def check_password():
+	#password_count = password_count()
 	user_name = user_name_ent.get()
 	password = password_ent.get()
 
-	if user_name == "Test2" and password == "12345":
+	if user_name == "1" and password == "1":
 		messagebox.showinfo("Login", "Login successful!")
+		window.destroy()  # Close the login window
+		open_main_page()  # Open the main page
 	else:
 		messagebox.showerror("Login", "Invalid username or password")
 		password_ent.delete(0, tk.END)
+		#password_count+= 1
 
 window = tk.Tk()
 window.title("Narcotics Management System")
 
 #Window setting
 window.resizable(False, False) #This stops the user from resizing the screen for the login ui
+
+def sign_in(sign_in):
+		check_password()
+window.bind('<Return>', sign_in)
+
 
 w = 550 
 h = 500

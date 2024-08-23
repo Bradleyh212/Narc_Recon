@@ -7,8 +7,13 @@ def open_main_page():
 	main_page_window = tk.Tk()
 	main_page_window.title("Narcotics Management System")
 
-	#Window setting
-	main_page_window.state('zoomed') #setting window to full screen before stopping the resizable to false
+	#Window setting	
+	w = main_page_window.winfo_screenwidth() 
+	h = main_page_window.winfo_screenheight()
+
+	main_page_window.geometry('%dx%d' % (w, h))
+
+	#main_page_window.state('zoomed') #setting window to full screen before stopping the resizable to false
 
 	main_page_window.resizable(False, False) #This stops the user from resizing the screen for the login ui
 
@@ -32,22 +37,23 @@ def open_main_page():
 	# Define a font for the Entry widget
 	font = font.Font(family="Inter", size=16, weight="normal")
 
-	upc_ent = tk.Entry(text = "Enter upc", fg = "black", bg = "white", width = 70, font = font, justify="center") #upc entry widget
+	upc_ent = tk.Entry(main_page_window, text = "Enter upc", fg = "black", bg = "white", width = 70, font = font, justify="center") #upc entry widget
 	upc_ent.pack(pady = 20)
+	upc_ent.focus()
 
-	search_btn = ttk.Button(text = "Search", style='TButton', command=search_meds)
+	search_btn = ttk.Button(main_page_window, text = "Search", style='TButton', command=search_meds)
 	search_btn.pack()
 
-	name__med_lbl = tk.Label(text = "name", bg = "white", fg = "black", width = 20, font = font)
+	name__med_lbl = tk.Label(main_page_window, text = "name", bg = "white", fg = "black", width = 20, font = font)
 	name__med_lbl.pack(pady = 10)
 
-	name_lbl_output = tk.Label(bg = "white", fg = "red", width = 70, font = font)
+	name_lbl_output = tk.Label(main_page_window, bg = "white", fg = "red", width = 70, font = font)
 	name_lbl_output.pack() # this will be the label to test the output when we enter the upc
 
-	strength__med_lbl = tk.Label(text = "strength", bg = "white", fg = "black", width = 20, font = font)
+	strength__med_lbl = tk.Label(main_page_window, text = "strength", bg = "white", fg = "black", width = 20, font = font)
 	strength__med_lbl.pack(pady = 10)
 
-	strength_lbl_output = tk.Label(bg = "white", fg = "red", width = 70, font = font)
+	strength_lbl_output = tk.Label(main_page_window, bg = "white", fg = "red", width = 70, font = font)
 	strength_lbl_output.pack()
 
 
