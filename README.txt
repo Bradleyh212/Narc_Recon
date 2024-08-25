@@ -8,6 +8,14 @@ Step 3 : Figure out how to password protect the app
 
 Step 4 : Sql server
 
+-
+
+-
+
+-
+
+Last step : work on ui
+
 
 
 
