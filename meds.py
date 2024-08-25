@@ -32,8 +32,8 @@ cleaned_narc_list = {} # creating a new list without the spaces from the excel s
 for key, value in narc_list.items():
     cleaned_values = []
     for item in value:
-        if isinstance(item, str):
-            cleaned_values.append(item.replace("\t", ""))
+        if type(item) == str:
+            cleaned_values.append(item.replace("\t", "").strip())
         else:
             cleaned_values.append(item)
     cleaned_narc_list[key] = cleaned_values

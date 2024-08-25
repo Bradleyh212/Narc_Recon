@@ -2,11 +2,13 @@ import tkinter as tk
 from tkinter import ttk, font, messagebox
 from main_page import open_main_page
 
-#password_count = 0
+password_count = 0
 
+def login_try(): #function to count the login tries and close the app if it reaches 3
+	global password_count
+	password_count += 1
 
 def check_password():
-	#password_count = password_count()
 	user_name = user_name_ent.get()
 	password = password_ent.get()
 
@@ -17,7 +19,11 @@ def check_password():
 	else:
 		messagebox.showerror("Login", "Invalid username or password")
 		password_ent.delete(0, tk.END)
-		#password_count+= 1
+		login_try()
+		print(password_count)
+		if password_count >= 3:
+			window.destroy()
+
 
 window = tk.Tk()
 window.title("Narcotics Management System")
