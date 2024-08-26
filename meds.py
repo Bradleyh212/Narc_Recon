@@ -1,5 +1,5 @@
-#import sqlite3
-#con = sqlite3.connect("tutorial.db")
+import sqlite3
+con = sqlite3.connect("narcotics_database.db") #Connecting our databse
 import pandas as pd
 
 narc_list = {}
@@ -19,10 +19,10 @@ drug_din_list = df["DIN"].apply(lambda x: str(int(x)).zfill(8)).tolist() #make t
 #print(drug_din_list)
 
 drug_stregth_list = df["Strength"].tolist()
-#print(drug_stregth_list)
+#print(drug_stregth_list
 
 drug_pack_size_list = df["Pack size"].fillna(1).astype(int).tolist()
-#print(drug_pack_size_list)
+
 
 
 for i in range(len(upc_list)):
