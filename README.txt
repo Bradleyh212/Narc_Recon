@@ -8,7 +8,7 @@ Step 3 : Figure out how to password protect the app
 
 Step 4 : Sql server
 
--
+Step 5 : Chnage the "SYR" to "ML" in the excel sheet
 
 -
 
