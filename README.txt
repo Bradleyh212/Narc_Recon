@@ -19,11 +19,6 @@ Last step : work on ui
 
 
 
-
-
-
-
-
 site i used to learn Tkinter:
 https://realpython.com/python-gui-tkinter/
 
