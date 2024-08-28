@@ -2,6 +2,22 @@ import sqlite3
 con = sqlite3.connect("narcotics_database.db") #Connecting our databse
 import pandas as pd
 
+# Create a cursor
+cur = con.cursor()
+
+#Create a table called narcs
+'''cur.execute("""CREATE TABLE narcs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            drug_name TEXT NOT NULL,
+            din TEXT NOT NULL, -- storing as text because of leading zero's
+            strength TEXT NOT NULL,
+            form TEXT NOT NULL UNIQUE,
+            upc TEXT NOT NULL, -- storing as text because of leading zero's
+            pack_size INTEGER NOT NULL
+            )
+
+        """)'''
+
 narc_list = {}
 df = pd.read_excel("Sheet1.xlsx", sheet_name="Sheet1")
 upc_list = df["Upc"].fillna(1).apply(lambda x: str(int(x)).zfill(12)).tolist() #make the upc list, also fill the first numbers with zero
