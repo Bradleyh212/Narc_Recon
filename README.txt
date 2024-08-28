@@ -27,3 +27,5 @@ Last step : work on ui
 site i used to learn Tkinter:
 https://realpython.com/python-gui-tkinter/
 
+site i used for sqlite3:
+https://www.udemy.com/course/using-sqlite3-databases-with-python/learn/lecture/14446938#notes
