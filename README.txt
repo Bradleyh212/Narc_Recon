@@ -14,6 +14,8 @@ Step 6 : Make a way to see the qty on the main page
 
 Step 7 : Create an audit log for the changes to the qty
 
+Step 8 : Need to back track and make the din the primary key for the dictionnary and the database
+
 
 Last step : work on ui
 
