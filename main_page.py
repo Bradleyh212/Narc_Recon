@@ -9,7 +9,7 @@ def open_main_page():
 	cur = con.cursor() # Create a cursor
 
 	main_page_window = tk.Tk()
-	main_page_window.title("Narcotics Management System")
+	main_page_window.title("Narc Recon")
 
 	#Window setting
 	w = main_page_window.winfo_screenwidth() 

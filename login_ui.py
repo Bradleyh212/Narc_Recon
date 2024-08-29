@@ -26,7 +26,7 @@ def check_password():
 
 
 window = tk.Tk()
-window.title("Narcotics Management System")
+window.title("Narc Recon")
 
 #Window setting
 window.resizable(False, False) #This stops the user from resizing the screen for the login ui
