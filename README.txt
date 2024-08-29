@@ -6,13 +6,11 @@ Step 2 : Make a database to store all the medication names (i made the excel she
 
 Step 3 : Figure out how to password protect the app
 
-Step 4 : Sql server
+Step 4 : Sqlite3 server
 
 Step 5 : Chnage the "SYR" to "ML" in the excel sheet
 
-- Step 6 : Add the qty counter to the table narcs in the database and set all at zero for now
-
-- Step 7 : Make a way to see the qty on the main page
+Step 6 : Make a way to see the qty on the main page
 
 Last step : work on ui
 

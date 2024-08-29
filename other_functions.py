@@ -34,7 +34,7 @@ drug_pack_size_list = df["Pack size"].fillna(1).astype(int).tolist()
 
 
 def show_all_narcs_table():
-	cur.execute("SELECT * FROM narcs")
+	cur.execute("SELECT * FROM narcs ORDER BY drug_name ASC")
 	items = cur.fetchall()
 	'''print("Upc          | Name|") #WILL DO LATE FOR BETTER FORMATTING
 				print("------         ---------"             )'''

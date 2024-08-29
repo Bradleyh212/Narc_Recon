@@ -36,7 +36,7 @@ for upc, items in narc_list.items():
             """, 
             (upc, drug_name, din, strength, form, pack_size))
 
-show_all_narcs_table()
+show_all_narcs_table() # From other functions file to to show by name ascending (A to Z) 
 
 
 def find_quantity(upc):

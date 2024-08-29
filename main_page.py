@@ -11,7 +11,7 @@ def open_main_page():
 	main_page_window = tk.Tk()
 	main_page_window.title("Narcotics Management System")
 
-	#Window setting	
+	#Window setting
 	w = main_page_window.winfo_screenwidth() 
 	h = main_page_window.winfo_screenheight()
 
@@ -37,7 +37,7 @@ def open_main_page():
 			strength_lbl_output.config(text = med_info[2])
 			drug_form_output.config(text = med_info[3])
 			pack_med_output.config(text = med_info[4])
-			qty_med_output.config(text = find_quantity(upc))
+			qty_med_output.config(text = find_quantity(upc)) #functions from the meds file to find the qty directly from the database
 
 		else:
 			messagebox.showerror("Error", "UPC not found")
