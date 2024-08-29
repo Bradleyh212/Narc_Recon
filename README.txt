@@ -12,6 +12,9 @@ Step 5 : Chnage the "SYR" to "ML" in the excel sheet
 
 Step 6 : Make a way to see the qty on the main page
 
+Step 7 : Create an audit log for the changes to the qty
+
+
 Last step : work on ui
 
 
