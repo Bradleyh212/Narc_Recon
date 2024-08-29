@@ -17,7 +17,10 @@ comment out create table (can run multiple time without "table already exist err
 			din TEXT, -- storing as text because of leading zero's
 			strength TEXT,
 			form TEXT,
-			pack_size INTEGER
+			pack_size INTEGER,
+			Quantity INT NOT NULL DEFAULT 0, --Added the qty part of the table
+			Last_Updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, --Create a time_stamp to know when changes are made
+			Updated_By VARCHAR(10)
 			)
 
 		""")
@@ -34,6 +37,15 @@ for upc, items in narc_list.items():
             (upc, drug_name, din, strength, form, pack_size))
 
 show_all_narcs_table()
+
+
+def find_quantity(upc):
+	cur.execute("SELECT upc FROM narcs")
+	qty = cur.fetchone(upc)
+	return qty
+
+
+
 
 
 con.commit()

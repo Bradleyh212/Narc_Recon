@@ -39,4 +39,4 @@ def show_all_narcs_table():
 	'''print("Upc          | Name|") #WILL DO LATE FOR BETTER FORMATTING
 				print("------         ---------"             )'''
 	for i in range(len(items)):
-		print(f"{items[i][0]} | {items[i][1]}| {items[i][2]} | {items[i][3]} | {items[i][4]} | {items[i][5]}")
+		print(f"{items[i][0]} | {items[i][1]}| {items[i][2]} | {items[i][3]} | {items[i][4]} | {items[i][5]} | {items[i][6]} | {items[i][7]}| {items[i][8]}")
