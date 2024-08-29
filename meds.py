@@ -33,6 +33,7 @@ for upc, items in narc_list.items():
             """, 
             (upc, drug_name, din, strength, form, pack_size))
 
+show_all_narcs_table()
 
 
 con.commit()

@@ -1,4 +1,9 @@
-import pandas as pd # Importing to read excel file
+import sqlite3 #To use database
+con = sqlite3.connect("narcotics_database.db") #Connecting our databse
+import pandas as pd
+
+cur = con.cursor() # Create a cursor
+
 
 def create_narc_list():
 	narc_list = {}

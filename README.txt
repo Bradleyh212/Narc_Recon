@@ -10,9 +10,9 @@ Step 4 : Sql server
 
 Step 5 : Chnage the "SYR" to "ML" in the excel sheet
 
--
+- Step 6 : Add the qty counter to the table narcs in the database and set all at zero for now
 
--
+- Step 7 : Make a way to see the qty on the main page
 
 Last step : work on ui
 
