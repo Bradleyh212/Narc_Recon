@@ -1,7 +1,7 @@
 import sqlite3 #To use database
 con = sqlite3.connect("narcotics_database.db") #Connecting our databse
 import pandas as pd
-from create_dictionnarie import create_narc_list
+from other_functions import create_narc_list, show_all_narcs_table
 
 narc_list = create_narc_list()
 
@@ -22,12 +22,7 @@ comment out create table (can run multiple time without "table already exist err
 
 		""")
 
-
-print()
-#print(len(narc_list))
-print()
-#print(narc_list)
-
+#Adding the dictionnarie into the database table
 for upc, items in narc_list.items():
 		drug_name, din, strength, form, pack_size = items
 
@@ -38,11 +33,7 @@ for upc, items in narc_list.items():
             """, 
             (upc, drug_name, din, strength, form, pack_size))
 
-cur.execute("SELECT * FROM narcs")
 
-items = cur.fetchall()
-for item in items:
-	print(item)
 
 con.commit()
 con.close()
