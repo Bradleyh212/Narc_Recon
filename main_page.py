@@ -2,7 +2,11 @@ def open_main_page():
 	#main page, will be full screen, not reziable
 	import tkinter as tk
 	from tkinter import ttk, font, messagebox
-	from meds import narc_list # importing the list of narcs from the file meds.py
+	from meds import narc_list, find_quantity # importing the list of narcs and the function for qtyfrom the file meds.py
+
+	import sqlite3 #To use database
+	con = sqlite3.connect("narcotics_database.db") #Connecting our databse
+	cur = con.cursor() # Create a cursor
 
 	main_page_window = tk.Tk()
 	main_page_window.title("Narcotics Management System")
@@ -33,6 +37,8 @@ def open_main_page():
 			strength_lbl_output.config(text = med_info[2])
 			drug_form_output.config(text = med_info[3])
 			pack_med_output.config(text = med_info[4])
+			qty_med_output.config(text = find_quantity(upc))
+
 		else:
 			messagebox.showerror("Error", "UPC not found")
 
@@ -76,6 +82,12 @@ def open_main_page():
 
 	pack_med_output = tk.Label(main_page_window, bg = "white", fg = "red", width = 70, font = font)
 	pack_med_output.pack()
+
+	qty_med_lbl = tk.Label(main_page_window, text = "Qty on hand", bg = "white", fg = "black", width = 20, font = font)
+	qty_med_lbl.pack(pady = 10)
+
+	qty_med_output = tk.Label(main_page_window, bg = "white", fg = "red", width = 70, font = font)
+	qty_med_output.pack()
 
 
 

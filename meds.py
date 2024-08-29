@@ -40,14 +40,10 @@ show_all_narcs_table()
 
 
 def find_quantity(upc):
-	cur.execute("SELECT upc FROM narcs")
-	qty = cur.fetchone(upc)
+	cur.execute("SELECT * FROM narcs WHERE upc = upc")
+	qty = cur.fetchone()[6] #Used index 6 as it is the index for the qty in the table
 	return qty
 
 
-
-
-
 con.commit()
-con.close()
 
