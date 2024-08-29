@@ -19,11 +19,12 @@ comment out create table (can run multiple time without "table already exist err
 
         """)
 
+#ur.executemany()
 
 def create_narc_list():
     narc_list = {}
     for i in range(len(upc_list)):
-        narc_list[upc_list[i]] = [drug_name_list[i], drug_din_list[i], drug_stregth_list[i], drug_pack_size_list[i]]
+        narc_list[upc_list[i]] = [drug_name_list[i], drug_din_list[i], drug_stregth_list[i], drug_form_list[i], drug_pack_size_list[i]]
     return narc_list
 
 df = pd.read_excel("Sheet1.xlsx", sheet_name="Sheet1")
@@ -40,6 +41,9 @@ drug_din_list = df["DIN"].apply(lambda x: str(int(x)).zfill(8)).tolist() #make t
 
 drug_stregth_list = df["Strength"].tolist()
 #print(drug_stregth_list)
+
+drug_form_list = df["Form"].tolist()
+#print(drug_form_list)
 
 drug_pack_size_list = df["Pack size"].fillna(1).astype(int).tolist()
 #print(drug_pack_size_list)

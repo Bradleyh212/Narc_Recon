@@ -31,7 +31,8 @@ def open_main_page():
 			name_lbl_output.config(text = med_info[0])
 			din__med_output.config(text = med_info[1])
 			strength_lbl_output.config(text = med_info[2])
-			pack_med_output.config(text = med_info[3])
+			drug_form_output.config(text = med_info[3])
+			pack_med_output.config(text = med_info[4])
 		else:
 			messagebox.showerror("Error", "UPC not found")
 
@@ -63,6 +64,12 @@ def open_main_page():
 
 	strength_lbl_output = tk.Label(main_page_window, bg = "white", fg = "red", width = 70, font = font)
 	strength_lbl_output.pack()
+
+	drug_form_lbl = tk.Label(main_page_window, text = "Form", bg = "white", fg = "black", width = 20, font = font)
+	drug_form_lbl.pack(pady = 10)
+
+	drug_form_output = tk.Label(main_page_window, bg = "white", fg = "red", width = 70, font = font)
+	drug_form_output.pack()
 
 	pack_med_lbl = tk.Label(main_page_window, text = "pack size", bg = "white", fg = "black", width = 20, font = font)
 	pack_med_lbl.pack(pady = 10)
