@@ -8,10 +8,19 @@ cur = con.cursor() # Create a cursor
 def create_narc_list():
 	narc_list = {}
 	for i in range(len(upc_list)):
-		if (drug_din_list[i] == "00000001") or (upc_list[i]=="000000000000"):
+		if (upc_list[i]=="000000000000"):
 			pass
 		else:
-			narc_list[drug_din_list[i]] = [drug_name_list[i], upc_list[i], drug_stregth_list[i], drug_form_list[i], drug_pack_size_list[i]]
+			if drug_din_list[i] not in narc_list:
+				narc_list[drug_din_list[i]] = []
+			# Append the details for the UPC to the DIN entry
+			narc_list[drug_din_list[i]].append({
+				"name": drug_name_list[i],
+				"upc": upc_list[i],
+				"strength": drug_stregth_list[i],
+				"form": drug_form_list[i],
+				"pack_size": drug_pack_size_list[i]
+			})
 	return narc_list
 
 df = pd.read_excel("Sheet1.xlsx", sheet_name="Sheet1")
@@ -32,10 +41,14 @@ drug_stregth_list = df["Strength"].tolist()
 drug_form_list = df["Form"].tolist()
 #print(drug_form_list)
 
-drug_pack_size_list = df["Pack size"].fillna(1).astype(int).tolist()
+drug_pack_size_list = df["Pack size"].fillna(0).astype(int).tolist()
 #print(drug_pack_size_list)
 
 narc_list = create_narc_list()
 
 print(len(narc_list))
 print(narc_list)
+
+
+
+
