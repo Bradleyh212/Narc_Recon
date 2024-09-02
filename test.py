@@ -33,7 +33,7 @@ drug_name_list = df["Drug Name"].tolist()
 #print(drug_name_list)
 
 drug_din_list = df["DIN"].apply(lambda x: str(int(x)).zfill(8)).tolist() #make the din list, also fill the first numbers with zero
-#print(drug_din_list)
+#print(drug_din_list)mm
 
 drug_stregth_list = df["Strength"].tolist()
 #print(drug_stregth_list)

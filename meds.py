@@ -12,18 +12,24 @@ cur.execute("""CREATE TABLE IF NOT EXISTS narcs ( -- Create a table called narcs
 /* Added the ""IF NOT EXISTS" constraint to make sure i dont have to
 comment out create table (can run multiple time without "table already exist error") */
 
-			upc TEXT PRIMARY KEY, -- storing as text because of leading zero's,
-			drug_name TEXT,
-			din TEXT, -- storing as text because of leading zero's
-			strength TEXT,
-			form TEXT,
-			pack_size INTEGER,
-			Quantity INT NOT NULL DEFAULT 0, --Added the qty part of the table
-			Last_Updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, --Create a time_stamp to know when changes are made
-			Updated_By VARCHAR(10)
-			)
+    din TEXT PRIMARY KEY, -- storing as text because of leading zero's,
+    name TEXT NOT NULL,
+    quantity INTEGER NOT NULL DEFAULT 0
+)
+""")
 
-		""")
+cur.execute("""
+CREATE TABLE IF NOT EXISTS narcs_details (
+    din TEXT NOT NULL, -- storing as text because of leading zero's,
+    upc TEXT NOT NULL, -- storing as text because of leading zero's,
+    strength TEXT,
+    form TEXT NOT NULL,
+    pack_size TEXT,
+    PRIMARY KEY (din, upc, pack_size),
+    FOREIGN KEY (din) REFERENCES drugs(din)
+)
+""")
+
 
 #Adding the dictionnarie into the database table
 for upc, items in narc_list.items():
