@@ -60,9 +60,14 @@ def open_main_page():
 			x = (window_width/2) - (w/2)
 			y = (window_height/2) - (h/0.1)
 			choice_windw.geometry('%dx%d+%d+%d' % (w, h, x, y))
-			
+
 			choice_windw.wm_attributes("-topmost", True) #Will keep the choice_windw on top
 			tk.Label(choice_windw, text="Choose the pack size:").pack()
+
+			pack_size = tk.StringVar()
+			pack_size_dropdown = ttk.Combobox(choice_windw, textvariable=pack_size)
+			pack_size_dropdown['values'] = [f"{item[6]} units - {item[4]} {item[5]}" for item in tup]
+			pack_size_dropdown.pack()
 		else:
 			messagebox.showerror("Error", "Drug not found")
 
