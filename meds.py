@@ -31,24 +31,14 @@ CREATE TABLE IF NOT EXISTS narcs_details (
 """)
 
 
-#Adding the dictionnarie into the database table
-for upc, items in narc_list.items():
-		drug_name, din, strength, form, pack_size = items
-
-		cur.execute("""
-            INSERT OR REPLACE INTO narcs 
-            (upc, drug_name, din, strength, form, pack_size) 
-            VALUES (?, ?, ?, ?, ?, ?)
-            """, 
-            (upc, drug_name, din, strength, form, pack_size))
-
-show_all_narcs_table() # From other functions file to to show by name ascending (A to Z) 
 
 
 def find_quantity(upc):
 	cur.execute("SELECT * FROM narcs WHERE upc = upc")
 	qty = cur.fetchone()[6] #Used index 6 as it is the index for the qty in the table
 	return qty
+
+show_all_narcs_table()
 
 
 con.commit()

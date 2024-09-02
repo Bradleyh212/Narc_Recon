@@ -30,17 +30,18 @@ def open_main_page():
 
 	def search_meds_by_upc(): #function to find the meds in meds.py
 		upc = upc_ent.get()
-		if upc in narc_list:
-			med_info = narc_list[upc]
-			name_lbl_output.config(text = med_info[0])
-			din__med_output.config(text = med_info[1])
-			strength_lbl_output.config(text = med_info[2])
-			drug_form_output.config(text = med_info[3])
-			pack_med_output.config(text = med_info[4])
-			qty_med_output.config(text = find_quantity(upc)) #functions from the meds file to find the qty directly from the database
+		for i in narc_list:
+			if upc in i:
+				med_info = narc_list[upc]
+				name_lbl_output.config(text = med_info[0])
+				din__med_output.config(text = med_info[1])
+				strength_lbl_output.config(text = med_info[2])
+				drug_form_output.config(text = med_info[3])
+				pack_med_output.config(text = med_info[4])
+				qty_med_output.config(text = find_quantity(upc)) #functions from the meds file to find the qty directly from the database
 
-		else:
-			messagebox.showerror("Error", "UPC not found")
+			else:
+				messagebox.showerror("Error", "UPC not found")
 
 
 	# Define a font for the Entry widget
