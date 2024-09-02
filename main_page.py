@@ -36,6 +36,7 @@ def open_main_page():
 			tup = find_narcs_din(search_input)
 		else:
 			messagebox.showerror("Error", "Drug not found")
+			return
 
 		if len(tup) == 1:
 #There will always be only 1 tuple in the list when looking with upc, will but another constraint, "if len(din) > 1" when lookin with din
@@ -47,7 +48,9 @@ def open_main_page():
 			qty_med_output.config(text = find_quantity(search_input)) #functions from the meds file to find the qty directly from the database
 		elif len(tup) > 1:
 			#I will output a choice for which pack size they want
-			pass
+			choice_windw = tk.Toplevel(main_page_window)
+			choice_windw.title("Choose Pack Size")
+			#Will keep the choice_windw on top
 		else:
 			messagebox.showerror("Error", "Drug not found")
 
