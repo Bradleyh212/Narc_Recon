@@ -50,7 +50,19 @@ def open_main_page():
 			#I will output a choice for which pack size they want
 			choice_windw = tk.Toplevel(main_page_window)
 			choice_windw.title("Choose Pack Size")
+			#Creating the place and the size of the window
+			w = 400 
+			h = 100
+
+			window_width = choice_windw.winfo_screenwidth()  # screen centering code from https://stackoverflow.com/questions/14910858/how-to-specify-where-a-tkinter-window-opens
+			window_height = choice_windw.winfo_screenheight()
+
+			x = (window_width/2) - (w/2)
+			y = (window_height/2) - (h/0.1)
+			choice_windw.geometry('%dx%d+%d+%d' % (w, h, x, y))
+			
 			choice_windw.wm_attributes("-topmost", True) #Will keep the choice_windw on top
+			tk.Label(choice_windw, text="Choose the pack size:").pack()
 		else:
 			messagebox.showerror("Error", "Drug not found")
 
