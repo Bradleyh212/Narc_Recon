@@ -54,13 +54,11 @@ def find_narcs_upcs(upc):
 
 print(find_narcs_upcs("057513040214"))
 
-
-
-
-
 def find_quantity(upc):
-	cur.execute("SELECT * FROM narcs WHERE upc = upc")
-	qty = cur.fetchone()[6] #Used index 6 as it is the index for the qty in the table
+	cur.execute("SELECT * FROM narcs_details WHERE upc = upc")
+	din = cur.fetchone()[0] #Used index 0 as it is the index for the din in the table narc_details
+	cur.execute("SELECT * FROM narcs WHERE din = din")
+	qty = cur.fetchone()[2] #Used index 2 as it is the index for the din in the table narcs
 	return qty
 
 #show_narcs_table()
