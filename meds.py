@@ -30,6 +30,20 @@ CREATE TABLE IF NOT EXISTS narcs_details (
 )
 """)
 
+for din, details_list in narc_list.items():
+	# Adding to drug_details table
+    drug_name = details_list[0]["name"]
+    cur.execute("INSERT OR IGNORE INTO drugs (din, name, quantity) VALUES (?, ?, ?)", (din, drug_name, 0))
+    
+    # Adding to drug_details table
+    for details in details_list:
+        # Handle None for UPC and strength if they are missing or null
+        upc = details.get("upc")
+        strength = details.get("strength")
+        cur.execute("""
+        INSERT INTO drug_details (din, upc, strength, form, pack_size)
+        VALUES (?, ?, ?, ?, ?)
+        """, (din, upc, strength, details["form"], details["pack_size"]))
 
 
 
