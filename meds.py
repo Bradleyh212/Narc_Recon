@@ -44,7 +44,7 @@ for din, details_list in narc_list.items():
 
 
 
-def find_narcs_upcs(upc):
+def find_narcs_upc(upc):
 	cur.execute("""
 	SELECT n.din, n.name, n.quantity, nd.upc, nd.strength, nd.form, nd.pack_size
 	FROM narcs n
@@ -53,15 +53,15 @@ def find_narcs_upcs(upc):
 	return tup
 
 
-def find_narcs_upcs():
+def find_narcs_din(din):
 	cur.execute("""
 	SELECT n.din, n.name, n.quantity, nd.upc, nd.strength, nd.form, nd.pack_size
 	FROM narcs n
-	INNER JOIN narcs_details  nd ON n.din = nd.din WHERE nd.upc = ?""", (upc,))
+	INNER JOIN narcs_details  nd ON n.din = nd.din WHERE nd.din = ?""", (din,))
 	tup = cur.fetchall()
 	return tup
 
-
+print(find_narcs_din("01913484"))
 
 def find_quantity(upc):
 	cur.execute("SELECT * FROM narcs_details WHERE upc = upc")
@@ -70,7 +70,7 @@ def find_quantity(upc):
 	qty = cur.fetchone()[2] #Used index 2 as it is the index for the din in the table narcs
 	return qty
 
-show_narcs_table()
+#show_narcs_table()
 
 
 con.commit()
