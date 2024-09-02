@@ -50,7 +50,7 @@ def open_main_page():
 			#I will output a choice for which pack size they want
 			choice_windw = tk.Toplevel(main_page_window)
 			choice_windw.title("Choose Pack Size")
-			#Will keep the choice_windw on top
+			choice_windw.wm_attributes("-topmost", True) #Will keep the choice_windw on top
 		else:
 			messagebox.showerror("Error", "Drug not found")
 
