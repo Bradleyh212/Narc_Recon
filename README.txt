@@ -1,9 +1,9 @@
 Inventory Management System: Developping a Python-based application to manage inventory for a small business, including features for adding, removing, and updating stock levels; using Python, SQLite and Tkinter
 
-***Make sure to have the tkinter, pandas, prettytable, library/interface: Use pip3 install to install if you dont have it
-- pip3 install tkinter
-- pip3 install pandas
-- pip3 install prettytable
+***Make sure to have the pandas, prettytable, library: Use pip3 install to install if you dont have it
+In the terminal type
+>>> pip3 install pandas
+>>> pip3 install prettytable
 
 Step 1 : Build a scetch of the ui and design
 
