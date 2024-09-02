@@ -52,8 +52,6 @@ def find_narcs_upcs(upc):
 	tup = cur.fetchall()
 	return tup
 
-print(find_narcs_upcs("057513040214"))
-
 def find_quantity(upc):
 	cur.execute("SELECT * FROM narcs_details WHERE upc = upc")
 	din = cur.fetchone()[0] #Used index 0 as it is the index for the din in the table narc_details

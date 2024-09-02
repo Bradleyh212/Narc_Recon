@@ -21,6 +21,8 @@ Step 7 : Create an audit log for the changes to the qty
 
 Step 8 : Need to back track and make the din the primary key for the dictionnary and the database
 
+Step 9 : Create a function to find by upc, make a constraint for if theres a different pack size to choose which one
+
 
 Last step : work on ui
 

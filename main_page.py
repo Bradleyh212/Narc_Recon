@@ -31,7 +31,6 @@ def open_main_page():
 	def search_meds_by_upc(): #function to find the meds in meds.py
 		upc = upc_ent.get()
 		tup = find_narcs_upcs(upc)
-		print(tup)
 		if len(tup) == 1: 
 #There will always be only 1 tuple in the list when looking with upc, will but another constraint, "if len(din) > 1" when lookin with din
 			name_lbl_output.config(text = tup[0][1])
