@@ -31,9 +31,9 @@ def open_main_page():
 	def search_narcs(): #function to find the meds in meds.py
 		search_input = meds_ent.get()
 		if len(search_input) == 12:
-			tup = find_narcs_upc(upc)
+			tup = find_narcs_upc(search_input)
 		elif len(search_input) == 8:
-			tup = find_narcs_din(upc)
+			tup = find_narcs_din(search_input)
 		else:
 			messagebox.showerror("Error", "Drug not found")
 
@@ -44,7 +44,7 @@ def open_main_page():
 			strength_lbl_output.config(text = tup[0][4])
 			drug_form_output.config(text = tup[0][5])
 			pack_med_output.config(text = tup[0][6])
-			qty_med_output.config(text = find_quantity(upc)) #functions from the meds file to find the qty directly from the database
+			qty_med_output.config(text = find_quantity(search_input)) #functions from the meds file to find the qty directly from the database
 		elif len(tup) > 1:
 			#I will output a choice for which pack size they want
 			pass
@@ -55,7 +55,7 @@ def open_main_page():
 	# Define a font for the Entry widget
 	font = font.Font(family="Inter", size=16, weight="normal")
 
-	meds_ent = tk.Entry(main_page_window, text = "Enter upc", fg = "black", bg = "white", width = 70, font = font, justify="center") #upc entry widget
+	meds_ent = tk.Entry(main_page_window, text = "Enter upc or din", fg = "black", bg = "white", width = 70, font = font, justify="center") #upc entry widget
 	meds_ent.pack(pady = 20)
 	meds_ent.focus()
 
