@@ -1,6 +1,7 @@
 import sqlite3 #To use database
 con = sqlite3.connect("narcotics_database.db") #Connecting our databse
 import pandas as pd
+from prettytable import PrettyTable
 
 cur = con.cursor() # Create a cursor
 
@@ -43,10 +44,28 @@ def create_narc_list():
 			})
 	return narc_list
 
-def show_all_narcs_table():
-	cur.execute("SELECT * FROM narcs ORDER BY name ASC")
-	items = cur.fetchall()
-	'''print("Upc          | Name|") #WILL DO LATE FOR BETTER FORMATTING
-				print("------         ---------"             )'''
-	for i in range(len(items)):
-		print(f"{items[i][0]} | {items[i][1]}| {items[i][2]} | {items[i][3]} | {items[i][4]} | {items[i][5]} | {items[i][6]} | {items[i][7]}| {items[i][8]}")
+def show_narcs_table():
+	cur.execute("""
+	SELECT n.din, n.name, n.quantity, nd.upc, nd.strength, nd.form, nd.pack_size
+	FROM narcs n
+	INNER JOIN narcs_details  nd ON n.din = nd.din"""
+	)
+
+	rows = cur.fetchall()
+
+	column_names = []
+	for description in cur.description:
+		column_names.append(description[0])
+
+
+	table = PrettyTable()
+
+	table.field_names = column_names
+
+	for row in rows:
+		table.add_row(row)
+
+	print(table)
+
+
+	
