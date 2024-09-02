@@ -2,7 +2,7 @@ def open_main_page():
 	#main page, will be full screen, not reziable
 	import tkinter as tk
 	from tkinter import ttk, font, messagebox
-	from meds import narc_list, find_quantity, find_narcs_upcs # importing the list of narcs and the function for qtyfrom the file meds.py
+	from meds import narc_list, find_quantity, find_narcs_upcs, find_narcs_upcs # importing the list of narcs and the function for qtyfrom the file meds.py
 
 	import sqlite3 #To use database
 	con = sqlite3.connect("narcotics_database.db") #Connecting our databse
@@ -24,13 +24,21 @@ def open_main_page():
 
 	#end of main_page_window setting
 	def search(search):
-		search_meds_by_upc()
+		search_narcs()
 	main_page_window.bind('<Return>', search)
 
 
-	def search_meds_by_upc(): #function to find the meds in meds.py
-		upc = upc_ent.get()
-		tup = find_narcs_upcs(upc)
+	def search_narcs(): #function to find the meds in meds.py
+		search_input = meds_ent.get()
+		if len(search_input) == 12:
+			tup = find_narcs_upcs(upc)
+		elif len(search_input) == 8:
+			tup = find_narcs_upcs(upc)
+		else:
+			messagebox.showerror("Error", "Drug not found")
+
+
+
 		if len(tup) == 1: 
 #There will always be only 1 tuple in the list when looking with upc, will but another constraint, "if len(din) > 1" when lookin with din
 			name_lbl_output.config(text = tup[0][1])
@@ -39,18 +47,20 @@ def open_main_page():
 			drug_form_output.config(text = tup[0][5])
 			pack_med_output.config(text = tup[0][6])
 			qty_med_output.config(text = find_quantity(upc)) #functions from the meds file to find the qty directly from the database
+		elif :
+
 		else:
-			messagebox.showerror("Error", "UPC not found")
+			messagebox.showerror("Error", "Drug not found")
 
 
 	# Define a font for the Entry widget
 	font = font.Font(family="Inter", size=16, weight="normal")
 
-	upc_ent = tk.Entry(main_page_window, text = "Enter upc", fg = "black", bg = "white", width = 70, font = font, justify="center") #upc entry widget
-	upc_ent.pack(pady = 20)
-	upc_ent.focus()
+	meds_ent = tk.Entry(main_page_window, text = "Enter upc", fg = "black", bg = "white", width = 70, font = font, justify="center") #upc entry widget
+	meds_ent.pack(pady = 20)
+	meds_ent.focus()
 
-	search_btn = ttk.Button(main_page_window, text = "Search", style='TButton', command=search_meds_by_upc)
+	search_btn = ttk.Button(main_page_window, text = "Search", style='TButton', command=search_narcs)
 	search_btn.pack()
 
 	name__med_lbl = tk.Label(main_page_window, text = "name", bg = "white", fg = "black", width = 20, font = font)
