@@ -2,7 +2,7 @@ def open_main_page():
 	#main page, will be full screen, not reziable
 	import tkinter as tk
 	from tkinter import ttk, font, messagebox
-	from meds import narc_list, find_quantity # importing the list of narcs and the function for qtyfrom the file meds.py
+	from meds import narc_list, find_quantity, find_narcs_upcs # importing the list of narcs and the function for qtyfrom the file meds.py
 
 	import sqlite3 #To use database
 	con = sqlite3.connect("narcotics_database.db") #Connecting our databse
@@ -30,18 +30,18 @@ def open_main_page():
 
 	def search_meds_by_upc(): #function to find the meds in meds.py
 		upc = upc_ent.get()
-		for i in narc_list:
-			if upc in i:
-				med_info = narc_list[upc]
-				name_lbl_output.config(text = med_info[0])
-				din__med_output.config(text = med_info[1])
-				strength_lbl_output.config(text = med_info[2])
-				drug_form_output.config(text = med_info[3])
-				pack_med_output.config(text = med_info[4])
-				qty_med_output.config(text = find_quantity(upc)) #functions from the meds file to find the qty directly from the database
-
-			else:
-				messagebox.showerror("Error", "UPC not found")
+		tup = find_narcs_upcs(upc)
+		print(tup)
+		if len(tup) == 1: 
+#There will always be only 1 tuple in the list when looking with upc, will but another constraint, "if len(din) > 1" when lookin with din
+			name_lbl_output.config(text = tup[0][1])
+			din__med_output.config(text = tup[0][0])
+			strength_lbl_output.config(text = tup[0][4])
+			drug_form_output.config(text = tup[0][5])
+			pack_med_output.config(text = tup[0][6])
+			qty_med_output.config(text = find_quantity(upc)) #functions from the meds file to find the qty directly from the database
+		else:
+			messagebox.showerror("Error", "UPC not found")
 
 
 	# Define a font for the Entry widget

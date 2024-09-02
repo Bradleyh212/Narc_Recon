@@ -52,7 +52,10 @@ def find_narcs_upcs(upc):
 	tup = cur.fetchall()
 	return tup
 
-print(find_narcs_upcs("63691082762"))
+print(find_narcs_upcs("057513040214"))
+
+
+
 
 
 def find_quantity(upc):
