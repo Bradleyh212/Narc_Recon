@@ -48,8 +48,8 @@ def show_narcs_table():
 	cur.execute("""
 	SELECT n.din, n.name, n.quantity, nd.upc, nd.strength, nd.form, nd.pack_size
 	FROM narcs n
-	INNER JOIN narcs_details  nd ON n.din = nd.din"""
-	)
+	INNER JOIN narcs_details  nd ON n.din = nd.din
+	""")
 
 	rows = cur.fetchall()
 

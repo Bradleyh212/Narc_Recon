@@ -30,7 +30,6 @@ CREATE TABLE IF NOT EXISTS narcs_details (
 )
 """)
 
-
 for din, details_list in narc_list.items():
 	# Adding to narcs table
 	drug_name = details_list[0]["name"]  # Assuming all entries under the same DIN have the same name
@@ -44,12 +43,24 @@ for din, details_list in narc_list.items():
 		""", (din, details["upc"], details["strength"], details["form"], details["pack_size"]))
 
 
+
+def find_narcs_upcs(upc):
+	cur.execute("""
+	SELECT n.din, n.name, n.quantity, nd.upc, nd.strength, nd.form, nd.pack_size
+	FROM narcs n
+	INNER JOIN narcs_details  nd ON n.din = nd.din WHERE nd.upc = ?""", (upc,))
+	tup = cur.fetchall()
+	return tup
+
+print(find_narcs_upcs("63691082762"))
+
+
 def find_quantity(upc):
 	cur.execute("SELECT * FROM narcs WHERE upc = upc")
 	qty = cur.fetchone()[6] #Used index 6 as it is the index for the qty in the table
 	return qty
 
-show_narcs_table()
+#show_narcs_table()
 
 
 con.commit()
