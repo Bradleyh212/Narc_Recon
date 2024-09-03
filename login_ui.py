@@ -40,7 +40,7 @@ w = 550
 h = 500
 
 window_width = window.winfo_screenwidth()  # screen centering code from https://stackoverflow.com/questions/14910858/how-to-specify-where-a-tkinter-window-opens
-window_height = window.winfo_screenheight()
+window_height = window.winfo_screenheight()  
 
 x = (window_width/2) - (w/2)
 y = (window_height/2) - (h/2)
@@ -56,11 +56,12 @@ login_lbl = tk.Label(text = "Login", relief = tk.RAISED, width = 0, font = login
 login_lbl.pack(pady=50)
 
 
-user_name_ent = tk.Entry(fg = "black", bg = "white", width = 30) #user name entry widget
+user_name_ent = tk.Entry(fg = "white", bg = "black", width = 30) #user name entry widget
 user_name_ent.pack(pady=12)
+user_name_ent.focus_set()
 
 
-password_ent = tk.Entry(fg = "black", bg = "white", width = 30, show="*") #password name entry widget
+password_ent = tk.Entry(fg = "white", bg = "black", width = 30, show="*") #password name entry widget
 password_ent.pack(pady=12)
 
 

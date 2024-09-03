@@ -69,3 +69,9 @@ def show_narcs_table():
 
 
 	
+
+def add_quantity(amount, din):
+	cur.execute("UPDATE drugs SET quantity = quantity + ? WHERE DIN = ?", (amount, din))
+
+	con.commit()
+	con.close()
