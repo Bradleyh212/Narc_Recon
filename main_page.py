@@ -68,6 +68,20 @@ def open_main_page():
 			pack_size_dropdown = ttk.Combobox(choice_windw, textvariable=pack_size)
 			pack_size_dropdown['values'] = [f"{item[6]} units - {item[4]} {item[5]}" for item in tup]
 			pack_size_dropdown.pack()
+
+			def on_select_pack_size():
+				selected_index = pack_size_dropdown.current()
+				selected_pack = tup[selected_index]
+				name_lbl_output.config(text=selected_pack[1])
+				din__med_output.config(text=selected_pack[0])
+				strength_lbl_output.config(text=selected_pack[4])
+				drug_form_output.config(text=selected_pack[5])
+				pack_med_output.config(text=selected_pack[6])
+				qty_med_output.config(text=find_quantity(selected_pack[2]))
+				choice_windw.destroy()
+
+			select_btn = tk.Button(choice_windw, text="Select", command=on_select_pack_size)
+			select_btn.pack()
 		else:
 			messagebox.showerror("Error", "Drug not found")
 
@@ -102,7 +116,7 @@ def open_main_page():
 
 	drug_form_lbl = tk.Label(main_page_window, text = "Form", bg = "white", fg = "black", width = 20, font = font)
 	drug_form_lbl.pack(pady = 10)
-
+ 
 	drug_form_output = tk.Label(main_page_window, bg = "white", fg = "red", width = 70, font = font)
 	drug_form_output.pack()
 
