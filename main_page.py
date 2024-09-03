@@ -2,7 +2,9 @@ def open_main_page():
 	#main page, will be full screen, not reziable
 	import tkinter as tk
 	from tkinter import ttk, font, messagebox
-	from meds import narc_list, find_quantity, find_narcs_upc, find_narcs_din # importing the list of narcs and the function for qtyfrom the file meds.py
+	from meds import narc_list, find_quantity, find_narcs_upc, find_narcs_din 
+	# importing the list of narcs and the function for qty, both functions to find medsfrom the file meds.py'''
+	from other_functions import add_quantity
 
 	import sqlite3 #To use database
 	con = sqlite3.connect("narcotics_database.db") #Connecting our databse
@@ -137,6 +139,9 @@ def open_main_page():
 
 	add_qty_ent = tk.Entry(main_page_window, fg = "white", bg = "black", width = 70, font = font, justify="center")
 	add_qty_ent.pack()
+
+	add_btn = ttk.Button(main_page_window, text = "Add Quantity", style='TButton', command=add_quantity)
+	add_btn.pack()
 
 
 	#Running the program
