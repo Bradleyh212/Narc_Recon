@@ -71,8 +71,8 @@ def show_narcs_table():
 	
 
 def add_quantity(amount, din):
-	cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE DIN = ?", (amount, din))
+	cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
 
 	con.commit()
-
+	
 	show_narcs_table()
