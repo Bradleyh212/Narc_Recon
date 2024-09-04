@@ -10,8 +10,6 @@ def open_main_page():
 	con = sqlite3.connect("narcotics_database.db") #Connecting our databse
 	cur = con.cursor() # Create a cursor
 
-	font = font.Font(family="Inter", size=16, weight="normal") # Define a font for the Entry widget
-
 	main_page_window = tk.Tk()
 	main_page_window.title("Narc Recon")
 
@@ -24,6 +22,8 @@ def open_main_page():
 	#main_page_window.state('zoomed') #setting window to full screen before stopping the resizable to false
 
 	main_page_window.resizable(False, False) #This stops the user from resizing the screen for the login ui
+
+	font = font.Font(family="Inter", size=16, weight="normal") # Define a font for the Entry widget
 
 
 	#end of main_page_window setting
@@ -39,6 +39,7 @@ def open_main_page():
 		show_narcs_table()
 
 	def search_narcs(): #function to find the meds in meds.py
+		
 		search_input = meds_ent.get()
 		if len(search_input) == 12:
 			tup = find_narcs_upc(search_input)
@@ -95,60 +96,61 @@ def open_main_page():
 		else:
 			messagebox.showerror("Error", "Drug not found")
 
+	def refresh_page():
+		meds_ent = tk.Entry(main_page_window, text = "Enter upc or din", fg = "white", bg = "black", width = 70, font = font, justify="center") #upc entry widget
+		meds_ent.pack(pady = 20)
+		meds_ent.focus()
 
-	meds_ent = tk.Entry(main_page_window, text = "Enter upc or din", fg = "white", bg = "black", width = 70, font = font, justify="center") #upc entry widget
-	meds_ent.pack(pady = 20)
-	meds_ent.focus()
+		search_btn = ttk.Button(main_page_window, text = "Search", style='TButton', command=search_narcs)
+		search_btn.pack()
 
-	search_btn = ttk.Button(main_page_window, text = "Search", style='TButton', command=search_narcs)
-	search_btn.pack()
+		name__med_lbl = tk.Label(main_page_window, text = "name", bg = "black", fg = "white", width = 20, font = font)
+		name__med_lbl.pack(pady = 10)
 
-	name__med_lbl = tk.Label(main_page_window, text = "name", bg = "black", fg = "white", width = 20, font = font)
-	name__med_lbl.pack(pady = 10)
+		name_lbl_output = tk.Label(main_page_window, bg = "black", fg = "red", width = 70, font = font)
+		name_lbl_output.pack() # this will be the label to test the output when we enter the upc
 
-	name_lbl_output = tk.Label(main_page_window, bg = "black", fg = "red", width = 70, font = font)
-	name_lbl_output.pack() # this will be the label to test the output when we enter the upc
+		din__med_lbl = tk.Label(main_page_window, text = "din", bg = "black", fg = "white", width = 20, font = font)
+		din__med_lbl.pack(pady = 10)
 
-	din__med_lbl = tk.Label(main_page_window, text = "din", bg = "black", fg = "white", width = 20, font = font)
-	din__med_lbl.pack(pady = 10)
+		din__med_output = tk.Label(main_page_window, bg = "black", fg = "red", width = 70, font = font)
+		din__med_output.pack()
 
-	din__med_output = tk.Label(main_page_window, bg = "black", fg = "red", width = 70, font = font)
-	din__med_output.pack()
+		strength__med_lbl = tk.Label(main_page_window, text = "strength", bg = "black", fg = "white", width = 20, font = font)
+		strength__med_lbl.pack(pady = 10)
 
-	strength__med_lbl = tk.Label(main_page_window, text = "strength", bg = "black", fg = "white", width = 20, font = font)
-	strength__med_lbl.pack(pady = 10)
+		strength_lbl_output = tk.Label(main_page_window, bg = "black", fg = "red", width = 70, font = font)
+		strength_lbl_output.pack()
 
-	strength_lbl_output = tk.Label(main_page_window, bg = "black", fg = "red", width = 70, font = font)
-	strength_lbl_output.pack()
+		drug_form_lbl = tk.Label(main_page_window, text = "Form", bg = "black", fg = "white", width = 20, font = font)
+		drug_form_lbl.pack(pady = 10)
+	 
+		drug_form_output = tk.Label(main_page_window, bg = "black", fg = "red", width = 70, font = font)
+		drug_form_output.pack()
 
-	drug_form_lbl = tk.Label(main_page_window, text = "Form", bg = "black", fg = "white", width = 20, font = font)
-	drug_form_lbl.pack(pady = 10)
- 
-	drug_form_output = tk.Label(main_page_window, bg = "black", fg = "red", width = 70, font = font)
-	drug_form_output.pack()
+		pack_med_lbl = tk.Label(main_page_window, text = "pack size", bg = "black", fg = "white", width = 20, font = font)
+		pack_med_lbl.pack(pady = 10)
 
-	pack_med_lbl = tk.Label(main_page_window, text = "pack size", bg = "black", fg = "white", width = 20, font = font)
-	pack_med_lbl.pack(pady = 10)
+		pack_med_output = tk.Label(main_page_window, bg = "black", fg = "red", width = 70, font = font)
+		pack_med_output.pack()
 
-	pack_med_output = tk.Label(main_page_window, bg = "black", fg = "red", width = 70, font = font)
-	pack_med_output.pack()
+		qty_med_lbl = tk.Label(main_page_window, text = "Qty on hand", bg = "black", fg = "white", width = 20, font = font)
+		qty_med_lbl.pack(pady = 10)
 
-	qty_med_lbl = tk.Label(main_page_window, text = "Qty on hand", bg = "black", fg = "white", width = 20, font = font)
-	qty_med_lbl.pack(pady = 10)
+		qty_med_output = tk.Label(main_page_window, bg = "black", fg = "red", width = 70, font = font)
+		qty_med_output.pack()
 
-	qty_med_output = tk.Label(main_page_window, bg = "black", fg = "red", width = 70, font = font)
-	qty_med_output.pack()
+		add_qty_lbl = tk.Label(main_page_window, text = "Enter the quantity to add",bg = "black", fg = "red", width = 70, font = font)
+		add_qty_lbl.pack(pady = 10)
 
-	add_qty_lbl = tk.Label(main_page_window, text = "Enter the quantity to add",bg = "black", fg = "red", width = 70, font = font)
-	add_qty_lbl.pack(pady = 10)
+		add_qty_ent = tk.Entry(main_page_window, fg = "white", bg = "black", width = 70, font = font, justify="center")
+		add_qty_ent.pack()
 
-	add_qty_ent = tk.Entry(main_page_window, fg = "white", bg = "black", width = 70, font = font, justify="center")
-	add_qty_ent.pack()
+		add_btn = ttk.Button(main_page_window, text = "Add Quantity", style='TButton', command=lambda: add_quantity(add_qty_ent.get(), meds_ent.get()))
+		add_btn.pack()
 
-	add_btn = ttk.Button(main_page_window, text = "Add Quantity", style='TButton', command=lambda: add_quantity(add_qty_ent.get(), meds_ent.get()))
-	add_btn.pack()
 
 
 	#Running the program
-
+	refresh_page()
 	main_page_window.mainloop()
