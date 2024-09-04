@@ -49,7 +49,7 @@ def open_main_page():
 			strength_lbl_output.config(text = tup[0][4])
 			drug_form_output.config(text = tup[0][5])
 			pack_med_output.config(text = tup[0][6])
-			qty_med_output.config(text = find_quantity(search_input)) #functions from the meds file to find the qty directly from the database
+			qty_med_output.config(text = find_quantity(tup[0][3])) #functions from the meds file to find the qty directly from the database
 		elif len(tup) > 1:
 			#I will output a choice for which pack size they want
 			choice_windw = tk.Toplevel(main_page_window)
@@ -82,7 +82,6 @@ def open_main_page():
 				drug_form_output.config(text=selected_pack[5])
 				pack_med_output.config(text=selected_pack[6])
 				qty_med_output.config(text=find_quantity(selected_pack[3]))
-				print(selected_pack)
 				choice_windw.destroy()
 
 			select_btn = tk.Button(choice_windw, text="Select", command=on_select_pack_size)
