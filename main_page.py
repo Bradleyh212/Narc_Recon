@@ -4,11 +4,13 @@ def open_main_page():
 	from tkinter import ttk, font, messagebox
 	from meds import narc_list, find_quantity, find_narcs_upc, find_narcs_din 
 	# importing the list of narcs and the function for qty, both functions to find medsfrom the file meds.py'''
-	from other_functions import add_quantity, show_narcs_table
+	from other_functions import show_narcs_table
 
 	import sqlite3 #To use database
 	con = sqlite3.connect("narcotics_database.db") #Connecting our databse
 	cur = con.cursor() # Create a cursor
+
+	font = font.Font(family="Inter", size=16, weight="normal") # Define a font for the Entry widget
 
 	main_page_window = tk.Tk()
 	main_page_window.title("Narc Recon")
@@ -29,8 +31,12 @@ def open_main_page():
 		search_narcs()
 	main_page_window.bind('<Return>', search)
 
+	
+	def add_quantity(amount, din):
+		cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
+		con.commit()	
 
-
+		show_narcs_table()
 
 	def search_narcs(): #function to find the meds in meds.py
 		search_input = meds_ent.get()
@@ -90,9 +96,6 @@ def open_main_page():
 			messagebox.showerror("Error", "Drug not found")
 
 
-	# Define a font for the Entry widget
-	font = font.Font(family="Inter", size=16, weight="normal")
-
 	meds_ent = tk.Entry(main_page_window, text = "Enter upc or din", fg = "white", bg = "black", width = 70, font = font, justify="center") #upc entry widget
 	meds_ent.pack(pady = 20)
 	meds_ent.focus()
@@ -142,7 +145,7 @@ def open_main_page():
 	add_qty_ent = tk.Entry(main_page_window, fg = "white", bg = "black", width = 70, font = font, justify="center")
 	add_qty_ent.pack()
 
-	add_btn = ttk.Button(main_page_window, text = "Add Quantity", style='TButton', command=add_quantity(add_qty_ent.get(), meds_ent.get()))
+	add_btn = ttk.Button(main_page_window, text = "Add Quantity", style='TButton', command=lambda: add_quantity(add_qty_ent.get(), meds_ent.get()))
 	add_btn.pack()
 
 
