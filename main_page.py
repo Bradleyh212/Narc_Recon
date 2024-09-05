@@ -37,9 +37,13 @@ def open_main_page():
 		con.commit()	
 
 		show_narcs_table()
+		for widget in main_page_window.winfo_children():
+			widget.destroy()
+		refresh_page()
+		search_narc(selected_pack[3])
+
 
 	def search_narcs(): #function to find the meds in meds.py
-		
 		search_input = meds_ent.get()
 		if len(search_input) == 12:
 			tup = find_narcs_upc(search_input)
@@ -81,6 +85,7 @@ def open_main_page():
 			pack_size_dropdown.pack()
 
 			def on_select_pack_size():
+				global selected_pack
 				selected_index = pack_size_dropdown.current()
 				selected_pack = tup[selected_index]
 				name_lbl_output.config(text=selected_pack[1])
@@ -89,6 +94,7 @@ def open_main_page():
 				drug_form_output.config(text=selected_pack[5])
 				pack_med_output.config(text=selected_pack[6])
 				qty_med_output.config(text=find_quantity(selected_pack[3]))
+				print(selected_pack)
 				choice_windw.destroy()
 
 			select_btn = tk.Button(choice_windw, text="Select", command=on_select_pack_size)
@@ -96,10 +102,25 @@ def open_main_page():
 		else:
 			messagebox.showerror("Error", "Drug not found")
 
+
+	def search_narc(upc): #function to find the meds in meds.py when refreshing the page
+		tup = find_narcs_upc(upc)
+		name_lbl_output.config(text = tup[0][1])
+		din__med_output.config(text = tup[0][0])
+		strength_lbl_output.config(text = tup[0][4])
+		drug_form_output.config(text = tup[0][5])
+		pack_med_output.config(text = tup[0][6])
+		qty_med_output.config(text = find_quantity(tup[0][3])) #functions from the meds file to find the qty directly from the database
+
+
+
+
 	def refresh_page():
+		global meds_ent, name_lbl_output, din__med_output, strength_lbl_output, drug_form_output, pack_med_output, qty_med_output
 		meds_ent = tk.Entry(main_page_window, text = "Enter upc or din", fg = "white", bg = "black", width = 70, font = font, justify="center") #upc entry widget
 		meds_ent.pack(pady = 20)
 		meds_ent.focus()
+
 
 		search_btn = ttk.Button(main_page_window, text = "Search", style='TButton', command=search_narcs)
 		search_btn.pack()

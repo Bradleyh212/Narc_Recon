@@ -18,9 +18,9 @@ def check_password():
 		open_main_page()  # Open the main page
 	else:
 		messagebox.showerror("Login", "Invalid username or password")
+		password_ent.focus() #Focus on password after try
 		password_ent.delete(0, tk.END)
 		login_try()
-		print(password_count)
 		if password_count >= 3:
 			window.destroy()
 
@@ -31,8 +31,8 @@ window.title("Narc Recon")
 #Window setting
 window.resizable(False, False) #This stops the user from resizing the screen for the login ui
 
-def sign_in(sign_in):
-		check_password()
+def sign_in(n):
+	check_password()
 window.bind('<Return>', sign_in)
 
 

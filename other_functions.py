@@ -11,7 +11,6 @@ def create_narc_list():
 
 	upc_list = df["Upc"].fillna(0).apply(lambda x: str(int(x)).zfill(12)).tolist()
 	#print(upc_list)
-
 	drug_name_list = df["Drug Name"].tolist()
 	#print(drug_name_list)
 
