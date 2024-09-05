@@ -142,7 +142,7 @@ def open_main_page():
 		remove_qty_btn = ttk.Button(main_page_window, text = "Fill", style='TButton')
 		remove_qty_btn.pack()
 
-		receiving_btn = ttk.Button(main_page_window, text = "Receiving", style='TButton', command = lambda : [main_page_window.destroy(), open_receiving()])
+		receiving_btn = ttk.Button(main_page_window, text = "Receiving", style='TButton', command = lambda : [main_page_window.withdraw(), open_receiving()])
 		receiving_btn.pack() #Used the lambda key word to use 2 functions in 1 button
 
 

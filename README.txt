@@ -4,6 +4,7 @@ Inventory Management System: Developping a Python-based application to manage in
 In the terminal type
 >>> pip3 install pandas
 >>> pip3 install prettytable
+>>> pip3 install pyinstaller 
 
 Step 1 : Build a scetch of the ui and design
 
