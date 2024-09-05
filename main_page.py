@@ -5,6 +5,7 @@ def open_main_page():
 	from meds import narc_list, find_quantity, find_narcs_upc, find_narcs_din 
 	# importing the list of narcs and the function for qty, both functions to find medsfrom the file meds.py'''
 	from other_functions import show_narcs_table
+	from receiving import open_receiving
 
 	import sqlite3 #To use database
 	con = sqlite3.connect("narcotics_database.db") #Connecting our databse
@@ -161,14 +162,10 @@ def open_main_page():
 		qty_med_output = tk.Label(main_page_window, bg = "black", fg = "red", width = 70, font = font)
 		qty_med_output.pack()
 
-		add_qty_lbl = tk.Label(main_page_window, text = "Enter the quantity to add",bg = "black", fg = "red", width = 70, font = font)
-		add_qty_lbl.pack(pady = 10)
+		add_btn = ttk.Button(main_page_window, text = "Receiving", style='TButton', command = lambda : [main_page_window.destroy(), open_receiving()])
+		add_btn.pack() #Used the lambda key word to use 2 functions in 1 button
 
-		add_qty_ent = tk.Entry(main_page_window, fg = "white", bg = "black", width = 70, font = font, justify="center")
-		add_qty_ent.pack()
 
-		add_btn = ttk.Button(main_page_window, text = "Add Quantity", style='TButton', command=lambda: add_quantity(add_qty_ent.get(), meds_ent.get()))
-		add_btn.pack()
 
 
 

@@ -65,7 +65,7 @@ password_ent = tk.Entry(fg = "white", bg = "black", width = 30, show="*") #passw
 password_ent.pack(pady=12)
 
 
-login_btn = ttk.Button(text = "Sign In", style='TButton', command=check_password)
+login_btn = ttk.Button(text = "Sign In", style = 'TButton', command= check_password)
 login_btn.pack()
 
 
