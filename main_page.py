@@ -137,10 +137,17 @@ def open_main_page():
 		qty_med_output = tk.Label(main_page_window, bg = "black", fg = "red", width = 70, font = font)
 		qty_med_output.pack()
 
+		remove_qty_ent = ttk.Entry(main_page_window, text = "Fill")
+		remove_qty_ent.pack()
+		remove_qty_btn = ttk.Button(main_page_window, text = "Fill", style='TButton')
+		remove_qty_btn.pack()
+
 		receiving_btn = ttk.Button(main_page_window, text = "Receiving", style='TButton', command = lambda : [main_page_window.destroy(), open_receiving()])
 		receiving_btn.pack() #Used the lambda key word to use 2 functions in 1 button
 
-		reconsiliation_btn = ttk.Button(main_page_window, text = "Reconsiliation", style='TButton')
+
+		#This will be open another page to do the narc reconsiliation where we set the quantity on hand
+		reconsiliation_btn = ttk.Button(main_page_window, text = "Reconsiliation", style='TButton') 
 		reconsiliation_btn.pack()
 
 
