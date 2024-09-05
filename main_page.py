@@ -32,18 +32,6 @@ def open_main_page():
 		search_narcs()
 	main_page_window.bind('<Return>', search)
 
-	
-	def add_quantity(amount, din):
-		cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
-		con.commit()	
-
-		show_narcs_table()
-		for widget in main_page_window.winfo_children():
-			widget.destroy()
-		refresh_page()
-		search_narc(selected_pack[3])
-
-
 	def search_narcs(): #function to find the meds in meds.py
 		search_input = meds_ent.get()
 		if len(search_input) == 12:
@@ -103,19 +91,6 @@ def open_main_page():
 		else:
 			messagebox.showerror("Error", "Drug not found")
 
-
-	def search_narc(upc): #function to find the meds in meds.py when refreshing the page
-		tup = find_narcs_upc(upc)
-		name_lbl_output.config(text = tup[0][1])
-		din__med_output.config(text = tup[0][0])
-		strength_lbl_output.config(text = tup[0][4])
-		drug_form_output.config(text = tup[0][5])
-		pack_med_output.config(text = tup[0][6])
-		qty_med_output.config(text = find_quantity(tup[0][3])) #functions from the meds file to find the qty directly from the database
-
-
-
-
 	def refresh_page():
 		global meds_ent, name_lbl_output, din__med_output, strength_lbl_output, drug_form_output, pack_med_output, qty_med_output
 		meds_ent = tk.Entry(main_page_window, text = "Enter upc or din", fg = "white", bg = "black", width = 70, font = font, justify="center") #upc entry widget
@@ -162,10 +137,11 @@ def open_main_page():
 		qty_med_output = tk.Label(main_page_window, bg = "black", fg = "red", width = 70, font = font)
 		qty_med_output.pack()
 
-		add_btn = ttk.Button(main_page_window, text = "Receiving", style='TButton', command = lambda : [main_page_window.destroy(), open_receiving()])
-		add_btn.pack() #Used the lambda key word to use 2 functions in 1 button
+		receiving_btn = ttk.Button(main_page_window, text = "Receiving", style='TButton', command = lambda : [main_page_window.destroy(), open_receiving()])
+		receiving_btn.pack() #Used the lambda key word to use 2 functions in 1 button
 
-
+		reconsiliation_btn = ttk.Button(main_page_window, text = "Reconsiliation", style='TButton')
+		reconsiliation_btn.pack()
 
 
 
