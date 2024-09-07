@@ -26,6 +26,7 @@ def check_password():
 
 window = tk.Tk()
 window.title("Narc Recon")
+window.configure(bg="#3B4B59")
 
 def sign_in(n):
 	check_password()
@@ -47,27 +48,31 @@ login_ui_font = font.Font(family="Inter", size=36, weight="bold")
 
 # Define left and right frame
 left_frame = tk.Frame(window, width = 350, height = h)
-left_frame.grid(row=0, column=0, padx=35, pady=5)
+left_frame.grid(row=0, column=0, padx = 53)
+left_frame.configure(bg="#3B4B59")
 
 right_frame = tk.Frame(window, width = 300, height = h)
-right_frame.grid(row=0, column=1, padx = 30)
+right_frame.grid(row=0, column=1)
 
 # Adding logo to right frame
 logo = PhotoImage(file="logo_nr.png")
 
 logo_lbl = tk.Label(right_frame, image = logo)
-logo_lbl.grid(row=0,column=0,sticky="e") # sticky = "e" is used to make the logo stick to the east of the page
+logo_lbl.grid(row=0,column=0)
 
 # Adding widgets to the left frame
-user_name_ent = tk.Entry(left_frame, fg = "white", bg = "black", width = 30) #user name entry widget
-user_name_ent.grid(row=0, column=0)
+
+# User name entry widget
+user_name_ent = tk.Entry(left_frame, fg = "white", bg ="black", highlightthickness = 0,  width = 30) # Removing the highlightthickness
+user_name_ent.grid(row=0, column=0, pady = 2.5)
 user_name_ent.focus_set()
 
-password_ent = tk.Entry(left_frame, fg = "white", bg = "black", width = 30, show="*") #password name entry widget
-password_ent.grid(row=1, column=0)
+# Password entry widget 
+password_ent = tk.Entry(left_frame, fg = "white", bg = "black", highlightthickness = 0, width = 30, show="*") # Removing the highlightthickness
+password_ent.grid(row=1, column=0, pady = 2.5)
 
 login_btn = ttk.Button(left_frame, text = "Sign In", style = 'TButton', command= check_password)
-login_btn.grid(row=2, column=0)
+login_btn.grid(row=2, column=0, pady = 5)
 
 
 # Running the program
