@@ -24,6 +24,7 @@ def open_main_page():
 
 	main_page_window.resizable(False, False) #This stops the user from resizing the screen for the login ui
 
+	header_font = font.Font(family="Inter", size=40, weight="normal")
 	font = font.Font(family="Inter", size=16, weight="normal") # Define a font for the Entry widget
 
 
@@ -93,6 +94,8 @@ def open_main_page():
 
 	def refresh_page():
 		global meds_ent, name_lbl_output, din__med_output, strength_lbl_output, drug_form_output, pack_med_output, qty_med_output
+		page_title = tk.Label(main_page_window, text = "Inventory", fg = "white", bg = "black", width = 70, font = header_font)
+		page_title.pack()
 		meds_ent = tk.Entry(main_page_window, text = "Enter upc or din", fg = "white", bg = "black", width = 70, font = font, justify="center") #upc entry widget
 		meds_ent.pack(pady = 20)
 		meds_ent.focus()

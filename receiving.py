@@ -32,9 +32,19 @@ def open_receiving():
 	main_page_window.bind('<Return>', search)
 
 	
-	def add_quantity(amount, din):
+	def add_quantity(amount, input):
+		din = find_narcs_upc(input)[0][0]
 		if int(amount) < 0:
 			messagebox.showerror("Error", "PLease add a positive integer")
+		elif len(tup) == 1:
+			cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
+			con.commit()	
+
+			show_narcs_table()
+			for widget in main_page_window.winfo_children():
+				widget.destroy()
+			refresh_page()
+			search_narc(tup[0][3])
 		else:
 			cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
 			con.commit()	
@@ -47,6 +57,7 @@ def open_receiving():
 
 
 	def search_narcs(): #function to find the meds in meds.py
+		global tup
 		search_input = meds_ent.get()
 		if len(search_input) == 12:
 			tup = find_narcs_upc(search_input)
@@ -97,7 +108,6 @@ def open_receiving():
 				drug_form_output.config(text=selected_pack[5])
 				pack_med_output.config(text=selected_pack[6])
 				qty_med_output.config(text=find_quantity(selected_pack[3]))
-				print(selected_pack)
 				choice_windw.destroy()
 
 			select_btn = tk.Button(choice_windw, text="Select", command=on_select_pack_size)
