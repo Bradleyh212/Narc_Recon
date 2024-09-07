@@ -26,6 +26,8 @@ Step 9 : Create a function to find by upc, make a constraint for if theres a dif
 
 Step 10 : Create receiving page to add the drug
 
+Step 11 : Work on first page ui
+
 
 Last step : work on ui
 

@@ -1,9 +1,8 @@
 import tkinter as tk
-from tkinter import ttk, font, messagebox
+from tkinter import ttk, font, messagebox, PhotoImage
 from main_page import open_main_page
 
 password_count = 0
-
 def login_try(): #function to count the login tries and close the app if it reaches 3
 	global password_count
 	password_count += 1
@@ -14,7 +13,7 @@ def check_password():
 
 	if user_name == "1" and password == "1":
 		messagebox.showinfo("Login", "Login successful!")
-		window.destroy()  # Close the login window
+		window.withdraw()  # Close the login window
 		open_main_page()  # Open the main page
 	else:
 		messagebox.showerror("Login", "Invalid username or password")
@@ -23,54 +22,54 @@ def check_password():
 		password_ent.delete(0, tk.END)
 		login_try()
 		if password_count == 3:
-			window.withdraw()
-
+			window.destroy()
 
 window = tk.Tk()
 window.title("Narc Recon")
-
-#Window setting
-window.resizable(False, False) #This stops the user from resizing the screen for the login ui
 
 def sign_in(n):
 	check_password()
 window.bind('<Return>', sign_in)
 
-
-w = 550 
-h = 500
-
+#Window setting
+window.resizable(False, False) #This stops the user from resizing the screen for the login ui
+w = 650 
+h = 234
 window_width = window.winfo_screenwidth()  # screen centering code from https://stackoverflow.com/questions/14910858/how-to-specify-where-a-tkinter-window-opens
 window_height = window.winfo_screenheight()  
-
 x = (window_width/2) - (w/2)
 y = (window_height/2) - (h/2)
-
 window.geometry('%dx%d+%d+%d' % (w, h, x, y))
-
-#end of window setting
+# End of window setting
 
 # Define a font
 login_ui_font = font.Font(family="Inter", size=36, weight="bold")
 
-login_lbl = tk.Label(text = "Login", relief = tk.RAISED, width = 0, font = login_ui_font) #login label
-login_lbl.pack(pady=50)
+# Define left and right frame
+left_frame = tk.Frame(window, width = 350, height = h)
+left_frame.grid(row=0, column=0, padx=35, pady=5)
 
+right_frame = tk.Frame(window, width = 300, height = h)
+right_frame.grid(row=0, column=1, padx = 30)
 
-user_name_ent = tk.Entry(fg = "white", bg = "black", width = 30) #user name entry widget
-user_name_ent.pack(pady=12)
+# Adding logo to right frame
+logo = PhotoImage(file="logo_nr.png")
+
+logo_lbl = tk.Label(right_frame, image = logo)
+logo_lbl.grid(row=0,column=0,sticky="e") # sticky = "e" is used to make the logo stick to the east of the page
+
+# Adding widgets to the left frame
+user_name_ent = tk.Entry(left_frame, fg = "white", bg = "black", width = 30) #user name entry widget
+user_name_ent.grid(row=0, column=0)
 user_name_ent.focus_set()
 
+password_ent = tk.Entry(left_frame, fg = "white", bg = "black", width = 30, show="*") #password name entry widget
+password_ent.grid(row=1, column=0)
 
-password_ent = tk.Entry(fg = "white", bg = "black", width = 30, show="*") #password name entry widget
-password_ent.pack(pady=12)
-
-
-login_btn = ttk.Button(text = "Sign In", style = 'TButton', command= check_password)
-login_btn.pack()
+login_btn = ttk.Button(left_frame, text = "Sign In", style = 'TButton', command= check_password)
+login_btn.grid(row=2, column=0)
 
 
-#Running the program
-
+# Running the program
 window.mainloop()
 

@@ -34,5 +34,5 @@ def show_audit_log():
         table.add_row(row)
 
     print(table)
-
-print(show_audit_log())
+    
+show_audit_log()
