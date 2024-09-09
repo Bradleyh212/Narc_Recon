@@ -23,7 +23,8 @@ main_page_window.geometry('%dx%d' % (w, h))
 
 # Creating the fonts
 header_font = font.Font(family="Inter", size=70, weight="normal")
-font = font.Font(family="Inter", size=16, weight="normal") # Define a font for the Entry widget
+font = font.Font(family="Inter", size=35, weight="normal") # Define a font for the Entry widget
+# The size of the text changes the height of the Entry widget
 
 # Creating the frames
 header_frame = tk.Frame(main_page_window, width = w, height = 100, bg = "blue") # using the bg to see the frames
@@ -64,8 +65,8 @@ def refresh_page():
 	log_off_btn = ttk.Button(nav_frame, text = "LOGOUT", style='TButton', command = lambda : [main_page_window.destroy()]) 
 	log_off_btn.grid(row = 0, column = 2, padx = 30, ipady=0, ipadx=0)
 
-	meds_ent = tk.Entry(left_body_frame, text = "Enter upc or din", fg = "white", bg = "black", width = 70, font = font, justify="center") #upc entry widget
-	meds_ent.grid(row = 0, column = 0, pady = 20, padx = ((w-500)-70)/4)
+	meds_ent = tk.Entry(left_body_frame, text = "Enter upc or din", fg = "white", bg = "black", width = 40, font = font, justify="center") #upc entry widget
+	meds_ent.grid(row = 0, column = 0, pady = 20, padx = 20)
 	meds_ent.focus()
 
 	'''
