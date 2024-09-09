@@ -18,29 +18,57 @@ w = main_page_window.winfo_screenwidth()
 h = main_page_window.winfo_screenheight()
 main_page_window.geometry('%dx%d' % (w, h))
 
+
 #main_page_window.resizable(False, False) #This stops the user from resizing the screen for the login ui
 
 # Creating the fonts
-header_font = font.Font(family="Inter", size=40, weight="normal")
+header_font = font.Font(family="Inter", size=70, weight="normal")
 font = font.Font(family="Inter", size=16, weight="normal") # Define a font for the Entry widget
 
 # Creating the frames
-header_frame = tk.Frame(main_page_window, width = w, height = 200, bg = "blue") # using the bg to see the frames
+header_frame = tk.Frame(main_page_window, width = w, height = 100, bg = "blue") # using the bg to see the frames
 header_frame.grid(row = 0, column = 0)
-body_frame = tk.Frame(main_page_window, width = w, height = 200, bg = "red") # using the bg to see the frames
-body_frame.grid(row = 1, column = 0)
+header_frame.grid_propagate(False) # Prevent the header frame from resizing based on its content
+
+body_frame = tk.Frame(main_page_window, width = w, height = h - 100, bg = "red") # using the bg to see the frames
+body_frame.grid(row = 1, column = 0, pady = 30)
+body_frame.grid_propagate(False) # Prevent the body frame from resizing based on its content
+
+left_body_frame = tk.Frame(body_frame, width = w-500, height = h, bg = "orange")
+left_body_frame.grid(row = 0, column = 0)
+left_body_frame.grid_propagate(False) # Prevent the left_body_frame frame from resizing based on its content
+
+
+right_body_frame = tk.Frame(body_frame, width = 500, height = h, bg = "green")
+right_body_frame.grid(row = 0, column = 1)
+right_body_frame.grid_propagate(False) # Prevent the right_body_frame frame from resizing based on its content
+
+nav_frame = tk.Frame(header_frame, width = 450, height = 100, bg = "purple")
+nav_frame.grid(row = 0, column = 1, padx = 550)
+nav_frame.grid_propagate(False) # Prevent the nav frame from resizing based on its content
+
 
 def refresh_page():
 	global meds_ent, name_lbl_output, din__med_output, strength_lbl_output, drug_form_output, pack_med_output, qty_med_output, remove_qty_ent
 
-	page_title = tk.Label(header_frame, text = "Inventory", fg = "white", bg = "black", font = header_font)
-	page_title.grid(row = 0, column = 0, sticky = "w", padx = 500)
-'''
-	meds_ent = tk.Entry(main_page_window, text = "Enter upc or din", fg = "white", bg = "black", width = 70, font = font, justify="center") #upc entry widget
-	meds_ent.pack(pady = 20)
+	page_title = tk.Label(header_frame, text = "INVENTORY", fg = "white", bg = "black", font = header_font)
+	page_title.grid(row = 0, column = 0, sticky = "w", padx = 30)
+
+	receiving_btn = ttk.Button(nav_frame, text = "RECEIVING", style='TButton', command = lambda : [main_page_window.withdraw(), open_receiving()])
+	receiving_btn.grid(row = 0, column = 0, padx = 30, pady = 40) #Used the lambda key word to use 2 functions in 1 button
+
+	#This will be open another page to do the narc reconsiliation where we set the quantity on hand
+	reconsiliation_btn = ttk.Button(nav_frame, text = "RECONSILIATION", style='TButton') 
+	reconsiliation_btn.grid(row = 0, column = 1)
+
+	log_off_btn = ttk.Button(nav_frame, text = "LOGOUT", style='TButton', command = lambda : [main_page_window.destroy()]) 
+	log_off_btn.grid(row = 0, column = 2, padx = 30, ipady=0, ipadx=0)
+
+	meds_ent = tk.Entry(left_body_frame, text = "Enter upc or din", fg = "white", bg = "black", width = 70, font = font, justify="center") #upc entry widget
+	meds_ent.grid(row = 0, column = 0, pady = 20, padx = ((w-500)-70)/4)
 	meds_ent.focus()
 
-
+	'''
 	search_btn = ttk.Button(main_page_window, text = "Search", style='TButton', command=search_narcs)
 	search_btn.pack()
 
@@ -85,13 +113,7 @@ def refresh_page():
 	remove_qty_btn = ttk.Button(main_page_window, text = "Fill", style='TButton')
 	remove_qty_btn.pack()
 
-	receiving_btn = ttk.Button(main_page_window, text = "Receiving", style='TButton', command = lambda : [main_page_window.withdraw(), open_receiving()])
-	receiving_btn.pack() #Used the lambda key word to use 2 functions in 1 button
-
-
-	#This will be open another page to do the narc reconsiliation where we set the quantity on hand
-	reconsiliation_btn = ttk.Button(main_page_window, text = "Reconsiliation", style='TButton') 
-	reconsiliation_btn.pack()'''
+	'''
 
 
 

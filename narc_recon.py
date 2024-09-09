@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, font, messagebox, PhotoImage
-from main_page import open_main_page
+#from main_page import open_main_page
 
 password_count = 0
 def login_try(): #function to count the login tries and close the app if it reaches 3
@@ -22,7 +22,7 @@ def check_password():
 		password_ent.delete(0, tk.END)
 		login_try()
 		if password_count == 3:
-			window.destroy()
+			 window.destroy()
 
 window = tk.Tk()
 window.title("Narc Recon")
@@ -43,7 +43,7 @@ y = (window_height/2) - (h/2)
 window.geometry('%dx%d+%d+%d' % (w, h, x, y))
 # End of window setting
 
-# Define a font
+# Define a font 
 login_ui_font = font.Font(family="Inter", size=36, weight="bold")
 
 # Define left and right frame
