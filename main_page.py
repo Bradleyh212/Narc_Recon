@@ -109,9 +109,26 @@ left_body_frame = tk.Frame(body_frame, width = w-500, height = h, bg = "orange")
 left_body_frame.grid(row = 0, column = 0)
 left_body_frame.grid_propagate(False) # Prevent the left_body_frame frame from resizing based on its content
 
+search_frame = tk.Frame(left_body_frame, width = w-500, height = 150, bg = "red")
+search_frame.grid(row = 0, column = 0)
+search_frame.grid_propagate(False)
+
+name_din_frame = tk.Frame(left_body_frame, width = w-500, height = 150, bg = "pink")
+name_din_frame.grid(row = 1, column = 0, pady = 30)
+name_din_frame.grid_propagate(False)
+
+strength_form_frame = tk.Frame(left_body_frame, width = w-500, height = 150, bg = "grey")
+strength_form_frame.grid(row = 2, column = 0, pady = 30)
+strength_form_frame.grid_propagate(False)
+
+pack_med_frame = tk.Frame(left_body_frame, width = w-500, height = 150, bg = "blue")
+pack_med_frame.grid(row = 3, column = 0, pady = 30)
+pack_med_frame.grid_propagate(False)
+
 right_body_frame = tk.Frame(body_frame, width = 500, height = h, bg = "green")
 right_body_frame.grid(row = 0, column = 1)
-right_body_frame.grid_propagate(False) # Prevent the right_body_frame frame from resizing based on its content
+right_body_frame.grid_propagate(False)
+
 
 nav_frame = tk.Frame(header_frame, width = 450, height = 100, bg = "purple")
 nav_frame.grid(row = 0, column = 1, padx = 550)
@@ -150,33 +167,35 @@ def refresh_page():
 	log_off_btn = ttk.Button(nav_frame, text = "LOGOUT", style='TButton', command = lambda : [main_page_window.destroy()]) 
 	log_off_btn.grid(row = 0, column = 2, padx = 30, ipady=0, ipadx=0)
 
-	meds_ent = tk.Entry(left_body_frame, text = "Enter upc or din", fg = "white", bg = "black", width = 35, font = font, justify="center") #upc entry widget
-	meds_ent.grid(row = 0, column = 0, pady = 40, padx = 20, )
+	meds_ent = tk.Entry(search_frame, text = "Enter upc or din", fg = "white", bg = "black", width = 35, font = font, justify="center") #upc entry widget
+	meds_ent.grid(row = 0, column = 0)
 	meds_ent.focus()
 	meds_ent.bind('<FocusIn>', on_entry_click)
 	meds_ent.bind('<FocusOut>', on_focusout)
 
-	search_btn = ttk.Button(left_body_frame, text = "Search", style='TButton', command=search_narcs)
-	search_btn.grid(row = 0, column = 1, padx = 10, sticky = "w")
+	search_btn = ttk.Button(search_frame, text = "Search", style='TButton', command=search_narcs)
+	search_btn.grid(row = 0, column = 1)
 
-	name_lbl_output = tk.Label(left_body_frame, bg = "black", fg = "White", width = 19, font = font)
-	name_lbl_output.grid(row = 1, column = 0, padx = 60, pady = 0, sticky = "w") # this will be the label to see the output when we enter the upc or din
+	name_lbl_output = tk.Label(name_din_frame, bg = "black", fg = "White", width = 19, font = font)
+	name_lbl_output.grid(row = 0, column = 0) # this will be the label to see the output when we enter the upc or din
 
-	din__med_output = tk.Label(left_body_frame, bg = "black", fg = "red", width = 12, font = font)
-	din__med_output.grid(row = 2, column = 0, padx = 0, sticky = "w")
+	din__med_output = tk.Label(name_din_frame, bg = "black", fg = "red", width = 12, font = font)
+	din__med_output.grid(row = 0, column = 1)
+
+	strength_lbl_output = tk.Label(strength_form_frame, bg = "black", fg = "red", width = 19, font = font)
+	strength_lbl_output.grid(row = 0, column = 0)
+
+	drug_form_output = tk.Label(strength_form_frame, bg = "black", fg = "red", width = 12, font = font)
+	drug_form_output.grid(row = 0, column = 1)
 
 
-	strength_lbl_output = tk.Label(left_body_frame, bg = "black", fg = "red", width = 15, font = font)
-	strength_lbl_output.grid(row = 3, column = 0, padx = 30, pady = 1, sticky = "w")
+	pack_med_lbl = tk.Label(pack_med_frame, bg = "black", text = "PACK SIZE", fg = "blue", width = 15, font = font)
+	pack_med_lbl.grid(row = 0, column = 0)
+	pack_med_output = tk.Label(pack_med_frame, bg = "black", fg = "blue", width = 15, font = font)
+	pack_med_output.grid(row = 0, column = 1)
 
-	drug_form_output = tk.Label(left_body_frame, bg = "black", fg = "red", width = 12, font = font)
-	drug_form_output.grid(row = 3, column = 0, padx = 600)
 
 
-	pack_med_lbl = tk.Label(left_body_frame, bg = "black", text = "PACK SIZE", fg = "blue", width = 15, font = font)
-	pack_med_lbl.grid(row = 4, column = 0, pady = 250, padx = 40, sticky = "w")
-	pack_med_output = tk.Label(left_body_frame, bg = "black", fg = "blue", width = 15, font = font)
-	pack_med_output.grid(row = 4, column = 0, pady = 250, padx = 300)
 
 	med_picture = tk.Label(picture_frame, text = "PICTURE", bg = "black", fg = "white", width = 10, font = font)
 	med_picture.grid(pady = 75)
