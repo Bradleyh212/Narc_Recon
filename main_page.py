@@ -157,23 +157,26 @@ def refresh_page():
 	meds_ent.bind('<FocusOut>', on_focusout)
 
 	search_btn = ttk.Button(left_body_frame, text = "Search", style='TButton', command=search_narcs)
-	search_btn.grid(row = 0, column = 1, padx = 10, sticky = "e")
+	search_btn.grid(row = 0, column = 1, padx = 10, sticky = "w")
 
 	name_lbl_output = tk.Label(left_body_frame, bg = "black", fg = "White", width = 19, font = font)
 	name_lbl_output.grid(row = 1, column = 0, padx = 60, pady = 0, sticky = "w") # this will be the label to see the output when we enter the upc or din
 
 	din__med_output = tk.Label(left_body_frame, bg = "black", fg = "red", width = 12, font = font)
-	din__med_output.grid(row = 1, column = 1, padx = 0, sticky = "w")
+	din__med_output.grid(row = 2, column = 0, padx = 0, sticky = "w")
 
 
-	strength_lbl_output = tk.Label(left_body_frame, bg = "black", fg = "red", width = 19, font = font)
-	strength_lbl_output.grid(row = 2, column = 0, padx = 60, pady = 30, sticky = "w")
+	strength_lbl_output = tk.Label(left_body_frame, bg = "black", fg = "red", width = 15, font = font)
+	strength_lbl_output.grid(row = 3, column = 0, padx = 30, pady = 1, sticky = "w")
 
 	drug_form_output = tk.Label(left_body_frame, bg = "black", fg = "red", width = 12, font = font)
-	drug_form_output.grid(row = 2, column = 1, padx = 0, sticky = "w")
+	drug_form_output.grid(row = 3, column = 0, padx = 600)
 
-	pack_med_output = tk.Label(left_body_frame, bg = "black", fg = "red", width = 20, font = font)
-	pack_med_output.grid(row = 3)
+
+	pack_med_lbl = tk.Label(left_body_frame, bg = "black", text = "PACK SIZE", fg = "blue", width = 15, font = font)
+	pack_med_lbl.grid(row = 4, column = 0, pady = 250, padx = 40, sticky = "w")
+	pack_med_output = tk.Label(left_body_frame, bg = "black", fg = "blue", width = 15, font = font)
+	pack_med_output.grid(row = 4, column = 0, pady = 250, padx = 300)
 
 	med_picture = tk.Label(picture_frame, text = "PICTURE", bg = "black", fg = "white", width = 10, font = font)
 	med_picture.grid(pady = 75)
@@ -186,7 +189,6 @@ def refresh_page():
 	remove_qty_ent.pack()
 	remove_qty_btn = ttk.Button(main_page_window, text = "Fill", style='TButton')
 	remove_qty_btn.pack()
-
 	'''
 
 
