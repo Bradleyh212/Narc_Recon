@@ -158,13 +158,11 @@ def on_entry_click(event): # When the med entry widget is clicked remove the tex
 	"""Remove placeholder when entry is clicked."""
 	if meds_ent.get() == 'Enter DIN or UPC':
 		meds_ent.delete(0, "end")  # Delete all the text in the entry
-		meds_ent.config(fg='white')  # Change text color to white
 
 def on_focusout(event): # When the med entry widget is un-clicked add the text back
 	"""Re-add placeholder if entry is empty when focus is lost."""
 	if meds_ent.get() == '':
 		meds_ent.insert(0, 'Enter DIN or UPC')
-		meds_ent.config(fg='gray')
 
 def refresh_page():
 	global meds_ent, name_lbl_output, din__med_output, strength_lbl_output, drug_form_output, pack_med_output, qty_med_output, remove_qty_ent
@@ -172,25 +170,25 @@ def refresh_page():
 	page_title = tk.Label(header_frame, text = "INVENTORY", fg = "white", font = header_font)
 	page_title.grid(row = 0, column = 0, sticky = "w", padx = 30)
 
-	receiving_btn = ttk.Button(nav_frame, text = "RECEIVING", style='TButton', command = lambda : [main_page_window.withdraw(), open_receiving()])
+	receiving_btn = ttk.Button(nav_frame, text = "RECEIVING", style='TButton', command = lambda : [main_page_window.withdraw(), open_receiving()], padding=(-5, -20))
 	receiving_btn.grid(row = 0, column = 0, padx = 30, pady = 40) #Used the lambda key word to use 2 functions in 1 button
 
 	#This will be open another page to do the narc reconsiliation where we set the quantity on hand
-	reconsiliation_btn = ttk.Button(nav_frame, text = "RECONSILIATION", style='TButton') 
+	reconsiliation_btn = ttk.Button(nav_frame, text = "RECONSILIATION", style='TButton', padding=(-5, -20))
 	reconsiliation_btn.grid(row = 0, column = 1)
 
-	log_off_btn = ttk.Button(nav_frame, text = "LOGOUT", style='TButton', command = lambda : [main_page_window.destroy()]) 
+	log_off_btn = ttk.Button(nav_frame, text = "LOGOUT", style='TButton', command = lambda : [main_page_window.destroy()], padding=(-5, -20)) 
 	log_off_btn.grid(row = 0, column = 2, padx = 30, ipady=0, ipadx=0)
 
 
 
-	meds_ent = tk.Entry(search_frame, text = "Enter upc or din", fg = "white", bg = "black", width = 35, font = font, justify="center") #upc entry widget
+	meds_ent = ttk.Entry(search_frame, text = "Enter upc or din", width = 35, font = font, justify="center") #upc entry widget
 	meds_ent.grid(row = 0, column = 0, padx = 30, pady = 50)
 	meds_ent.focus()
 	meds_ent.bind('<FocusIn>', on_entry_click)
 	meds_ent.bind('<FocusOut>', on_focusout)
 
-	search_btn = ttk.Button(search_frame, text = "Search", style='TButton', command=search_narcs, padding=(-5, -20)) #The padding is to remove the space around the button
+	search_btn = ttk.Button(search_frame, text = "SEARCH", style='TButton', command=search_narcs, padding=(-5, -20)) #The padding is to remove the space around the button
 	search_btn.grid(row = 0, column = 1)
 
 	name_lbl_output = tk.Label(name_din_frame, bg = "black", fg = "White", width = 30, font = font)
@@ -221,12 +219,12 @@ def refresh_page():
 	qty_med_output = tk.Label(right_body_frame, bg = "black", fg = "red", width = 10, font = font)
 	qty_med_output.grid(row = 2)
 
-	'''
-	remove_qty_ent = ttk.Entry(main_page_window, text = "Fill")
-	remove_qty_ent.pack()
-	remove_qty_btn = ttk.Button(main_page_window, text = "Fill", style='TButton')
-	remove_qty_btn.pack()
-	'''
+
+	remove_qty_ent = ttk.Entry(right_body_frame, text = "FILL", font = font, width = 8)
+	remove_qty_ent.grid(row = 3, pady = 30)
+
+	remove_qty_btn = ttk.Button(right_body_frame, text = "Fill", style='TButton', padding=(-5, -20))
+	remove_qty_btn.grid(row = 4)
 
 
 
