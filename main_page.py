@@ -29,6 +29,7 @@ main_page_window.bind('<Return>', search)
 
 def search_narcs(): #function to find the meds in meds.py
     search_input = meds_ent.get()
+    meds_ent.delete(0, "end")
     if len(search_input) == 12:
         tup = find_narcs_upc(search_input)
     elif len(search_input) == 8:
