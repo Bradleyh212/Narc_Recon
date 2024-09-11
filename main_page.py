@@ -190,7 +190,7 @@ def refresh_page():
 	meds_ent.bind('<FocusIn>', on_entry_click)
 	meds_ent.bind('<FocusOut>', on_focusout)
 
-	search_btn = ttk.Button(search_frame, text = "Search", style='TButton', command=search_narcs)
+	search_btn = ttk.Button(search_frame, text = "Search", style='TButton', command=search_narcs, padding=(-5, -20)) #The padding is to remove the space around the button
 	search_btn.grid(row = 0, column = 1)
 
 	name_lbl_output = tk.Label(name_din_frame, bg = "black", fg = "White", width = 30, font = font)

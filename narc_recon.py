@@ -71,7 +71,7 @@ user_name_ent.focus_set()
 password_ent = tk.Entry(left_frame, fg = "white", bg = "black", highlightthickness = 0, width = 30, show="*") # Removing the highlightthickness
 password_ent.grid(row=1, column=0, pady = 2.5)
 
-login_btn = ttk.Button(left_frame, text = "Sign In", style = 'TButton', command= check_password)
+login_btn = ttk.Button(left_frame, text = "Sign In", style = 'TButton', command= check_password, padding=(-5, -20))
 login_btn.grid(row=2, column=0, pady = 5)
 
 
