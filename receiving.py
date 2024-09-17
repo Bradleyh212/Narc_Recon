@@ -40,7 +40,7 @@ def add_quantity(amount, input):
 		messagebox.showerror("Error", "PLease add a positive integer")
 	elif len(tup) == 1:
 		cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
-		con.commit()	
+		con.commit()
 
 		show_narcs_table()
 		for widget in main_page_window.winfo_children():

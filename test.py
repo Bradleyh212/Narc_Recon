@@ -30,19 +30,18 @@ receiving_window.bind('<Return>', search)
 
 
 def add_quantity(amount, input):
-	if tup == 1:
-		print(input)
-	din = find_narcs_upc(tup[0][3])[0][0]
-	print(din)
+	if len(input) == 12:
+		din = find_narcs_upc(input)[0][0]
+	else:
+		din = input
 	if int(amount) < 0:
 		messagebox.showerror("Error", "PLease add a positive integer")
 	elif len(tup) == 1:
 		cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
-		con.commit()	
+		con.commit()
 
 		show_narcs_table()
-		for widget in receiving_window.winfo_children():
-			widget.destroy()
+		
 		refresh_page()
 		search_narc(tup[0][3])
 	else:
@@ -50,8 +49,7 @@ def add_quantity(amount, input):
 		con.commit()	
 
 		show_narcs_table()
-		for widget in receiving_window.winfo_children():
-			widget.destroy()
+		
 		refresh_page()
 		search_narc(selected_pack[3])
 
@@ -66,7 +64,8 @@ def search_narc(upc): #function to find the meds in meds.py when refreshing the 
 
 
 def search_narcs(): #function to find the meds in meds.py
-	global tup
+	global tup, din_or_upc 
+	din_or_upc = meds_ent.get() #This is to keep track of the din or upc for add_quantity
 	meds_ent.focus_set()
 	search_input = meds_ent.get()
 	meds_ent.delete(0, "end")
@@ -208,14 +207,14 @@ def refresh_page():
 	page_title = tk.Label(header_frame, text = "RECEIVING", fg = "white", font = header_font)
 	page_title.grid(row = 0, column = 0, sticky = "w", padx = 30)
 
-	receiving_btn = ttk.Button(nav_frame, text = "RECEIVING", style='TButton', command = lambda : [main_page_window.withdraw(), open_receiving()], padding=(-5, -20))
+	receiving_btn = ttk.Button(nav_frame, text = "RECEIVING", style='TButton', command = lambda : [receiving_window.withdraw(), open_receiving()], padding=(-5, -20))
 	receiving_btn.grid(row = 0, column = 0, padx = 30, pady = 40) #Used the lambda key word to use 2 functions in 1 button
 
 	#This will be open another page to do the narc reconsiliation where we set the quantity on hand
 	reconsiliation_btn = ttk.Button(nav_frame, text = "RECONSILIATION", style='TButton', padding=(-5, -20))
 	reconsiliation_btn.grid(row = 0, column = 1)
 
-	log_off_btn = ttk.Button(nav_frame, text = "LOGOUT", style='TButton', command = lambda : [main_page_window.destroy()], padding=(-5, -20)) 
+	log_off_btn = ttk.Button(nav_frame, text = "LOGOUT", style='TButton', command = lambda : [receiving_window.destroy()], padding=(-5, -20)) 
 	log_off_btn.grid(row = 0, column = 2, padx = 30, ipady=0, ipadx=0)
 
 
@@ -261,8 +260,11 @@ def refresh_page():
 	add_qty_ent = ttk.Entry(right_body_frame, font = font, width = 8)
 	add_qty_ent.grid(row = 3, pady = 30)
 
-	add_btn = ttk.Button(right_body_frame, text = "ADD QUANTITY", style='TButton', padding=(-5, -20), command=lambda: add_quantity(add_qty_ent.get(), meds_ent.get()))
+
+	add_btn = ttk.Button(right_body_frame, text = "ADD QUANTITY", style='TButton', padding=(-5, -20), command=lambda: add_quantity(add_qty_ent.get(), din_or_upc))
 	add_btn.grid(row = 4)
+
+	meds_ent.focus_set()
 
 
 
