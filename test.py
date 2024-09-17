@@ -1,5 +1,3 @@
-
-
 #def open_receiving():
 #main page, will be full screen, not reziable
 import tkinter as tk
