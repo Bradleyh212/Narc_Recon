@@ -67,4 +67,21 @@ def show_narcs_table():
 	print(table)
 
 
+
+'''add_qty_ent = tk.Entry(main_page_window, fg = "white", bg = "black", width = 70, font = font, justify="center")
+add_qty_ent.pack()
+
+add_btn = ttk.Button(main_page_window, text = "Add Quantity", style='TButton', command=lambda: add_quantity(add_qty_ent.get(), meds_ent.get()))
+add_btn.pack()'''
+
+
+
+
 con.commit()
+
+
+
+
+
+
+

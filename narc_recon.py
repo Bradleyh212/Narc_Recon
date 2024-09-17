@@ -13,7 +13,7 @@ def check_password():
 
 	if user_name == "1" and password == "1":
 		messagebox.showinfo("Login", "Login successful!")
-		window.withdraw()  # Close the login window
+		window.destroy()  # Close the login window
 		open_main_page()  # Open the main page
 	else:
 		messagebox.showerror("Login", "Invalid username or password")

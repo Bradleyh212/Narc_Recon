@@ -4,7 +4,7 @@ Inventory Management System: Developping a Python-based application to manage in
 In the terminal type
 >>> pip3 install pandas
 >>> pip3 install prettytable
->>> pip3 install pyinstaller 
+>>> pip3 install pyinstaller
 
 Step 1 : Build a scetch of the ui and design
 
@@ -30,9 +30,6 @@ Step 11 : Work on first page ui
 
 
 Last step : work on ui
-
-
-
 
 site i used to learn Tkinter:
 https://realpython.com/python-gui-tkinter/

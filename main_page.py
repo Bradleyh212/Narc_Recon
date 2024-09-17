@@ -1,4 +1,4 @@
-#def open_main_page
+#def open_main_page():
 #main page, will be full screen, not reziable
 import tkinter as tk
 from tkinter import ttk, font, messagebox
@@ -204,7 +204,7 @@ def refresh_page():
 	drug_form_output.grid(row = 0, column = 1, padx =75, pady = 30)
 
 
-	pack_med_lbl = tk.Label(pack_med_frame, bg = "black", text = "PACK SIZE", fg = "blue", width = 15, font = font)
+	pack_med_lbl = tk.Label(pack_med_frame, bg = "black", text = "PACK SIZE", fg = "white", width = 15, font = font)
 	pack_med_lbl.grid(row = 0, column = 0, padx = 30, pady = 30)
 	pack_med_output = tk.Label(pack_med_frame, bg = "black", fg = "blue", width = 15, font = font)
 	pack_med_output.grid(row = 0, column = 1)
