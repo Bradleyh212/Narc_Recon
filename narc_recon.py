@@ -43,7 +43,7 @@ y = (window_height/2) - (h/2)
 window.geometry('%dx%d+%d+%d' % (w, h, x, y))
 # End of window setting
 
-# Define a font 
+# Define a font
 login_ui_font = font.Font(family="Inter", size=36, weight="bold")
 
 # Define left and right frame

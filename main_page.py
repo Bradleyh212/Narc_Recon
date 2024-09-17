@@ -5,6 +5,7 @@ def open_main_page():
 	from meds import narc_list, find_quantity, find_narcs_upc, find_narcs_din 
 	from other_functions import show_narcs_table
 	from receiving import open_receiving
+	from reconciliation import open_reconciliation_page
 
 	import sqlite3 #To use database
 	con = sqlite3.connect("narcotics_database.db") #Connecting our databse
@@ -176,9 +177,9 @@ def open_main_page():
 		receiving_btn = ttk.Button(nav_frame, text = "RECEIVING", style='TButton', command = lambda : [main_page_window.destroy(), open_receiving()], padding=(-5, -20))
 		receiving_btn.grid(row = 0, column = 1, padx = 6) #Used the lambda key word to use 2 functions in 1 button
 
-		#This will be open another page to do the narc reconsiliation where we set the quantity on hand
-		reconsiliation_btn = ttk.Button(nav_frame, text = "RECONSILIATION", style='TButton', padding=(-5, -20))
-		reconsiliation_btn.grid(row = 0, column = 2, padx = 6)
+		#This will be open another page to do the narc reconciliation where we set the quantity on hand
+		reconciliation_btn = ttk.Button(nav_frame, text = "RECONCILIATION", style='TButton', command = lambda : [main_page_window.destroy(), open_reconciliation_page()], padding=(-5, -20))
+		reconciliation_btn.grid(row = 0, column = 2, padx = 6)
 
 		log_off_btn = ttk.Button(nav_frame, text = "LOGOUT", style='TButton', command = lambda : [main_page_window.destroy()], padding=(-5, -20)) 
 		log_off_btn.grid(row = 0, column = 3, padx = 6)
