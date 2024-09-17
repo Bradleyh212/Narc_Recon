@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, font, messagebox, PhotoImage
-#from main_page import open_main_page
+from main_page import open_main_page
 
 password_count = 0
 def login_try(): #function to count the login tries and close the app if it reaches 3
@@ -65,7 +65,7 @@ logo_lbl.grid(row=0,column=0)
 # User name entry widget
 user_name_ent = tk.Entry(left_frame, fg = "white", bg ="black", highlightthickness = 0,  width = 30) # Removing the highlightthickness
 user_name_ent.grid(row=0, column=0, pady = 2.5)
-user_name_ent.focus_set()
+
 
 # Password entry widget 
 password_ent = tk.Entry(left_frame, fg = "white", bg = "black", highlightthickness = 0, width = 30, show="*") # Removing the highlightthickness
@@ -76,5 +76,6 @@ login_btn.grid(row=2, column=0, pady = 5)
 
 
 # Running the program
+user_name_ent.focus_set()
 window.mainloop()
 

@@ -264,7 +264,7 @@ def refresh_page():
 	add_btn = ttk.Button(right_body_frame, text = "ADD QUANTITY", style='TButton', padding=(-5, -20), command=lambda: add_quantity(add_qty_ent.get(), din_or_upc))
 	add_btn.grid(row = 4)
 
-	meds_ent.focus_set()
+
 
 
 
