@@ -140,7 +140,7 @@ def open_receiving():
 			drug_form_output.config(text = "")
 			pack_med_output.config(text = "")
 			qty_med_output.config(text = "") 
-			remove_qty_ent.focus_set() #This brings the focus out of the med entry
+			add_qty_ent.focus_set() #This brings the focus out of the med entry
 			meds_ent.focus_set() # This brings back the focus to med entry
 
 
