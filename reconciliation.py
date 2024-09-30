@@ -141,7 +141,7 @@ def open_reconciliation_page():
 	pack_med_frame.grid(row = 3, column = 0, pady = 30)
 	pack_med_frame.grid_propagate(False)
 
-	right_body_frame = tk.Frame(body_frame, width = 500, height = h, bg = main_background_color, bd = 5, relief = "raised")
+	right_body_frame = tk.Frame(body_frame, width = 500, height = h, b g = main_background_color, bd = 5, relief = "raised")
 	right_body_frame.grid(row = 0, column = 1)
 	right_body_frame.grid_propagate(False)
 
@@ -223,13 +223,15 @@ def open_reconciliation_page():
 		qty_med_output = tk.Label(right_body_frame, bg = "black", fg = "red", width = 10, font = font)
 		qty_med_output.grid(row = 2)
 
+		set_qty_ent = ttk.Entry(right_body_frame, font = font, width = 8)
+		set_qty_ent.grid(row = 3, pady = 30)
 
-		remove_qty_ent = ttk.Entry(right_body_frame, text = "FILL", font = font, width = 8)
-		remove_qty_ent.grid(row = 3, pady = 30)
+		set_qty_btn = ttk.Button(right_body_frame, text = "SET QTY", style='TButton', padding=(-5, -20), command=lambda: set_quantity(set_qty_ent.get(), din_or_upc))
+		set_qty_btn.grid(row = 4)
 
-		remove_qty_btn = ttk.Button(right_body_frame, text = "Fill", style='TButton', padding=(-5, -20))
-		remove_qty_btn.grid(row = 4)
 
+def set_quantity():
+	pass #This is the function to set the new quantity when doing the reconsiliation
 
 
 	#Running the program
