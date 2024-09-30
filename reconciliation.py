@@ -169,10 +169,10 @@ def open_reconciliation_page():
 		global meds_ent, name_lbl_output, din__med_output, strength_lbl_output, drug_form_output, pack_med_output, qty_med_output, remove_qty_ent
 
 		page_title = tk.Label(header_frame, text = "RECONCILIATION", fg = "white", font = header_font)
-		page_title.grid(row = 0, column = 0, sticky = "w", padx = 30)
+		page_title.grid(row = 0, column = 0, sticky = "w", padx = 20)
 
 		home_btn = ttk.Button(nav_frame, text = "HOME", style='TButton', command = lambda : [reconciliation_window.destroy(), open_main_page()], padding=(-5, -20))
-		home_btn.grid(row = 0, column = 0, padx = 6, pady = 40) #Used the lambda key word to use 2 functions in 1 button
+		home_btn.grid(row = 0, column = 0, padx = 0, pady = 40) #Used the lambda key word to use 2 functions in 1 button
 
 		receiving_btn = ttk.Button(nav_frame, text = "RECEIVING", style='TButton', command = lambda : [reconciliation_window.destroy(), open_receiving()], padding=(-5, -20))
 		receiving_btn.grid(row = 0, column = 1, padx = 6) #Used the lambda key word to use 2 functions in 1 button
