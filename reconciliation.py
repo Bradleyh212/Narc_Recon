@@ -141,7 +141,7 @@ def open_reconciliation_page():
 	pack_med_frame.grid(row = 3, column = 0, pady = 30)
 	pack_med_frame.grid_propagate(False)
 
-	right_body_frame = tk.Frame(body_frame, width = 500, height = h, b g = main_background_color, bd = 5, relief = "raised")
+	right_body_frame = tk.Frame(body_frame, width = 500, height = h, bg = main_background_color, bd = 5, relief = "raised")
 	right_body_frame.grid(row = 0, column = 1)
 	right_body_frame.grid_propagate(False)
 
