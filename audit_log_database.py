@@ -24,6 +24,8 @@ audit_cur.execute("""CREATE TABLE IF NOT EXISTS audit_log (
 
 audit_con.commit()
 
+# The remove id will be used only on the home screen when filling the medication
+# It will not be requested to be entered by the user
 list_user_id = ["AZ", "Remove"]
 
 #This function will only be use when receiving and when doing
@@ -39,7 +41,7 @@ def add_to_audit_log(din, old, user): #Takes the din, the old qty, new qty and t
 
         # Format the converted time as a string for SQLite (e.g., '2024-10-11 03:42:04')
         formatted_time = current_time_local.strftime('%Y-%m-%d %H:%M:%S')
-        
+
         audit_cur.execute("INSERT INTO audit_log (din, odl_qty, new_qty, Updated_By, Timestamp) values (?, ?, ?, ?, ?)", (din, old, new_amount, user, formatted_time))
         audit_con.commit()
 
@@ -61,5 +63,5 @@ def show_audit_log():
         table.add_row(row)
 
     print(table)
-    
+
 show_audit_log()

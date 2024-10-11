@@ -60,8 +60,8 @@ def open_receiving():
 			add_to_audit_log(din, current_amount, user)
 			show_audit_log()
 		else:
-			# cur.execute("SELECT * FROM narcs WHERE din = ?", (din))
-			# current_amount = cur.fetchall()[3]
+			cur.execute("SELECT quantity FROM narcs WHERE din = ?", (din, ))
+			current_amount = cur.fetchone()[0]
 
 			cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
 			con.commit()
@@ -71,8 +71,9 @@ def open_receiving():
 			refresh_page()
 			search_narc(selected_pack[2])
 
-			# add_to_audit_log(din, current_amount, user)
-			# show_audit_log()
+			user = "AZ" # Will use just for now until i set the variable above
+			add_to_audit_log(din, current_amount, user)
+			show_audit_log()
 
 	def search_narc(upc): #function to find the meds in meds.py when refreshing the page
 		tup = find_narcs_upc(upc)

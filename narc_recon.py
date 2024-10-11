@@ -34,7 +34,7 @@ window.bind('<Return>', sign_in)
 
 #Window setting
 window.resizable(False, False) #This stops the user from resizing the screen for the login ui
-w = 650
+w = 650 
 h = 234
 window_width = window.winfo_screenwidth()  # screen centering code from https://stackoverflow.com/questions/14910858/how-to-specify-where-a-tkinter-window-opens
 window_height = window.winfo_screenheight()  
