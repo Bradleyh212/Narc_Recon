@@ -66,8 +66,6 @@ def show_narcs_table():
 
 	print(table)
 
-
-
 '''add_qty_ent = tk.Entry(main_page_window, fg = "white", bg = "black", width = 70, font = font, justify="center")
 add_qty_ent.pack()
 

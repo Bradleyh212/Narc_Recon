@@ -7,10 +7,12 @@ def open_receiving():
 	from other_functions import show_narcs_table
 	from main_page import open_main_page
 	from reconciliation import open_reconciliation_page
+	from audit_log_database import add_to_audit_log, show_audit_log
 
 	import sqlite3 #To use database
 	con = sqlite3.connect("narcotics_database.db") #Connecting our databse
 	cur = con.cursor() # Create a cursor
+
 
 	receiving_window = tk.Tk()
 	receiving_window.title("Narc Recon")
@@ -48,12 +50,14 @@ def open_receiving():
 			
 			refresh_page()
 			search_narc(tup[0][3])
+			add_to_audit_log(din, old, new, user)
+			show_audit_log()
 		else:
 			cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
 			con.commit()	
 
 			show_narcs_table()
-			
+
 			refresh_page()
 			search_narc(selected_pack[3])
 
