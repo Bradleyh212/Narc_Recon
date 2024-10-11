@@ -2,10 +2,11 @@ def open_main_page():
 	#main page, will be full screen, not reziable
 	import tkinter as tk
 	from tkinter import ttk, font, messagebox
-	from meds import narc_list, find_quantity, find_narcs_upc, find_narcs_din 
 	from other_functions import show_narcs_table
 	from receiving import open_receiving
 	from reconciliation import open_reconciliation_page
+	from sqlite3_functions import create_narcs_table, create_narcs_details_table, from_excel_to_sql, find_narcs_upc, find_narcs_din, find_quantity
+
 
 	import sqlite3 #To use database
 	con = sqlite3.connect("narcotics_database.db") #Connecting our databse

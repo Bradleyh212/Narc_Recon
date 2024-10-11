@@ -7,6 +7,7 @@ def open_reconciliation_page():
 	from other_functions import show_narcs_table
 	from main_page import open_main_page
 	from reconciliation import open_reconciliation_page
+	from sqlite3_functions import create_narcs_table, create_narcs_details_table, from_excel_to_sql, find_narcs_upc, find_narcs_din, find_quantity
 
 	import sqlite3 #To use database
 	con = sqlite3.connect("narcotics_database.db") #Connecting our databse

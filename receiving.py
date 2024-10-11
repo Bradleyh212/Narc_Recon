@@ -8,6 +8,7 @@ def open_receiving():
 	from main_page import open_main_page
 	from reconciliation import open_reconciliation_page
 	from audit_log_database import add_to_audit_log, show_audit_log
+	from sqlite3_functions import create_narcs_table, create_narcs_details_table, from_excel_to_sql, find_narcs_upc, find_narcs_din, find_quantity
 
 	import sqlite3 #To use database
 	con = sqlite3.connect("narcotics_database.db") #Connecting our databse
@@ -45,8 +46,7 @@ def open_receiving():
 		if int(amount) < 0:
 			messagebox.showerror("Error", "PLease add a positive integer")
 		elif len(tup) == 1:
-			cur.execute("SELECT quantity FROM narcs WHERE din = ?", (din, ))
-			current_amount = cur.fetchone()[0]
+			current_amount = find_quantity(din)
 
 			cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
 			con.commit()
@@ -60,8 +60,8 @@ def open_receiving():
 			add_to_audit_log(din, current_amount, user)
 			show_audit_log()
 		else:
-			cur.execute("SELECT quantity FROM narcs WHERE din = ?", (din, ))
-			current_amount = cur.fetchone()[0]
+			current_amount = find_quantity(din)
+
 
 			cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
 			con.commit()
