@@ -33,33 +33,49 @@ def open_receiving():
 	receiving_window.bind('<Return>', search)
 
 
-	def add_quantity(amount, input):
-		if len(input) == 12:
-			din = find_narcs_upc(input)[0][0]
-		elif len(input) == 8:
-			din = input
+	def add_quantity(amount, inpt):
+		if len(inpt) == 12:
+			din = find_narcs_upc(inpt)[0][0]
+		elif len(inpt) == 8:
+			din = inpt
 		else:
 			messagebox.showerror("Error", "Please enter a valid DIN or UPC")
 		if int(amount) < 0:
 			messagebox.showerror("Error", "PLease add a positive integer")
 		elif len(tup) == 1:
+			cur.execute("SELECT quantity FROM narcs WHERE din = inpt")
+			current_amount = audit_cur.fetchall()
+
 			cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
 			con.commit()
 
-			show_narcs_table()
+			show_narcs_table() # This is just to show the sql table after the modification
 			
 			refresh_page()
 			search_narc(tup[0][3])
-			add_to_audit_log(din, old, new, user)
+
+			cur.execute("SELECT quantity FROM narcs WHERE din = inpt")
+			new_amount = audit_cur.fetchall()
+
+			add_to_audit_log(din, current_amount, new_amount, user)
 			show_audit_log()
 		else:
-			cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
-			con.commit()	
+			cur.execute("SELECT quantity FROM narcs WHERE din = inpt")
+			current_amount = audit_cur.fetchall()
 
-			show_narcs_table()
+			cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
+			con.commit()
+
+			show_narcs_table() # This is just to show the sql table after the modification
 
 			refresh_page()
 			search_narc(selected_pack[3])
+
+			cur.execute("SELECT quantity FROM narcs WHERE din = inpt")
+			new_amount = audit_cur.fetchall()
+
+			add_to_audit_log(din, current_amount, new_amount, user)
+			show_audit_log()
 
 	def search_narc(upc): #function to find the meds in meds.py when refreshing the page
 		tup = find_narcs_upc(upc)

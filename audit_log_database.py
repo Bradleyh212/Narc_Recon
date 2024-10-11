@@ -17,7 +17,7 @@ audit_cur.execute("""CREATE TABLE IF NOT EXISTS audit_log (
 
 audit_con.commit()
 
-list_user_id = ["AZ"]
+list_user_id = ["AZ" "Remove"]
 
 #This function will only be use when receiving and when doing
 def add_to_audit_log(din, old, new, user): #Takes the din, the old qty, new qty and the user_id, and updates the audit log
