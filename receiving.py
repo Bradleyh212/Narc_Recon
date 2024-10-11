@@ -36,15 +36,17 @@ def open_receiving():
 	def add_quantity(amount, inpt):
 		if len(inpt) == 12:
 			din = find_narcs_upc(inpt)[0][0]
+			# user = this will make a drop small text box to enter user id
 		elif len(inpt) == 8:
 			din = inpt
+			# user = this will make a drop small text box to enter user id
 		else:
 			messagebox.showerror("Error", "Please enter a valid DIN or UPC")
 		if int(amount) < 0:
 			messagebox.showerror("Error", "PLease add a positive integer")
 		elif len(tup) == 1:
-			cur.execute("SELECT quantity FROM narcs WHERE din = inpt")
-			current_amount = audit_cur.fetchall()
+			cur.execute("SELECT quantity FROM narcs WHERE din = ?", (din, ))
+			current_amount = cur.fetchone()[0]
 
 			cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
 			con.commit()
@@ -54,14 +56,12 @@ def open_receiving():
 			refresh_page()
 			search_narc(tup[0][3])
 
-			cur.execute("SELECT quantity FROM narcs WHERE din = inpt")
-			new_amount = audit_cur.fetchall()
-
-			add_to_audit_log(din, current_amount, new_amount, user)
+			user = "AZ" # Will use just for now until i set the variable above
+			add_to_audit_log(din, current_amount, user)
 			show_audit_log()
 		else:
-			cur.execute("SELECT quantity FROM narcs WHERE din = inpt")
-			current_amount = audit_cur.fetchall()
+			# cur.execute("SELECT * FROM narcs WHERE din = ?", (din))
+			# current_amount = cur.fetchall()[3]
 
 			cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
 			con.commit()
@@ -69,13 +69,10 @@ def open_receiving():
 			show_narcs_table() # This is just to show the sql table after the modification
 
 			refresh_page()
-			search_narc(selected_pack[3])
+			search_narc(selected_pack[2])
 
-			cur.execute("SELECT quantity FROM narcs WHERE din = inpt")
-			new_amount = audit_cur.fetchall()
-
-			add_to_audit_log(din, current_amount, new_amount, user)
-			show_audit_log()
+			# add_to_audit_log(din, current_amount, user)
+			# show_audit_log()
 
 	def search_narc(upc): #function to find the meds in meds.py when refreshing the page
 		tup = find_narcs_upc(upc)
@@ -105,7 +102,7 @@ def open_receiving():
 			drug_form_output.config(text = "")
 			pack_med_output.config(text = "")
 			qty_med_output.config(text = "") 
-			remove_qty_ent.focus_set() #This brings the focus out of the med entry
+			add_qty_ent.focus_set() #This brings the focus out of the med entry
 			meds_ent.focus_set() # This brings back the focus to med entry
 
 		if len(tup) == 1:
@@ -225,7 +222,7 @@ def open_receiving():
 			meds_ent.insert(0, 'Enter DIN or UPC')
 
 	def refresh_page():
-		global meds_ent, name_lbl_output, din__med_output, strength_lbl_output, drug_form_output, pack_med_output, qty_med_output, remove_qty_ent
+		global meds_ent, name_lbl_output, din__med_output, strength_lbl_output, drug_form_output, pack_med_output, qty_med_output, add_qty_ent
 
 		page_title = tk.Label(header_frame, text = "RECEIVING", fg = "white", font = header_font)
 		page_title.grid(row = 0, column = 0, sticky = "w", padx = 30)
