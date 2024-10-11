@@ -34,8 +34,10 @@ def open_receiving():
 	def add_quantity(amount, input):
 		if len(input) == 12:
 			din = find_narcs_upc(input)[0][0]
-		else:
+		elif len(input) == 8:
 			din = input
+		else:
+			messagebox.showerror("Error", "Please enter a valid DIN or UPC")
 		if int(amount) < 0:
 			messagebox.showerror("Error", "PLease add a positive integer")
 		elif len(tup) == 1:
@@ -85,7 +87,6 @@ def open_receiving():
 			qty_med_output.config(text = "") 
 			remove_qty_ent.focus_set() #This brings the focus out of the med entry
 			meds_ent.focus_set() # This brings back the focus to med entry
-			return
 
 		if len(tup) == 1:
 	#There will always be only 1 tuple in the list when looking with upc, will but another constraint, "if len(din) > 1" when lookin with din

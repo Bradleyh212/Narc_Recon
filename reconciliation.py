@@ -3,9 +3,10 @@ def open_reconciliation_page():
 	import tkinter as tk
 	from tkinter import ttk, font, messagebox
 	from meds import narc_list, find_quantity, find_narcs_upc, find_narcs_din 
+	# importing the list of narcs and the function for qty, both functions to find medsfrom the file meds.py'''
 	from other_functions import show_narcs_table
 	from main_page import open_main_page
-	from receiving import open_receiving
+	from reconciliation import open_reconciliation_page
 
 	import sqlite3 #To use database
 	con = sqlite3.connect("narcotics_database.db") #Connecting our databse
@@ -15,7 +16,7 @@ def open_reconciliation_page():
 	reconciliation_window.title("Narc Recon")
 
 	#Window setting
-	w = reconciliation_window.winfo_screenwidth() 
+	w = reconciliation_window.winfo_screenwidth()
 	h = reconciliation_window.winfo_screenheight()
 	reconciliation_window.geometry('%dx%d' % (w, h))
 
@@ -29,7 +30,48 @@ def open_reconciliation_page():
 		search_narcs()
 	reconciliation_window.bind('<Return>', search)
 
+
+	def set_quantity(amount, input): #This is the function to set the new quantity when doing the reconsiliation
+		if len(input) == 12:
+			din = find_narcs_upc(input)[0][0]
+		elif len(input) == 8:
+			din = input
+		else:
+			messagebox.showerror("Error", "Please enter a valid DIN or UPC")
+		if int(amount) < 0:
+			messagebox.showerror("Error", "PLease add a positive integer")
+		elif len(tup) == 1:
+			cur.execute("UPDATE narcs SET quantity = ? WHERE din = ?", (amount, din))
+			con.commit()
+
+			show_narcs_table()
+			
+			refresh_page()
+			search_narc(tup[0][3])
+		else:
+			cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
+			con.commit()	
+
+			show_narcs_table()
+			
+			refresh_page()
+			search_narc(selected_pack[3])
+
+
+
+	def search_narc(upc): #function to find the meds in meds.py when refreshing the page
+		tup = find_narcs_upc(upc)
+		name_lbl_output.config(text = tup[0][1])
+		din__med_output.config(text = tup[0][0])
+		strength_lbl_output.config(text = tup[0][4])
+		drug_form_output.config(text = tup[0][5])
+		pack_med_output.config(text = tup[0][6])
+		qty_med_output.config(text = find_quantity(tup[0][3])) #functions from the meds file to find the qty directly from the database
+
+
 	def search_narcs(): #function to find the meds in meds.py
+		global tup, din_or_upc 
+		din_or_upc = meds_ent.get() #This is to keep track of the din or upc for add_quantity
 		meds_ent.focus_set()
 		search_input = meds_ent.get()
 		meds_ent.delete(0, "end")
@@ -47,7 +89,6 @@ def open_reconciliation_page():
 			qty_med_output.config(text = "") 
 			remove_qty_ent.focus_set() #This brings the focus out of the med entry
 			meds_ent.focus_set() # This brings back the focus to med entry
-			return
 
 		if len(tup) == 1:
 	#There will always be only 1 tuple in the list when looking with upc, will but another constraint, "if len(din) > 1" when lookin with din
@@ -103,7 +144,7 @@ def open_reconciliation_page():
 			drug_form_output.config(text = "")
 			pack_med_output.config(text = "")
 			qty_med_output.config(text = "") 
-			remove_qty_ent.focus_set() #This brings the focus out of the med entry
+			set_qty_ent.focus_set() #This brings the focus out of the med entry
 			meds_ent.focus_set() # This brings back the focus to med entry
 
 
@@ -147,7 +188,7 @@ def open_reconciliation_page():
 
 
 	nav_frame = tk.Frame(header_frame, width = 450, height = 100, bg = main_background_color)
-	nav_frame.grid(row = 0, column = 1, padx = 550)
+	nav_frame.grid(row = 0, column = 1, padx = 450)
 	nav_frame.grid_propagate(False) # Prevent the nav frame from resizing based on its content
 
 	picture_frame = tk.Frame(right_body_frame, width = 200, height = 200, bg = "Black")
@@ -169,17 +210,17 @@ def open_reconciliation_page():
 		global meds_ent, name_lbl_output, din__med_output, strength_lbl_output, drug_form_output, pack_med_output, qty_med_output, remove_qty_ent
 
 		page_title = tk.Label(header_frame, text = "RECONCILIATION", fg = "white", font = header_font)
-		page_title.grid(row = 0, column = 0, sticky = "w", padx = 20)
+		page_title.grid(row = 0, column = 0, sticky = "w", padx = 0)
 
 		home_btn = ttk.Button(nav_frame, text = "HOME", style='TButton', command = lambda : [reconciliation_window.destroy(), open_main_page()], padding=(-5, -20))
-		home_btn.grid(row = 0, column = 0, padx = 0, pady = 40) #Used the lambda key word to use 2 functions in 1 button
+		home_btn.grid(row = 0, column = 0, padx = 6, pady = 40) #Used the lambda key word to use 2 functions in 1 button
 
-		receiving_btn = ttk.Button(nav_frame, text = "RECEIVING", style='TButton', command = lambda : [reconciliation_window.destroy(), open_receiving()], padding=(-5, -20))
+		receiving_btn = ttk.Button(nav_frame, text = "RECEIVING", style='TButton', padding=(-5, -20))
 		receiving_btn.grid(row = 0, column = 1, padx = 6) #Used the lambda key word to use 2 functions in 1 button
 
-		#This will be open another page to do the narc reconsiliation where we set the quantity on hand
-		reconsiliation_btn = ttk.Button(nav_frame, text = "RECONSILIATION", style='TButton', padding=(-5, -20))
-		reconsiliation_btn.grid(row = 0, column = 2, padx = 6)
+		#This will be open another page to do the narc reconciliation where we set the quantity on hand
+		reconciliation_btn = ttk.Button(nav_frame, text = "RECONCILIATION", style='TButton', command = lambda : [reconciliation_window.destroy(), open_reconciliation_page()], padding=(-5, -20))
+		reconciliation_btn.grid(row = 0, column = 2, padx = 6)
 
 		log_off_btn = ttk.Button(nav_frame, text = "LOGOUT", style='TButton', command = lambda : [reconciliation_window.destroy()], padding=(-5, -20)) 
 		log_off_btn.grid(row = 0, column = 3, padx = 6)
@@ -223,15 +264,16 @@ def open_reconciliation_page():
 		qty_med_output = tk.Label(right_body_frame, bg = "black", fg = "red", width = 10, font = font)
 		qty_med_output.grid(row = 2)
 
+
 		set_qty_ent = ttk.Entry(right_body_frame, font = font, width = 8)
 		set_qty_ent.grid(row = 3, pady = 30)
 
-		set_qty_btn = ttk.Button(right_body_frame, text = "SET QTY", style='TButton', padding=(-5, -20), command=lambda: set_quantity(set_qty_ent.get(), din_or_upc))
-		set_qty_btn.grid(row = 4)
+
+		add_btn = ttk.Button(right_body_frame, text = "SET QUANTITY", style='TButton', padding=(-5, -20), command=lambda: set_quantity(set_qty_ent.get(), din_or_upc))
+		add_btn.grid(row = 4)
 
 
-def set_quantity():
-	pass #This is the function to set the new quantity when doing the reconsiliation
+
 
 
 	#Running the program

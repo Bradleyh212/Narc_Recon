@@ -76,7 +76,6 @@ add_btn.pack()'''
 
 
 
-
 con.commit()
 
 
