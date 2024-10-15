@@ -1,67 +1,73 @@
 from datetime import datetime
 import pytz
-
 import sqlite3
 from prettytable import PrettyTable
 
+# Connect to narcotics and audit log databases
 con = sqlite3.connect("narcotics_database.db")
-cur = con.cursor() # Create a cursor
-
+cur = con.cursor()
 
 audit_con = sqlite3.connect('audit_log.db')
 audit_cur = audit_con.cursor()
 
-user_timezone = pytz.timezone('America/Toronto') # This is to set the current time zone
+# Set the user's timezone (America/Toronto)
+user_timezone = pytz.timezone('America/Toronto')
 
-audit_cur.execute("""CREATE TABLE IF NOT EXISTS audit_log (
-    log_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    din TEXT,
-    odl_qty INT,
-    new_qty INT,
-    Updated_By VARCHAR(10),
-    Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-	)""")
-
+# Create audit log table if it doesn't exist
+audit_cur.execute("""
+    CREATE TABLE IF NOT EXISTS audit_log (
+        log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        din TEXT,
+        old_qty INT,
+        new_qty INT,
+        Updated_By VARCHAR(10),
+        Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+""")
 audit_con.commit()
 
-# The remove id will be used only on the home screen when filling the medication
-# It will not be requested to be entered by the user
-list_user_id = ["AZ", "Remove"]
+# Predefined list of valid user IDs
+list_user_id = ["AZ", "RM", "Remove"]
 
-#This function will only be use when receiving and when doing
-def add_to_audit_log(din, old, user): #Takes the din, the old qty, new qty and the user_id, and updates the audit log
+# Function to add an entry to the audit log
+def add_to_audit_log(din, old_qty, user):
     if user not in list_user_id:
         messagebox.showerror("Error", "Please enter a valid user ID")
-    else :
-        cur.execute("SELECT quantity FROM narcs WHERE din = ?", (din, ))
-        new_amount = cur.fetchone()[0]
+        return
 
-        current_time_utc = datetime.now(pytz.utc)
-        current_time_local = current_time_utc.astimezone(user_timezone)
+    # Get the current quantity of the narcotic by DIN
+    cur.execute("SELECT quantity FROM narcs WHERE din = ?", (din,))
+    new_qty = cur.fetchone()[0]
 
-        # Format the converted time as a string for SQLite (e.g., '2024-10-11 03:42:04')
-        formatted_time = current_time_local.strftime('%Y-%m-%d %H:%M:%S')
+    # In the add_to_audit_log function
+    formatted_time = datetime.now(pytz.utc).astimezone(user_timezone).strftime('%Y-%m-%d %H:%M:%S')
 
-        audit_cur.execute("INSERT INTO audit_log (din, odl_qty, new_qty, Updated_By, Timestamp) values (?, ?, ?, ?, ?)", (din, old, new_amount, user, formatted_time))
-        audit_con.commit()
+    # Insert the log entry into the audit log table
+    audit_cur.execute("""
+        INSERT INTO audit_log (din, old_qty, new_qty, Updated_By, Timestamp)
+        VALUES (?, ?, ?, ?, ?)
+    """, (din, old_qty, new_qty, user, formatted_time))
+    
+    audit_con.commit()
 
-
+# Function to display the audit log in a pretty table format
 def show_audit_log():
     audit_cur.execute("SELECT * FROM audit_log")
     rows = audit_cur.fetchall()
 
-    column_names = []
-    for description in audit_cur.description:
-        column_names.append(description[0])
+    # Fetch column names from the database
+    column_names = [description[0] for description in audit_cur.description]
 
-
+    # Create and format the PrettyTable
     table = PrettyTable()
-
     table.field_names = column_names
 
+    # Add each row to the table
     for row in rows:
         table.add_row(row)
 
+    # Print the table
     print(table)
 
+# Display the audit log
 show_audit_log()

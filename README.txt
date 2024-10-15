@@ -28,6 +28,8 @@ Step 10 : Create receiving page to add the drug
 
 Step 11 : Work on first page ui
 
+Step 12 : Clean the code
+
 Step 12 : Create a way to make a report when doing the reconsiliation
 
 

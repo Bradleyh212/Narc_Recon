@@ -1,193 +1,37 @@
 def open_receiving():
-	#main page, will be full screen, not reziable
+	# Receiving page setup, full-screen, non-resizable window
 	import tkinter as tk
 	from tkinter import ttk, font, messagebox, simpledialog
 	from main_page import open_main_page
 	from reconciliation import open_reconciliation_page
 	from audit_log_database import add_to_audit_log, show_audit_log, list_user_id
-	from sqlite3_functions import create_narcs_table, create_narcs_details_table, from_excel_to_sql, find_narcs_upc, find_narcs_din, find_quantity, narc_list, show_narcs_table, find_quantity_din
+	from sqlite3_functions import find_narcs_upc, find_narcs_din, find_quantity, show_narcs_table, find_quantity_din
+	import sqlite3
 
-	import sqlite3 #To use database
-	con = sqlite3.connect("narcotics_database.db") #Connecting our databse
-	cur = con.cursor() # Create a cursor
+	# Connect to SQLite database
+	con = sqlite3.connect("narcotics_database.db")
+	cur = con.cursor()
 
+	# Initialize the main Tkinter window
 	receiving_window = tk.Tk()
 	receiving_window.title("Narc Recon")
 
-	#Window setting
-	w = receiving_window.winfo_screenwidth() 
+	# Set window size to full screen
+	w = receiving_window.winfo_screenwidth()
 	h = receiving_window.winfo_screenheight()
-	receiving_window.geometry('%dx%d' % (w, h))
+	receiving_window.geometry(f'{w}x{h}')
 
+	# Set background color and disable resizing
 	main_background_color = "#3B4B59"
-
-	receiving_window.resizable(False, False) #This stops the user from resizing the screen for the login ui
-
-
-
-	def search(search):
-		search_narcs()
-	receiving_window.bind('<Return>', search)
-
-	def ask_user_id():
-		user_id = None
-		while True:
-			# Show a simple dialog to ask for the user ID
-			user_id = simpledialog.askstring("Input", "Please enter your user ID:", parent=receiving_window)
-			
-			# Check if the user clicked 'Cancel' or closed the dialog
-			if user_id is None:
-				messagebox.showinfo("Cancelled", "Operation cancelled")
-				break  # Exit the loop if no input was given (cancel or close)
-			
-			# Check if the user ID is valid
-			if user_id in list_user_id:
-				return user_id  # Return the valid user ID
-			else:
-				# Show an error if the user ID is not valid
-				messagebox.showerror("Error", "Please enter a valid user ID")
-
-	def add_quantity(amount, inpt):
-		if len(inpt) == 12:
-			din = find_narcs_upc(inpt)[0][0]
-			# this will make a drop small text box to enter user id
-			user = ask_user_id()
-			if user not in list_user_id:
-				return
-		elif len(inpt) == 8:
-			din = inpt
-			# this will make a drop small text box to enter user id
-			user = ask_user_id()
-			if user not in list_user_id:
-				return
-		else:
-			messagebox.showerror("Error", "Please enter a valid DIN or UPC")
-		if int(amount) < 0:
-			messagebox.showerror("Error", "PLease add a positive integer")
-		elif len(tup) == 1:
-			current_amount = find_quantity_din(din)
-
-			cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
-			con.commit()
-
-			show_narcs_table() # This is just to show the sql table after the modification
-			
-			refresh_page()
-			search_narc(tup[0][3])
-
-			add_to_audit_log(din, current_amount, user)
-			show_audit_log()
-		else:
-			current_amount = find_quantity_din(din)
-
-
-			cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
-			con.commit()
-
-			show_narcs_table() # This is just to show the sql table after the modification
-
-			refresh_page()
-			search_narc(selected_pack[2])
-
-			user = "AZ" # Will use just for now until i set the variable above
-			add_to_audit_log(din, current_amount, user)
-			show_audit_log()
-
-	def search_narc(upc): #function to find the meds in meds.py when refreshing the page
-		tup = find_narcs_upc(upc)
-		name_lbl_output.config(text = tup[0][1])
-		din__med_output.config(text = tup[0][0])
-		strength_lbl_output.config(text = tup[0][4])
-		drug_form_output.config(text = tup[0][5])
-		pack_med_output.config(text = tup[0][6])
-		qty_med_output.config(text = find_quantity(tup[0][3])) #functions from the meds file to find the qty directly from the database
-
-
-	def search_narcs(): #function to find the meds in meds.py
-		global tup, din_or_upc 
-		din_or_upc = meds_ent.get() #This is to keep track of the din or upc for add_quantity
-		meds_ent.focus_set()
-		search_input = meds_ent.get()
-		meds_ent.delete(0, "end")
-		if len(search_input) == 12:
-			tup = find_narcs_upc(search_input)
-		elif len(search_input) == 8:
-			tup = find_narcs_din(search_input)
-		else:
-			messagebox.showerror("Error", "Drug not found")
-			name_lbl_output.config(text = "")
-			din__med_output.config(text = "")
-			strength_lbl_output.config(text = "")
-			drug_form_output.config(text = "")
-			pack_med_output.config(text = "")
-			qty_med_output.config(text = "") 
-			add_qty_ent.focus_set() #This brings the focus out of the med entry
-			meds_ent.focus_set() # This brings back the focus to med entry
-
-		if len(tup) == 1:
-	#There will always be only 1 tuple in the list when looking with upc, will but another constraint, "if len(din) > 1" when lookin with din
-			name_lbl_output.config(text = tup[0][1])
-			din__med_output.config(text = tup[0][0])
-			strength_lbl_output.config(text = tup[0][4])
-			drug_form_output.config(text = tup[0][5])
-			pack_med_output.config(text = tup[0][6])
-			qty_med_output.config(text = find_quantity(tup[0][3])) #functions from the meds file to find the qty directly from the database
-		elif len(tup) > 1:
-			#I will output a choice for which pack size they want
-			choice_windw = tk.Toplevel(receiving_window)
-			choice_windw.title("Choose Pack Size")
-			#Creating the place and the size of the window
-			w = 400 
-			h = 100
-
-			window_width = choice_windw.winfo_screenwidth()  # screen centering code from https://stackoverflow.com/questions/14910858/how-to-specify-where-a-tkinter-window-opens
-			window_height = choice_windw.winfo_screenheight()
-
-			x = (window_width/2) - (w/2)
-			y = (window_height/2) - (h/0.1)
-			choice_windw.geometry('%dx%d+%d+%d' % (w, h, x, y))
-
-			choice_windw.wm_attributes("-topmost", True) #Will keep the choice_windw on top
-			tk.Label(choice_windw, text="Choose the pack size:").pack()
-
-			pack_size = tk.StringVar()
-			pack_size_dropdown = ttk.Combobox(choice_windw, textvariable=pack_size)
-			pack_size_dropdown['values'] = [f"{item[6]} units - {item[4]} {item[5]}" for item in tup]
-			pack_size_dropdown.pack()
-
-			def on_select_pack_size():
-				global selected_pack
-				selected_index = pack_size_dropdown.current()
-				selected_pack = tup[selected_index]
-				name_lbl_output.config(text=selected_pack[1])
-				din__med_output.config(text=selected_pack[0])
-				strength_lbl_output.config(text=selected_pack[4])
-				drug_form_output.config(text=selected_pack[5])
-				pack_med_output.config(text=selected_pack[6])
-				qty_med_output.config(text=find_quantity(selected_pack[3]))
-				print(selected_pack)
-				choice_windw.destroy()
-
-			select_btn = tk.Button(choice_windw, text="Select", command=on_select_pack_size)
-			select_btn.pack()
-		else:
-			messagebox.showerror("Error", "Drug not found")
-			name_lbl_output.config(text = "")
-			din__med_output.config(text = "")
-			strength_lbl_output.config(text = "")
-			drug_form_output.config(text = "")
-			pack_med_output.config(text = "")
-			qty_med_output.config(text = "") 
-			add_qty_ent.focus_set() #This brings the focus out of the med entry
-			meds_ent.focus_set() # This brings back the focus to med entry
-
+	receiving_window.configure(bg=main_background_color)
+	receiving_window.resizable(False, False)
 
 	# Creating the fonts
 	header_font = font.Font(family="Inter", size=70, weight="normal")
 	font = font.Font(family="Inter", size=30, weight="normal") # Define a font for the Entry widget
 	# The size of the text changes the height of the Entry widget
 
-	# Creating the frames
+	# Frame setup: header, body, and navigation
 	header_frame = tk.Frame(receiving_window, width = w, height = 100, bg = main_background_color) # using the bg to see the frames
 	header_frame.grid(row = 0, column = 0)
 	header_frame.grid_propagate(False) # Prevent the header frame from resizing based on its content
@@ -220,7 +64,6 @@ def open_receiving():
 	right_body_frame.grid(row = 0, column = 1)
 	right_body_frame.grid_propagate(False)
 
-
 	nav_frame = tk.Frame(header_frame, width = 450, height = 100, bg = main_background_color)
 	nav_frame.grid(row = 0, column = 1, padx = 550)
 	nav_frame.grid_propagate(False) # Prevent the nav frame from resizing based on its content
@@ -229,6 +72,136 @@ def open_receiving():
 	picture_frame.grid(padx = 150, pady = 100)
 	picture_frame.grid_propagate(False) # Prevent the picture frame from resizing based on its content
 
+	def search(search):
+		search_narcs()
+	receiving_window.bind('<Return>', search)
+
+	# Function to request a valid user ID
+	def ask_user_id():
+		while True:
+			user_id = simpledialog.askstring("Input", "Please enter your user ID:", parent=receiving_window)
+			if user_id is None:  # Cancel or close
+				messagebox.showinfo("Cancelled", "Operation cancelled")
+				return None
+			if user_id in list_user_id:  # Valid user ID
+				return user_id
+			else:
+				messagebox.showerror("Error", "Please enter a valid user ID")
+
+	# Function to add quantity to a narcotic record
+	def add_quantity(amount, inpt):
+		if len(inpt) == 12:
+			din = find_narcs_upc(inpt)[0][0]  # Find DIN by UPC
+			user_id = ask_user_id()
+			if user_id not in list_user_id: # In case the user press the cancel button
+				return
+		elif len(inpt) == 8:
+			din = inpt  # Input is DIN
+			user_id = ask_user_id()
+			if user_id not in list_user_id: # In case the user press the cancel button
+				return
+		else:
+			messagebox.showerror("Error", "Please enter a valid DIN or UPC")
+			return
+
+		if int(amount) < 0:
+			messagebox.showerror("Error", "Please add a positive integer")
+			return
+
+		# Perform database update and refresh UI
+		current_amount = find_quantity_din(din)
+		cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
+		con.commit()
+
+		show_narcs_table()  # Refresh the narcotic table view
+		refresh_page()
+		search_narc_din(din)
+
+		# Log the action to the audit log
+		add_to_audit_log(din, current_amount, user_id)
+		show_audit_log()
+
+
+	def search_narc(upc): #function to find the meds in meds.py when refreshing the page
+		tup = find_narcs_upc(upc)
+		name_lbl_output.config(text = tup[0][1])
+		din__med_output.config(text = tup[0][0])
+		strength_lbl_output.config(text = tup[0][4])
+		drug_form_output.config(text = tup[0][5])
+		pack_med_output.config(text = tup[0][6])
+		qty_med_output.config(text = find_quantity(tup[0][3])) #functions from the meds file to find the qty directly from the database
+
+	def search_narc_din(din): #function to find the meds in meds.py when refreshing the page
+		tup = find_narcs_din(din)
+		name_lbl_output.config(text = tup[0][1])
+		din__med_output.config(text = tup[0][0])
+		strength_lbl_output.config(text = tup[0][4])
+		drug_form_output.config(text = tup[0][5])
+		pack_med_output.config(text = tup[0][6])
+		qty_med_output.config(text = find_quantity(tup[0][3])) #functions from the meds file to find the qty directly from the database
+
+	def search_narcs():
+		global search_input
+		search_input = meds_ent.get()  # Get the input from entry field
+		meds_ent.delete(0, "end")  # Clear the entry field
+
+		if len(search_input) == 12:
+			tup = find_narcs_upc(search_input)
+		elif len(search_input) == 8:
+			tup = find_narcs_din(search_input)
+		else:
+			messagebox.showerror("Error", "Drug not found")
+			clear_display_fields()
+			return
+
+		if len(tup) == 1:  # Single result, display information
+			display_narcotic_info(tup[0])
+		elif len(tup) > 1:  # Multiple results, ask for pack size
+			select_pack_size(tup)
+		else:
+			messagebox.showerror("Error", "Drug not found")
+			clear_display_fields()
+
+	# Function to display narcotic information
+	def display_narcotic_info(narc):
+		name_lbl_output.config(text=narc[1])
+		din__med_output.config(text=narc[0])
+		strength_lbl_output.config(text=narc[4])
+		drug_form_output.config(text=narc[5])
+		pack_med_output.config(text=narc[6])
+		qty_med_output.config(text=find_quantity(narc[3]))
+
+	# Function to clear the display fields
+	def clear_display_fields():
+		name_lbl_output.config(text="")
+		din__med_output.config(text="")
+		strength_lbl_output.config(text="")
+		drug_form_output.config(text="")
+		pack_med_output.config(text="")
+		qty_med_output.config(text="")
+
+	# Function to handle pack size selection when multiple results are found
+	def select_pack_size(tup):
+		choice_window = tk.Toplevel(receiving_window)
+		choice_window.title("Choose Pack Size")
+		choice_window.geometry("400x100")
+		choice_window.wm_attributes("-topmost", True)
+
+		tk.Label(choice_window, text="Choose the pack size:").pack()
+
+		pack_size = tk.StringVar()
+		pack_size_dropdown = ttk.Combobox(choice_window, textvariable=pack_size)
+		pack_size_dropdown['values'] = [f"{item[6]} units - {item[4]} {item[5]}" for item in tup]
+		pack_size_dropdown.pack()
+
+		def on_select_pack_size():
+			selected_index = pack_size_dropdown.current()
+			selected_pack = tup[selected_index]
+			display_narcotic_info(selected_pack)
+			choice_window.destroy()
+
+		select_btn = tk.Button(choice_window, text="Select", command=on_select_pack_size)
+		select_btn.pack()
 
 	def on_entry_click(event): # When the med entry widget is clicked remove the text
 		"""Remove placeholder when entry is clicked."""
@@ -259,8 +232,6 @@ def open_receiving():
 		log_off_btn = ttk.Button(nav_frame, text = "LOGOUT", style='TButton', command = lambda : [receiving_window.destroy()], padding=(-5, -20)) 
 		log_off_btn.grid(row = 0, column = 3, padx = 6)
 
-
-
 		meds_ent = ttk.Entry(search_frame, text = "Enter upc or din", width = 35, font = font, justify="center") #upc entry widget
 		meds_ent.grid(row = 0, column = 0, padx = 30, pady = 50)
 		meds_ent.focus()
@@ -282,12 +253,10 @@ def open_receiving():
 		drug_form_output = tk.Label(strength_form_frame, bg = "black", fg = "red", width = 12, font = font)
 		drug_form_output.grid(row = 0, column = 1, padx =75, pady = 30)
 
-
 		pack_med_lbl = tk.Label(pack_med_frame, bg = "black", text = "PACK SIZE", fg = "white", width = 15, font = font)
 		pack_med_lbl.grid(row = 0, column = 0, padx = 30, pady = 30)
 		pack_med_output = tk.Label(pack_med_frame, bg = "black", fg = "blue", width = 15, font = font)
 		pack_med_output.grid(row = 0, column = 1)
-
 
 		med_picture = tk.Label(picture_frame, text = "PICTURE", bg = "black", fg = "white", width = 10, font = font)
 		med_picture.grid(pady = 75)
@@ -298,16 +267,13 @@ def open_receiving():
 		qty_med_output = tk.Label(right_body_frame, bg = "black", fg = "red", width = 10, font = font)
 		qty_med_output.grid(row = 2)
 
-
 		add_qty_ent = ttk.Entry(right_body_frame, font = font, width = 8)
 		add_qty_ent.grid(row = 3, pady = 30)
 
-
-		add_btn = ttk.Button(right_body_frame, text = "ADD QUANTITY", style='TButton', padding=(-5, -20), command=lambda: add_quantity(add_qty_ent.get(), din_or_upc))
+		add_btn = ttk.Button(right_body_frame, text = "ADD QUANTITY", style='TButton', padding=(-5, -20), command=lambda: add_quantity(add_qty_ent.get(), search_input))
 		add_btn.grid(row = 4)
 
 
-
-	#Running the program
+	# Initialize the UI and start the Tkinter event loop
 	refresh_page()
 	receiving_window.mainloop()
