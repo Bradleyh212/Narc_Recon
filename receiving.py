@@ -1,19 +1,15 @@
 def open_receiving():
 	#main page, will be full screen, not reziable
 	import tkinter as tk
-	from tkinter import ttk, font, messagebox
-	from meds import narc_list, find_quantity, find_narcs_upc, find_narcs_din 
-	# importing the list of narcs and the function for qty, both functions to find medsfrom the file meds.py'''
-	from other_functions import show_narcs_table
+	from tkinter import ttk, font, messagebox, simpledialog
 	from main_page import open_main_page
 	from reconciliation import open_reconciliation_page
-	from audit_log_database import add_to_audit_log, show_audit_log
-	from sqlite3_functions import create_narcs_table, create_narcs_details_table, from_excel_to_sql, find_narcs_upc, find_narcs_din, find_quantity
+	from audit_log_database import add_to_audit_log, show_audit_log, list_user_id
+	from sqlite3_functions import create_narcs_table, create_narcs_details_table, from_excel_to_sql, find_narcs_upc, find_narcs_din, find_quantity, narc_list, show_narcs_table, find_quantity_din
 
 	import sqlite3 #To use database
 	con = sqlite3.connect("narcotics_database.db") #Connecting our databse
 	cur = con.cursor() # Create a cursor
-
 
 	receiving_window = tk.Tk()
 	receiving_window.title("Narc Recon")
@@ -33,20 +29,43 @@ def open_receiving():
 		search_narcs()
 	receiving_window.bind('<Return>', search)
 
+	def ask_user_id():
+		user_id = None
+		while True:
+			# Show a simple dialog to ask for the user ID
+			user_id = simpledialog.askstring("Input", "Please enter your user ID:", parent=receiving_window)
+			
+			# Check if the user clicked 'Cancel' or closed the dialog
+			if user_id is None:
+				messagebox.showinfo("Cancelled", "Operation cancelled")
+				break  # Exit the loop if no input was given (cancel or close)
+			
+			# Check if the user ID is valid
+			if user_id in list_user_id:
+				return user_id  # Return the valid user ID
+			else:
+				# Show an error if the user ID is not valid
+				messagebox.showerror("Error", "Please enter a valid user ID")
 
 	def add_quantity(amount, inpt):
 		if len(inpt) == 12:
 			din = find_narcs_upc(inpt)[0][0]
-			# user = this will make a drop small text box to enter user id
+			# this will make a drop small text box to enter user id
+			user = ask_user_id()
+			if user not in list_user_id:
+				return
 		elif len(inpt) == 8:
 			din = inpt
-			# user = this will make a drop small text box to enter user id
+			# this will make a drop small text box to enter user id
+			user = ask_user_id()
+			if user not in list_user_id:
+				return
 		else:
 			messagebox.showerror("Error", "Please enter a valid DIN or UPC")
 		if int(amount) < 0:
 			messagebox.showerror("Error", "PLease add a positive integer")
 		elif len(tup) == 1:
-			current_amount = find_quantity(din)
+			current_amount = find_quantity_din(din)
 
 			cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
 			con.commit()
@@ -56,11 +75,10 @@ def open_receiving():
 			refresh_page()
 			search_narc(tup[0][3])
 
-			user = "AZ" # Will use just for now until i set the variable above
 			add_to_audit_log(din, current_amount, user)
 			show_audit_log()
 		else:
-			current_amount = find_quantity(din)
+			current_amount = find_quantity_din(din)
 
 
 			cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amount, din))
@@ -287,8 +305,6 @@ def open_receiving():
 
 		add_btn = ttk.Button(right_body_frame, text = "ADD QUANTITY", style='TButton', padding=(-5, -20), command=lambda: add_quantity(add_qty_ent.get(), din_or_upc))
 		add_btn.grid(row = 4)
-
-
 
 
 

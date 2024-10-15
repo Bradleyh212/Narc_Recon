@@ -2,12 +2,10 @@ def open_reconciliation_page():
 	#main page, will be full screen, not reziable
 	import tkinter as tk
 	from tkinter import ttk, font, messagebox
-	from meds import narc_list, find_quantity, find_narcs_upc, find_narcs_din 
-	# importing the list of narcs and the function for qty, both functions to find medsfrom the file meds.py'''
-	from other_functions import show_narcs_table
 	from main_page import open_main_page
 	from reconciliation import open_reconciliation_page
-	from sqlite3_functions import create_narcs_table, create_narcs_details_table, from_excel_to_sql, find_narcs_upc, find_narcs_din, find_quantity
+	from sqlite3_functions import create_narcs_table, create_narcs_details_table, from_excel_to_sql, find_narcs_upc, find_narcs_din, find_quantity, narc_list, find_quantity, find_narcs_upc, find_narcs_din, show_narcs_table
+	from audit_log_database import list_user_id
 
 	import sqlite3 #To use database
 	con = sqlite3.connect("narcotics_database.db") #Connecting our databse
