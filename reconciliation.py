@@ -1,3 +1,6 @@
+####################
+# Need to add a way to print the audit_log based on time
+####################
 def open_reconciliation_page():
 	#main page, will be full screen, not reziable
 	import tkinter as tk

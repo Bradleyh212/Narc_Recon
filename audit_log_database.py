@@ -70,9 +70,6 @@ def show_audit_log():
 	print(table)
 
 # Display the audit log
+
 show_audit_log()
-l = audit_cur.execute("PRAGMA table_info(audit_log)")
-for i in l:
-	print(i)
-table_info = audit_cur.fetchall()
-print(table_info)
+
