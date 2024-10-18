@@ -13,14 +13,17 @@ audit_con = sqlite3.connect('audit_log.db')
 audit_cur = audit_con.cursor()
 
 def create_narcs_table():
-		audit_cur.execute("""CREATE TABLE IF NOT EXISTS audit_log (
-	    log_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	    din TEXT,
-	    odl_qty INT,
-	    new_qty INT,
-	    Updated_By VARCHAR(10),
-	    Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-	)""")
+	cur.execute("""CREATE TABLE IF NOT EXISTS narcs ( -- Create a table called narcs
+
+	/* Added the ""IF NOT EXISTS" constraint to make sure i dont have to
+	comment out create table (can run multiple time without "table already exist error") */
+
+		din TEXT PRIMARY KEY, -- storing as text because of leading zero's,
+		name TEXT NOT NULL,
+		quantity INTEGER NOT NULL DEFAULT 0
+	)
+	""")
+	
 
 def create_narcs_details_table():
 	cur.execute("""CREATE TABLE IF NOT EXISTS narcs_details (
