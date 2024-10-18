@@ -27,7 +27,7 @@ audit_cur.execute("""
 audit_con.commit()
 
 # Predefined list of valid user IDs
-list_user_id = ["AZ", "RM", "Filling"]
+list_user_id = ["Filling"] # Will add user id in pharmacy system only
 
 # Function to add an entry to the audit log
 def add_to_audit_log(din, old_qty, user):
