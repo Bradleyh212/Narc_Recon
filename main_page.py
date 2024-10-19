@@ -22,6 +22,7 @@ def open_main_page():
 
 	# Set background color and disable resizing
 	main_background_color = "#3B4B59"
+	nav_background_color = "black"
 	main_page_window.configure(bg=main_background_color)
 	main_page_window.resizable(False, False)
 
@@ -31,7 +32,7 @@ def open_main_page():
 	# The size of the text changes the height of the Entry widget
 
 	# Frame setup: header, body, and navigation
-	header_frame = tk.Frame(main_page_window, width = w, height = 100, bg = main_background_color) # using the bg to see the frames
+	header_frame = tk.Frame(main_page_window, width = w, height = 100, bg = nav_background_color) # using the bg to see the frames
 	header_frame.grid(row = 0, column = 0)
 	header_frame.grid_propagate(False) # Prevent the header frame from resizing based on its content
 
@@ -63,7 +64,7 @@ def open_main_page():
 	right_body_frame.grid(row = 0, column = 1)
 	right_body_frame.grid_propagate(False)
 
-	nav_frame = tk.Frame(header_frame, width = 450, height = 100, bg = main_background_color)
+	nav_frame = tk.Frame(header_frame, width = 450, height = 100, bg = nav_background_color)
 	nav_frame.grid(row = 0, column = 1, padx = 550)
 	nav_frame.grid_propagate(False) # Prevent the nav frame from resizing based on its content
 
@@ -74,7 +75,7 @@ def open_main_page():
 	def refresh_page():
 		global meds_ent, name_lbl_output, din__med_output, strength_lbl_output, drug_form_output, pack_med_output, qty_med_output, remove_qty_ent
 
-		page_title = tk.Label(header_frame, text = "INVENTORY", fg = "white", font = header_font)
+		page_title = tk.Label(header_frame, text = "INVENTORY", fg = "white", bg = "black", font = header_font)
 		page_title.grid(row = 0, column = 0, sticky = "w", padx = 30)
 
 		home_btn = ttk.Button(nav_frame, text = "HOME", style='TButton', padding=(-5, -20))
