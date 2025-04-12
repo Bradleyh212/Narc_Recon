@@ -1,0 +1,6 @@
+pandas
+prettytable
+pyinstaller
+reportlab
+pytz
+openpyxl

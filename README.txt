@@ -36,7 +36,7 @@ Step 12 : Create a way to make a report when doing the reconsiliation
 
 
 
-Last step : work on ui, use streamlit
+Last step : work on ui, (maybe use streamlit)
 
 site i used to learn Tkinter:
 https://realpython.com/python-gui-tkinter/

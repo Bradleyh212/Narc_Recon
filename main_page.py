@@ -4,6 +4,7 @@ def open_main_page():
 	from tkinter import ttk, font, messagebox, simpledialog
 	from receiving import open_receiving
 	from reconciliation import open_reconciliation_page
+	from report import open_report_page
 	from audit_log_database import add_to_audit_log, show_audit_log, list_user_id
 	from sqlite3_functions import find_narcs_upc, find_narcs_din, find_quantity, show_narcs_table, find_quantity_din
 	import sqlite3
@@ -27,8 +28,8 @@ def open_main_page():
 	main_page_window.resizable(False, False)
 
 	# Creating the fonts
-	header_font = font.Font(family="Inter", size=70, weight="normal")
-	font = font.Font(family="Inter", size=30, weight="normal") # Define a font for the Entry widget
+	header_font = font.Font(family="Inter", size=40, weight="normal")
+	font = font.Font(family="Inter", size=20, weight="normal") # Define a font for the Entry widget
 	# The size of the text changes the height of the Entry widget
 
 	# Frame setup: header, body, and navigation
@@ -40,37 +41,34 @@ def open_main_page():
 	body_frame.grid(row = 1, column = 0, pady = 30)
 	body_frame.grid_propagate(False) # Prevent the body frame from resizing based on its content
 
-	left_body_frame = tk.Frame(body_frame, width = w-500, height = h, bg = main_background_color)
+	left_body_frame = tk.Frame(body_frame, width = w-300, height = h, bg = main_background_color)
 	left_body_frame.grid(row = 0, column = 0)
 	left_body_frame.grid_propagate(False) # Prevent the left_body_frame frame from resizing based on its content
 
-	search_frame = tk.Frame(left_body_frame, width = w-500, height = 150, bg = main_background_color)
+	search_frame = tk.Frame(left_body_frame, width = w-300, height = 150, bg = main_background_color)
 	search_frame.grid(row = 0, column = 0)
 	search_frame.grid_propagate(False)
 
-	name_din_frame = tk.Frame(left_body_frame, width = w-500, height = 150, bg = main_background_color)
+	name_din_frame = tk.Frame(left_body_frame, width = w-300, height = 150, bg = main_background_color)
 	name_din_frame.grid(row = 1, column = 0, pady = 30)
 	name_din_frame.grid_propagate(False)
 
-	strength_form_frame = tk.Frame(left_body_frame, width = w-500, height = 150, bg = main_background_color)
+	strength_form_frame = tk.Frame(left_body_frame, width = w-300, height = 150, bg = main_background_color)
 	strength_form_frame.grid(row = 2, column = 0, pady = 30)
 	strength_form_frame.grid_propagate(False)
 
-	pack_med_frame = tk.Frame(left_body_frame, width = w-500, height = 150, bg = main_background_color)
+	pack_med_frame = tk.Frame(left_body_frame, width = w-300, height = 150, bg = main_background_color)
 	pack_med_frame.grid(row = 3, column = 0, pady = 30)
 	pack_med_frame.grid_propagate(False)
 
-	right_body_frame = tk.Frame(body_frame, width = 500, height = h, bg = main_background_color, bd = 5, relief = "raised")
+	right_body_frame = tk.Frame(body_frame, width = 250, height = h, bg = main_background_color, bd = 5)
 	right_body_frame.grid(row = 0, column = 1)
 	right_body_frame.grid_propagate(False)
 
-	nav_frame = tk.Frame(header_frame, width = 450, height = 100, bg = nav_background_color)
-	nav_frame.grid(row = 0, column = 1, padx = 550)
+	nav_frame = tk.Frame(header_frame, width = 550, height = 100, bg = nav_background_color)
+	nav_frame.grid(row = 0, column = 1, padx = 450)
 	nav_frame.grid_propagate(False) # Prevent the nav frame from resizing based on its content
 
-	picture_frame = tk.Frame(right_body_frame, width = 200, height = 200, bg = "Black")
-	picture_frame.grid(padx = 150, pady = 100)
-	picture_frame.grid_propagate(False) # Prevent the picture frame from resizing based on its content
 
 	def refresh_page():
 		global meds_ent, name_lbl_output, din__med_output, strength_lbl_output, drug_form_output, pack_med_output, qty_med_output, remove_qty_ent
@@ -78,59 +76,60 @@ def open_main_page():
 		page_title = tk.Label(header_frame, text = "INVENTORY", fg = "white", bg = "black", font = header_font)
 		page_title.grid(row = 0, column = 0, sticky = "w", padx = 30)
 
-		home_btn = ttk.Button(nav_frame, text = "HOME", style='TButton', padding=(-5, -20))
-		home_btn.grid(row = 0, column = 0, padx = 6, pady = 40) #Used the lambda key word to use 2 functions in 1 button
+		home_btn = ttk.Button(nav_frame, text = "HOME", style='TButton')
+		home_btn.grid(row = 0, column = 0, padx = 3, pady = 40) #Used the lambda key word to use 2 functions in 1 button
 
-		receiving_btn = ttk.Button(nav_frame, text = "RECEIVING", style='TButton', command = lambda : [main_page_window.destroy(), open_receiving()], padding=(-5, -20))
-		receiving_btn.grid(row = 0, column = 1, padx = 6) #Used the lambda key word to use 2 functions in 1 button
+		receiving_btn = ttk.Button(nav_frame, text = "RECEIVING", style='TButton', command = lambda : [main_page_window.destroy(), open_receiving()], )
+		receiving_btn.grid(row = 0, column = 1, padx = 3) #Used the lambda key word to use 2 functions in 1 button
 
 		#This will be open another page to do the narc reconciliation where we set the quantity on hand
-		reconciliation_btn = ttk.Button(nav_frame, text = "RECONCILIATION", style='TButton', command = lambda : [main_page_window.destroy(), open_reconciliation_page()], padding=(-5, -20))
-		reconciliation_btn.grid(row = 0, column = 2, padx = 6)
+		reconciliation_btn = ttk.Button(nav_frame, text = "RECONCILIATION", style='TButton', command = lambda : [main_page_window.destroy(), open_reconciliation_page()], )
+		reconciliation_btn.grid(row = 0, column = 2, padx = 3)
 
-		log_off_btn = ttk.Button(nav_frame, text = "LOGOUT", style='TButton', command = lambda : [main_page_window.destroy()], padding=(-5, -20)) 
-		log_off_btn.grid(row = 0, column = 3, padx = 6)
+		#This will be open another page to do the report where we get the previous reconciliation
+		report_btn = ttk.Button(nav_frame, text = "REPORT", style='TButton', command = lambda : [main_page_window.destroy(), open_report_page()], )
+		report_btn.grid(row = 0, column = 3, padx = 3)
 
-		meds_ent = ttk.Entry(search_frame, text = "Enter upc or din", width = 35, font = font, justify="center") #upc entry widget
+		log_off_btn = ttk.Button(nav_frame, text = "LOGOUT", style='TButton', command = lambda : [main_page_window.destroy()], ) 
+		log_off_btn.grid(row = 0, column = 4, padx = 3)
+
+		meds_ent = ttk.Entry(search_frame, text = "Enter upc or din", width = 20, font = font, justify="center") #upc entry widget
 		meds_ent.grid(row = 0, column = 0, padx = 30, pady = 50)
 		meds_ent.focus()
 		meds_ent.bind('<FocusIn>', on_entry_click)
 		meds_ent.bind('<FocusOut>', on_focusout)
 
-		search_btn = ttk.Button(search_frame, text = "SEARCH", style='TButton', command=search_narcs, padding=(-5, -20)) #The padding is to remove the space around the button
+		search_btn = ttk.Button(search_frame, text = "SEARCH", style='TButton', command=search_narcs, )
 		search_btn.grid(row = 0, column = 1)
 
 		name_lbl_output = tk.Label(name_din_frame, bg = "black", fg = "White", width = 30, font = font)
 		name_lbl_output.grid(row = 0, column = 0, padx = 30) # this will be the label to see the output when we enter the upc or din
 
-		din__med_output = tk.Label(name_din_frame, bg = "black", fg = "red", width = 12, font = font)
+		din__med_output = tk.Label(name_din_frame, bg = "black", fg = "white", width = 12, font = font)
 		din__med_output.grid(row = 0, column = 1, padx =75, pady = 30)
 
-		strength_lbl_output = tk.Label(strength_form_frame, bg = "black", fg = "red", width = 30, font = font)
+		strength_lbl_output = tk.Label(strength_form_frame, bg = "black", fg = "white", width = 30, font = font)
 		strength_lbl_output.grid(row = 0, column = 0, padx = 30)
 
-		drug_form_output = tk.Label(strength_form_frame, bg = "black", fg = "red", width = 12, font = font)
+		drug_form_output = tk.Label(strength_form_frame, bg = "black", fg = "white", width = 12, font = font)
 		drug_form_output.grid(row = 0, column = 1, padx =75, pady = 30)
 
 		pack_med_lbl = tk.Label(pack_med_frame, bg = "black", text = "PACK SIZE", fg = "white", width = 15, font = font)
 		pack_med_lbl.grid(row = 0, column = 0, padx = 30, pady = 30)
-		pack_med_output = tk.Label(pack_med_frame, bg = "black", fg = "blue", width = 15, font = font)
+		pack_med_output = tk.Label(pack_med_frame, bg = "black", fg = "white", width = 15, font = font)
 		pack_med_output.grid(row = 0, column = 1)
-
-		med_picture = tk.Label(picture_frame, text = "PICTURE", bg = "black", fg = "white", width = 10, font = font)
-		med_picture.grid(pady = 75)
 
 		qty_med_lbl = tk.Label(right_body_frame, text = "ON HAND", bg = "black", fg = "white", width = 10, font = font)
 		qty_med_lbl.grid(row = 1)
 
-		qty_med_output = tk.Label(right_body_frame, bg = "black", fg = "red", width = 10, font = font)
+		qty_med_output = tk.Label(right_body_frame, bg = "black", fg = "white", width = 10, font = font)
 		qty_med_output.grid(row = 2)
 
 
 		remove_qty_ent = ttk.Entry(right_body_frame, text = "FILL", font = font, width = 8)
 		remove_qty_ent.grid(row = 3, pady = 30)
 
-		remove_qty_btn = ttk.Button(right_body_frame, text = "Fill", style='TButton', command=lambda: remove_quantity(remove_qty_ent.get(), search_input), padding=(-5, -20))
+		remove_qty_btn = ttk.Button(right_body_frame, text = "Fill", style='TButton', command=lambda: remove_quantity(remove_qty_ent.get(), search_input), )
 		remove_qty_btn.grid(row = 4)
 
 

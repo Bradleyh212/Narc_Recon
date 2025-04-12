@@ -27,7 +27,7 @@ audit_cur.execute("""
 audit_con.commit()
 
 # Predefined list of valid user IDs
-list_user_id = ["Filling"] # Will add user id in pharmacy system only
+list_user_id = ["test"] # Will add user id in pharmacy system only
 
 # Function to add an entry to the audit log
 def add_to_audit_log(din, old_qty, user):
@@ -49,6 +49,22 @@ def add_to_audit_log(din, old_qty, user):
 	""", (din, old_qty, new_qty, user, formatted_time))
 	
 	audit_con.commit()
+
+def get_audit_log_by_din_and_date(din, start_date, end_date):
+	audit_cur.execute("""
+		SELECT din, old_qty, new_qty, Updated_By, Timestamp
+		FROM audit_log
+		WHERE din = ?
+		AND date(Timestamp) BETWEEN ? AND ?
+		ORDER BY Timestamp ASC
+	""", (din, start_date, end_date))
+
+	results = audit_cur.fetchall()
+
+	audit_con.commit()
+
+	return results
+
 
 # Function to display the audit log in a pretty table format
 def show_audit_log():

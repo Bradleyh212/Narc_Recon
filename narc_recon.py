@@ -10,7 +10,7 @@ def login_try():
     global password_count
     password_count += 1
     if password_count == 3:
-        window.destroy()  # Close the login window after 3 failed attempts
+        window.destroy()  # C`lose the login window after 3 failed attempts
 
 # Function to check username and password validity
 def check_password():
@@ -61,7 +61,7 @@ right_frame = tk.Frame(window, width=300, height=h)
 right_frame.grid(row=0, column=1)
 
 # Add logo to the right frame
-logo = PhotoImage(file="logo_nr.png")
+logo = PhotoImage(file="others/logo_nr.png")
 logo_lbl = tk.Label(right_frame, image=logo)
 logo_lbl.grid(row=0, column=0)
 

@@ -14,12 +14,13 @@ from sqlite3_functions import (
 con = sqlite3.connect("narcotics_database.db")
 cur = con.cursor()
 
+# Import data from Excel into the SQL database
+from_excel_to_sql()
+
 # Create tables for storing narcotics data
 create_narcs_table()  # Main table for meds
 create_narcs_details_table()  # Detailed table for meds
 
-# Import data from Excel into the SQL database
-from_excel_to_sql()
 
 # Commit the changes to the database
 con.commit()

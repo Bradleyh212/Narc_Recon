@@ -23,7 +23,6 @@ def create_narcs_table():
 		quantity INTEGER NOT NULL DEFAULT 0
 	)
 	""")
-	
 
 def create_narcs_details_table():
 	cur.execute("""CREATE TABLE IF NOT EXISTS narcs_details (
@@ -41,13 +40,13 @@ def from_excel_to_sql():
 		# Adding to narcs table
 		drug_name = details_list[0]["name"]  # Assuming all entries under the same DIN have the same name
 		cur.execute("INSERT OR IGNORE INTO narcs (din, name, quantity) VALUES (?, ?, ?)", (din, drug_name, 0))
-
-	# Adding to narcs_details table
-	for details in details_list:
-		cur.execute("""
-		INSERT OR IGNORE INTO narcs_details (din, upc, strength, form, pack_size)
-		VALUES (?, ?, ?, ?, ?)
-		""", (din, details["upc"], details["strength"], details["form"], details["pack_size"]))
+		
+		# Adding to narcs_details table
+		for details in details_list:
+			cur.execute("""
+			INSERT OR IGNORE INTO narcs_details (din, upc, strength, form, pack_size)
+			VALUES (?, ?, ?, ?, ?)
+			""", (din, details["upc"], details["strength"], details["form"], details["pack_size"]))
 
 def find_narcs_upc(upc):
 	cur.execute("""
@@ -101,7 +100,7 @@ def show_narcs_table():
 	print(table)
 
 def create_narc_list():	
-	df = pd.read_excel("Sheet1.xlsx", sheet_name="Sheet1")
+	df = pd.read_excel("med_sheet.xlsx", sheet_name="med_sheet")
 
 	upc_list = df["Upc"].fillna(0).apply(lambda x: str(int(x)).zfill(12)).tolist()
 	#print(upc_list)
@@ -109,7 +108,7 @@ def create_narc_list():
 	#print(drug_name_list)
 
 	drug_din_list = df["DIN"].apply(lambda x: str(int(x)).zfill(8)).tolist() #make the din list, also fill the first numbers with zero
-	#print(drug_din_list)mm
+	# print(drug_din_list)
 
 	drug_stregth_list = df["Strength"].tolist()
 	#print(drug_stregth_list)
@@ -137,8 +136,14 @@ def create_narc_list():
 			})
 	return narc_list
 
-show_narcs_table()
 narc_list = create_narc_list()
+create_narcs_table()
+create_narcs_details_table()
+from_excel_to_sql()
+
+show_narcs_table()
+
+
 con.commit()
 audit_con.commit()
 
