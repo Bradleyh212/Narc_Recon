@@ -1,6 +1,8 @@
-pandas
-prettytable
-pyinstaller
-reportlab
-pytz
-openpyxl
+pandas          # Data analysis and manipulation library, used for handling tables, CSV/Excel data in the app
+openpyxl        # Reads and writes Excel (.xlsx) files; works with pandas for spreadsheet operations
+prettytable     # For printing nicely formatted tables in text-based outputs (e.g., console reports)
+pyinstaller     # Packages the Python app into a standalone executable for distribution
+reportlab       # Used to generate PDFs (e.g., printable reports) directly from Python
+pytz            # Timezone handling library (helps with UTC/local time conversions)
+customtkinter   # Modern, themed UI framework based on Tkinter for creating the application's GUI
+argon2-cffi     # Argon2 password hashing library, used for secure account authentication

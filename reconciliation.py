@@ -1,175 +1,240 @@
-####################
-# Need to add a way to print the audit_log based on time
-####################
 def open_reconciliation_page():
 	# Reconsilation page setup, full-screen, non-resizable window
-	import tkinter as tk
-	from tkinter import ttk, font, messagebox, simpledialog
-	from main_page import open_main_page
-	from receiving import open_receiving
-	from report import open_report_page
-	from audit_log_database import add_to_audit_log, show_audit_log, list_user_id
-	from sqlite3_functions import find_narcs_upc, find_narcs_din, find_quantity, show_narcs_table, find_quantity_din
-	import sqlite3
 
-	import sqlite3 #To use database
+	# === Standard Library ===
+	import tkinter as tk
+	import customtkinter as ctk
+	from tkinter import ttk, messagebox, simpledialog
+
+	# === Project Modules ===
+	from inventory import open_inventory_page
+	from filling import open_filling_page
+	from receiving import open_receiving_page
+	from report import open_report_page
+	from settings import open_settings_page
+	from auth import get_conn
+	from ui_helpers import create_nav_bar
+
+	# === Database Functions ===
+	from sqlite3_functions import (
+	    find_narcs_upc,
+	    find_narcs_din,
+	    find_quantity,
+	    find_quantity_din,
+	    show_narcs_table,
+	    add_to_audit_log,
+	    show_audit_log,
+	    user_exists
+	)
+
 	# Connect to SQLite database
-	con = sqlite3.connect("narcotics_database.db")
+	con = get_conn()
 	cur = con.cursor()
 
-	# Initialize the main Tkinter window
-	reconciliation_window = tk.Tk()
+	# Initialize the reconcilliation Tkinter window
+	reconciliation_window = ctk.CTk()
 	reconciliation_window.title("Narc Recon")
 
-	# Set window size to full screen
-	w = reconciliation_window.winfo_screenwidth()
-	h = reconciliation_window.winfo_screenheight()
-	reconciliation_window.geometry(f'{w}x{h}')
+	main_background_color = "#1C1C1C"
+	nav_and_header_background_color = "#181818"
 
-	# Set background color and disable resizing
-	main_background_color = "#3B4B59"
-	nav_background_color = "black"
-	reconciliation_window.configure(bg=main_background_color)
+	button_color = "#3B4B59"
+	button_corner_radius = 20
+	button_hover_color="#468189"
+
+
+
+	# Initialize the rereconcilliationcon page Tkinter window
+	ctk.set_appearance_mode("dark")
+	ctk.set_default_color_theme("dark-blue")
+	reconciliation_window.configure(fg_color=main_background_color)
+
+	w = 1000
+	h = 600
+	window_width = reconciliation_window.winfo_screenwidth()
+	window_height = reconciliation_window.winfo_screenheight()
+	x = (window_width / 2) - (w / 2)
+	y = (window_height / 2) - (h / 2)
+	reconciliation_window.geometry(f'{w}x{h}+{int(x)}+{int(y)}')
+
+	# Disable resizing
 	reconciliation_window.resizable(False, False)
 
 	# Creating the fonts
-	header_font = font.Font(family="Inter", size=40, weight="normal")
-	font = font.Font(family="Inter", size=20, weight="normal") # Define a font for the Entry widget
+	header_font = ("Inter", 40)
+	font = ("Inter", 30) # Define a font for the Entry widget
 	# The size of the text changes the height of the Entry widget
 
 	# Frame setup: header, body, and navigation
-	header_frame = tk.Frame(reconciliation_window, width = w, height = 100, bg = nav_background_color) # using the bg to see the frames
+	header_frame = tk.Frame(reconciliation_window, width = w, height = 75, bg = nav_and_header_background_color)
 	header_frame.grid(row = 0, column = 0)
+
+	# Configure header_frame columns
+	header_frame.columnconfigure(0, weight=1)
+	header_frame.columnconfigure(1, weight=1)
 	header_frame.grid_propagate(False) # Prevent the header frame from resizing based on its content
 
-	body_frame = tk.Frame(reconciliation_window, width = w, height = h - 100, bg = main_background_color) # using the bg to see the frames
-	body_frame.grid(row = 1, column = 0, pady = 30)
-	body_frame.grid_propagate(False) # Prevent the body frame from resizing based on its content
+	# Navigation frame on the right
+	nav_frame = ctk.CTkFrame(header_frame, width=700, height=20, fg_color = nav_and_header_background_color)
+	nav_frame.grid(row=0, column=1, sticky="e", pady=20)
+	nav_frame.pack_propagate(False) # Prevent the nav frame from resizing based on its content
 
-	left_body_frame = tk.Frame(body_frame, width = w-300, height = h, bg = main_background_color)
-	left_body_frame.grid(row = 0, column = 0)
+	body_frame = ctk.CTkFrame(reconciliation_window, width = 1000, height = 400)
+	body_frame.grid(row = 1, column = 0, pady=(60,0))
+
+	body_frame.columnconfigure(0, weight=1)
+	body_frame.columnconfigure(1, weight=1)
+	body_frame.grid_propagate(False) # Prevent the body frame from resizing based on its content
+	body_frame.configure(fg_color=main_background_color)
+
+	left_body_frame = ctk.CTkFrame(body_frame, width = 500, height = 400, corner_radius=20)
+	left_body_frame.grid(row = 0, column = 0, sticky="w", padx=(60,0), pady=(0, 200))
+	left_body_frame.columnconfigure(0, weight=1) # So column 0 can expand if need, if weight=2 it would expand twice as fast
+	left_body_frame.columnconfigure(1, weight=1) # So column 1 can expand if need
 	left_body_frame.grid_propagate(False) # Prevent the left_body_frame frame from resizing based on its content
 
-	search_frame = tk.Frame(left_body_frame, width = w-300, height = 150, bg = main_background_color)
-	search_frame.grid(row = 0, column = 0)
-	search_frame.grid_propagate(False)
-
-	name_din_frame = tk.Frame(left_body_frame, width = w-300, height = 150, bg = main_background_color)
-	name_din_frame.grid(row = 1, column = 0, pady = 30)
-	name_din_frame.grid_propagate(False)
-
-	strength_form_frame = tk.Frame(left_body_frame, width = w-300, height = 150, bg = main_background_color)
-	strength_form_frame.grid(row = 2, column = 0, pady = 30)
-	strength_form_frame.grid_propagate(False)
-
-	pack_med_frame = tk.Frame(left_body_frame, width = w-300, height = 150, bg = main_background_color)
-	pack_med_frame.grid(row = 3, column = 0, pady = 30)
-	pack_med_frame.grid_propagate(False)
-
-	right_body_frame = tk.Frame(body_frame, width = 300, height = h, bg = main_background_color, bd = 5)
-	right_body_frame.grid(row = 0, column = 1)
+	right_body_frame = ctk.CTkFrame(body_frame, width = 300, height = 400, corner_radius=20)
+	right_body_frame.grid(row = 0, column = 1, sticky="e", padx=(0, 60), pady=(0, 200))
 	right_body_frame.grid_propagate(False)
 
-	nav_frame = tk.Frame(header_frame, width = 550, height = 100, bg = nav_background_color)
-	nav_frame.grid(row = 0, column = 1, padx = 250)
-	nav_frame.grid_propagate(False) # Prevent the nav frame from resizing based on its content
+	btn_frame = ctk.CTkFrame(right_body_frame, fg_color="transparent")
+	btn_frame.grid(row=4, column=0, pady=(20, 0))
+
+	reconciliation_window.bind('<Return>', lambda event: search_narcs())
+
 
 	def refresh_page():
-		global meds_ent, name_lbl_output, din__med_output, strength_lbl_output, drug_form_output, pack_med_output, qty_med_output, set_qty_ent
+		global meds_ent, name_lbl_output, din__med_output, strength_lbl_output, drug_form_output,pack_med_lbl, pack_med_output, qty_med_output, set_qty_ent
 
-		page_title = tk.Label(header_frame, text = "RECONCILIATION", fg = "white", bg = nav_background_color, font = header_font)
-		page_title.grid(row = 0, column = 0, sticky = "w", padx = 30)
+		# Title
+		page_title = ctk.CTkLabel(header_frame, text="RECONCILIATION", font=header_font)
+		page_title.grid(row=0, column=0, sticky="w", padx=(60,0), pady=(10,5))
 
-		home_btn = ttk.Button(nav_frame, text = "HOME", style='TButton', command = lambda : [reconciliation_window.destroy(), open_main_page()])
-		home_btn.grid(row = 0, column = 0, padx = 6, pady = 40) #Used the lambda key word to use 2 functions in 1 button
+		# --- Dropdown Menu + Settings Button ---
+		pages = {
+			"INVENTORY": open_inventory_page,
+			"FILLING": open_filling_page,
+			"RECEIVING": open_receiving_page,
+			"RECONCILIATION": open_reconciliation_page,
+			"REPORT": open_report_page,
+			"SETTINGS": open_settings_page
+		}
 
-		receiving_btn = ttk.Button(nav_frame, text = "RECEIVING", style='TButton', command = lambda : [reconciliation_window.destroy(), open_receiving()])
-		receiving_btn.grid(row = 0, column = 1, padx = 6) #Used the lambda key word to use 2 functions in 1 button
+		create_nav_bar(
+			reconciliation_window,
+			nav_frame,
+			"RECONCILIATION",
+			pages,
+			button_color,
+			button_corner_radius,
+			button_hover_color
+		)
 
-		#This will be open another page to do the narc reconciliation where we set the quantity on hand
-		reconciliation_btn = ttk.Button(nav_frame, text = "RECONCILIATION", style='TButton')
-		reconciliation_btn.grid(row = 0, column = 2, padx = 6)
-
-		#This will be open another page to do the report where we get the previous reconciliation
-		report_btn = ttk.Button(nav_frame, text = "REPORT", style='TButton', command = lambda : [reconciliation_window.destroy(), open_report_page()])
-		report_btn.grid(row = 0, column = 3, padx = 3)
-
-		log_off_btn = ttk.Button(nav_frame, text = "LOGOUT", style='TButton', command = lambda : [reconciliation_window.destroy()]) 
-		log_off_btn.grid(row = 0, column = 4, padx = 6)
-
-		meds_ent = ttk.Entry(search_frame, text = "Enter upc or din", width = 20, font = font, justify="center") #upc entry widget
-		meds_ent.grid(row = 0, column = 0, padx = 30, pady = 50)
+		###Left Frame
+		meds_ent = ctk.CTkEntry(left_body_frame, placeholder_text = "Enter upc or din", width = 200, font = font, justify="center", corner_radius=20) #upc entry widget
+		meds_ent.grid(row = 0, column = 0, sticky="ew", pady=30, padx=10)
 		meds_ent.focus()
-		meds_ent.bind('<FocusIn>', on_entry_click)
-		meds_ent.bind('<FocusOut>', on_focusout)
+		meds_ent.bind("<FocusIn>", on_focus_in)
+		meds_ent.bind("<FocusOut>", on_focus_out)
 
-		search_btn = ttk.Button(search_frame, text = "SEARCH", style='TButton', command=search_narcs)
-		search_btn.grid(row = 0, column = 1)
+		search_btn = ctk.CTkButton(left_body_frame, text = "SEARCH", command=search_narcs, width = 100, fg_color=button_color, corner_radius=button_corner_radius, hover_color=button_hover_color)
+		search_btn.grid(row = 0, column = 1, sticky="ew", pady=20, padx=10)
 
-		name_lbl_output = tk.Label(name_din_frame, bg = "black", fg = "White", width = 30, font = font)
-		name_lbl_output.grid(row = 0, column = 0, padx = 30) # this will be the label to see the output when we enter the upc or din
+		name_lbl_output = ctk.CTkLabel(left_body_frame, font = font, text="")
+		name_lbl_output.grid(row = 2, columnspan=2, pady=(20,0)) # this will be the label to see the output when we enter the upc or din
 
-		din__med_output = tk.Label(name_din_frame, bg = "black", fg = "white", width = 12, font = font)
-		din__med_output.grid(row = 0, column = 1, padx =75, pady = 30)
+		din__med_output = ctk.CTkLabel(left_body_frame, font = font, text="")
+		din__med_output.grid(row = 3, columnspan=2, pady=(20,0))
 
-		strength_lbl_output = tk.Label(strength_form_frame, bg = "black", fg = "white", width = 30, font = font)
-		strength_lbl_output.grid(row = 0, column = 0, padx = 30)
+		strength_lbl_output = ctk.CTkLabel(left_body_frame, font = font, text="")
+		strength_lbl_output.grid(row = 4, columnspan=2, pady=(20,0))
 
-		drug_form_output = tk.Label(strength_form_frame, bg = "black", fg = "white", width = 12, font = font)
-		drug_form_output.grid(row = 0, column = 1, padx =75, pady = 30)
+		drug_form_output = ctk.CTkLabel(left_body_frame, font = font, text="")
+		drug_form_output.grid(row = 5, columnspan=2, pady=(20,0))
 
-		pack_med_lbl = tk.Label(pack_med_frame, bg = "black", text = "PACK SIZE", fg = "white", width = 15, font = font)
-		pack_med_lbl.grid(row = 0, column = 0, padx = 30, pady = 30)
-		pack_med_output = tk.Label(pack_med_frame, bg = "black", fg = "white", width = 15, font = font)
-		pack_med_output.grid(row = 0, column = 1)
+		pack_med_output = ctk.CTkLabel(left_body_frame, font = font, text="")
+		pack_med_output.grid(row = 6, columnspan=2, pady=(20,0))
 
-		qty_med_lbl = tk.Label(right_body_frame, text = "ON HAND", bg = "black", fg = "white", width = 10, font = font)
-		qty_med_lbl.grid(row = 1)
 
-		qty_med_output = tk.Label(right_body_frame, bg = "black", fg = "white", width = 10, font = font)
-		qty_med_output.grid(row = 2)
+		###Right Frame
+		qty_med_lbl = ctk.CTkLabel(right_body_frame, text = "ON HAND", width = 10, font = font)
+		qty_med_lbl.grid(row = 1, pady=(30, 0))
 
-		set_qty_ent = ttk.Entry(right_body_frame, font = font, width = 8)
-		set_qty_ent.grid(row = 3, pady = 30)
+		qty_med_output = ctk.CTkLabel(right_body_frame, width = 10, font = font, text="")
+		qty_med_output.grid(row = 2, pady=(0, 50))
 
-		add_btn = ttk.Button(right_body_frame, text = "SET QUANTITY", style='TButton', command=lambda: set_quantity(set_qty_ent.get(), search_input))
-		add_btn.grid(row = 4)
 
-	def search(search):
-		search_narcs()
-	reconciliation_window.bind('<Return>', search)
+		set_qty_ent = ctk.CTkEntry(right_body_frame, placeholder_text = "Quantity", font = font, width = 200, justify="center", corner_radius=20)
+		set_qty_ent.grid(row = 3, padx=50, pady=(0, 25))
+
+		set_qty_btn = ctk.CTkButton(
+			btn_frame,
+			text="SET QUANTITY",
+			command=lambda: set_quantity(set_qty_ent.get(), search_input),
+			fg_color=button_color, corner_radius=button_corner_radius, hover_color=button_hover_color
+		)
+		set_qty_btn.grid(row=0, column=0, padx=4)
+
+		expired_btn = ctk.CTkButton(
+			btn_frame,
+			text="EXPIRED",
+			command=lambda: mark_as_expired(set_qty_ent.get(), search_input),
+			fg_color="#B33A3A",  # distinct red
+			corner_radius=button_corner_radius,
+			hover_color="#D64545"
+		)
+		expired_btn.grid(row=0, column=1, padx=4)
+
+
 
 	# Function to request a valid user ID
 	def ask_user_id():
 		while True:
 			user_id = simpledialog.askstring("Input", "Please enter your user ID:", parent=reconciliation_window)
-			if user_id is None:  # Cancel or close
+
+			# If cancelled or closed
+			if user_id is None:
 				messagebox.showinfo("Cancelled", "Operation cancelled")
-				return None
-			if user_id in list_user_id:  # Valid user ID
-				return user_id
-			else:
-				messagebox.showerror("Error", "Please enter a valid user ID")
+				return None  
+
+			# If user exists in DB
+			if user_exists(user_id.strip()):
+				return user_id.strip()
+
+			# If invalid
+			messagebox.showerror("Error", "Please enter a valid user ID")
 
 	def set_quantity(amount, inpt): 
 		if len(inpt) == 12:
-			din = find_narcs_upc(inpt)[0][0]
-			user_id = ask_user_id()
-			if user_id not in list_user_id: # In case the user press the cancel button
+			rows = find_narcs_upc(inpt)
+			if not rows:
+				messagebox.showerror("Error", "Drug not found for this UPC")
+				set_qty_ent.focus(); meds_ent.focus()
 				return
+			din = rows[0][0]
 		elif len(inpt) == 8:
 			din = inpt
-			user_id = ask_user_id()
-			if user_id not in list_user_id: # In case the user press the cancel button
-				return
 		else:
 			messagebox.showerror("Error", "Please enter a valid DIN or UPC")
 			set_qty_ent.focus()
 			meds_ent.focus()
 			return
 
-		if int(amount) < 0:
-			messagebox.showerror("Error", "Please add a positive integer")
+		user_id = ask_user_id()
+		if user_id is None:
+			return  # user cancelled
+
+		try:
+		# try converting to float instead of int
+			amount = float(amount)
+		except ValueError:
+			messagebox.showerror("Error", "Please enter a valid number")
+			set_qty_ent.focus()
+			meds_ent.focus()
+			return
+
+		if amount < 0:
+			messagebox.showerror("Error", "Please add a positive number")
 			set_qty_ent.focus()
 			meds_ent.focus()
 			return
@@ -179,31 +244,70 @@ def open_reconciliation_page():
 		con.commit()
 
 		show_narcs_table()  # Refresh the narcotic table view
+		clear_display_fields()
 		refresh_page()
 		search_narc_din(din)
 
 		# Log the action to the audit log
-		add_to_audit_log(din, current_amount, user_id)
+		add_to_audit_log(din, current_amount, user_id, "reconciliation")
 		show_audit_log()
 
+	def mark_as_expired(amount, inpt):
+		if len(inpt) == 12:
+			rows = find_narcs_upc(inpt)
+			if not rows:
+				messagebox.showerror("Error", "Drug not found for this UPC")
+				set_qty_ent.focus(); meds_ent.focus()
+				return
+			din = rows[0][0]
+		elif len(inpt) == 8:
+			din = inpt
+		else:
+			messagebox.showerror("Error", "Please enter a valid DIN or UPC")
+			set_qty_ent.focus()
+			meds_ent.focus()
+			return
 
-	def search_narc(upc): #function to find the meds in meds.py when refreshing the page
-		tup = find_narcs_upc(upc)
-		name_lbl_output.config(text = tup[0][1])
-		din__med_output.config(text = tup[0][0])
-		strength_lbl_output.config(text = tup[0][4])
-		drug_form_output.config(text = tup[0][5])
-		pack_med_output.config(text = tup[0][6])
-		qty_med_output.config(text = find_quantity(tup[0][3])) #functions from the meds file to find the qty directly from the database
+		user_id = ask_user_id()
+		if user_id is None:
+			return  # user cancelled
+
+		try:
+			expired_qty = float(amount)
+		except ValueError:
+			messagebox.showerror("Error", "Please enter a valid number")
+			return
+
+		current_amount = find_quantity_din(din)
+
+		if expired_qty <= 0:
+			messagebox.showerror("Error", "Expired quantity must be greater than 0")
+			return
+
+		if expired_qty > current_amount:
+			messagebox.showerror("Error", f"Expired qty ({expired_qty}) cannot exceed current stock ({current_amount})")
+			return
+
+		new_amount = current_amount - expired_qty
+		cur.execute("UPDATE narcs SET quantity = ? WHERE din = ?", (new_amount, din))
+		con.commit()
+
+		show_narcs_table()  # Refresh the narcotic table view
+		clear_display_fields()
+		refresh_page()
+		search_narc_din(din)
+
+		add_to_audit_log(din, current_amount, user_id, "expired")
+		show_audit_log()
 
 	def search_narc_din(din): #function to find the meds in meds.py when refreshing the page
 		tup = find_narcs_din(din)
-		name_lbl_output.config(text = tup[0][1])
-		din__med_output.config(text = tup[0][0])
-		strength_lbl_output.config(text = tup[0][4])
-		drug_form_output.config(text = tup[0][5])
-		pack_med_output.config(text = tup[0][6])
-		qty_med_output.config(text = find_quantity(tup[0][3])) #functions from the meds file to find the qty directly from the database
+		name_lbl_output.configure(text = tup[0][1])
+		din__med_output.configure(text = tup[0][0])
+		strength_lbl_output.configure(text = tup[0][4])
+		drug_form_output.configure(text = tup[0][5])
+		pack_med_output.configure(text = "PACK SIZE " + tup[0][6])
+		qty_med_output.configure(text = find_quantity(tup[0][3])) #functions from the meds file to find the qty directly from the database
 
 	def search_narcs():
 		global search_input
@@ -233,21 +337,21 @@ def open_reconciliation_page():
 
 	# Function to display narcotic information
 	def display_narcotic_info(narc):
-		name_lbl_output.config(text=narc[1])
-		din__med_output.config(text=narc[0])
-		strength_lbl_output.config(text=narc[4])
-		drug_form_output.config(text=narc[5])
-		pack_med_output.config(text=narc[6])
-		qty_med_output.config(text=find_quantity(narc[3]))
+		name_lbl_output.configure(text=narc[1])
+		din__med_output.configure(text=narc[0])
+		strength_lbl_output.configure(text=narc[4])
+		drug_form_output.configure(text=narc[5])
+		pack_med_output.configure(text= "PACK SIZE " + narc[6])
+		qty_med_output.configure(text=find_quantity(narc[3]))
 
 	# Function to clear the display fields
 	def clear_display_fields():
-		name_lbl_output.config(text="")
-		din__med_output.config(text="")
-		strength_lbl_output.config(text="")
-		drug_form_output.config(text="")
-		pack_med_output.config(text="")
-		qty_med_output.config(text="")
+		name_lbl_output.configure(text="")
+		din__med_output.configure(text="")
+		strength_lbl_output.configure(text="")
+		drug_form_output.configure(text="")
+		pack_med_output.configure(text="")
+		qty_med_output.configure(text="")
 
 	# Function to handle pack size selection when multiple results are found
 	def select_pack_size(tup):
@@ -272,17 +376,15 @@ def open_reconciliation_page():
 		select_btn = tk.Button(choice_window, text="Select", command=on_select_pack_size)
 		select_btn.pack()
 
-	def on_entry_click(event): # When the med entry widget is clicked remove the text
-		"""Remove placeholder when entry is clicked."""
-		if meds_ent.get() == 'Enter DIN or UPC':
-			meds_ent.delete(0, "end")  # Delete all the text in the entry
+	def on_focus_in(event):
+	    meds_ent.configure(border_color="#3B4B59")  # Cyan border on focus
 
-	def on_focusout(event): # When the med entry widget is un-clicked add the text back
-		"""Re-add placeholder if entry is empty when focus is lost."""
-		if meds_ent.get() == '':
-			meds_ent.insert(0, 'Enter DIN or UPC')
+	def on_focus_out(event):
+	    meds_ent.configure(border_color="#444")     # Neutral gray border when unfocused
 
 
-	#Running the program
+
+
+	# Initialize the UI and start the Tkinter event loop
 	refresh_page()
 	reconciliation_window.mainloop()
