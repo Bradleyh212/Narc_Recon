@@ -6,27 +6,53 @@ import pytest
 
 @pytest.fixture(autouse=True)
 def temp_db(monkeypatch, tmp_path):
-    """Create a temporary in-memory or file-based SQLite DB for tests."""
+    """Create a fresh, isolated SQLite DB for each test and patch get_conn()."""
     temp_db_path = tmp_path / "temp.db"
     con = sqlite3.connect(temp_db_path)
     cur = con.cursor()
 
-    # Create only the minimal table needed for your test
-    cur.execute("""
+    # --- schema minimal for your tests ---
+    cur.executescript("""
         CREATE TABLE users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id TEXT,
+            user_id TEXT NOT NULL,
             role TEXT,
             created_at TEXT
-        )
+        );
+
+        CREATE TABLE narcs (
+            din TEXT PRIMARY KEY,
+            name TEXT,
+            upc TEXT,
+            quantity REAL DEFAULT 0
+        );
+
+        CREATE TABLE audit_log (
+            din TEXT,
+            old_qty REAL,
+            new_qty REAL,
+            Updated_By TEXT,
+            Timestamp TEXT,
+            transaction_type TEXT,
+            discrepancy REAL
+        );
     """)
-    cur.execute("INSERT INTO users (user_id, role, created_at) VALUES (?, ?, ?)", ('BHD', 'admin', "Today"))
+
+    # seed users and narcs so quantity lookups & user checks work
+    cur.execute("INSERT INTO users (user_id, role, created_at) VALUES (?, ?, ?)",
+                ('BHD', 'admin', 'Today'))
+    cur.execute("INSERT INTO narcs (din, name, upc, quantity) VALUES (?, ?, ?, ?)",
+                ('02248809', 'ADDERALL XR', '663220111026', 0))
     con.commit()
 
-    # Patch get_conn() so it returns this temporary connection
+    # Patch sqlite3_functions.get_conn so all DB calls use this temp DB
     monkeypatch.setattr("sqlite3_functions.get_conn", lambda: con)
 
-    yield  # runs the test
+    # Ensure audit_log starts empty (paranoid clear each test)
+    cur.execute("DELETE FROM audit_log")
+    con.commit()
+
+    yield
 
     con.close()
 
@@ -95,3 +121,24 @@ def test_list_user_ids():
     sqlite3_functions = importlib.import_module("sqlite3_functions")
 
     assert sqlite3_functions.list_user_ids() == ["BHD"]
+
+def test_user_exists_true_false():
+    # Import AFTER mocking so module-level build runs with our fake DF
+    sqlite3_functions = importlib.import_module("sqlite3_functions")
+    assert sqlite3_functions.user_exists("BHD") is True
+    assert sqlite3_functions.user_exists("NOPE") is False
+
+def test_add_and_remove_user_roundtrip():
+    # Import AFTER mocking so module-level build runs with our fake DF
+    sqlite3_functions = importlib.import_module("sqlite3_functions")
+    sqlite3_functions.add_user("TMP", "staff")
+    assert sqlite3_functions.user_exists("TMP") is True
+    sqlite3_functions.remove_user("TMP")
+    assert sqlite3_functions.user_exists("TMP") is False
+
+# def test_get_audit_log_by_din_and_date():
+#     sqlite3_functions = importlib.import_module("sqlite3_functions")
+#     # With a fresh temp DB and cleared audit_log, this should be empty
+#     assert sqlite3_functions.get_audit_log_by_din_and_date(
+#         "02248809", "2025-01-01 21:13:36", "2025-10-09 21:13:36"
+#     ) == []

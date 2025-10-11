@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 import pytz
 import sqlite3
 import pandas as pd
@@ -125,7 +125,7 @@ def add_user(user_id: str, role: str = "staff"):
 	with con:
 		con.execute(
 			"INSERT INTO users (user_id, role, created_at) VALUES (?, ?, ?)",
-			(user_id.strip(), role, datetime.utcnow().isoformat())
+			(user_id.strip(), role, datetime.now(UTC).isoformat())
 		)
 
 def list_users():
