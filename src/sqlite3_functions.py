@@ -119,7 +119,7 @@ def find_quantity_din(din):
 
 # === User Functions ===
 
-def add_user(user_id: str, role: str = "staff"):
+def add_user(user_id: str, role: str = "Assistant"):
 	"""Add a new user to the users table."""
 	con = get_conn()
 	with con:
@@ -127,6 +127,12 @@ def add_user(user_id: str, role: str = "staff"):
 			"INSERT INTO users (user_id, role, created_at) VALUES (?, ?, ?)",
 			(user_id.strip(), role, datetime.now(UTC).isoformat())
 		)
+
+def get_user_role(user_id):
+	"""Add a new user to the users table."""
+	con = get_conn()
+	row = con.execute("SELECT role FROM users where user_id = ?", (user_id.strip(),)).fetchone()
+	return row[0] if row else None
 
 def list_users():
 	"""Return all users as (id, user_id, role, created_at)."""

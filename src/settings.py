@@ -103,7 +103,7 @@ def open_settings_page():
 	user_id_entry.pack(pady=5)
 
 	ctk.CTkLabel(right_body_frame, text="Role", font=("Inter", 18)).pack(pady=(20, 5))
-	role_entry = ctk.CTkEntry(right_body_frame, width=250, corner_radius=20, placeholder_text="e.g. staff/admin")
+	role_entry = ctk.CTkEntry(right_body_frame, width=250, corner_radius=20, placeholder_text="e.g. Pharmacist, Technician, Assistant")
 	role_entry.pack(pady=5)
 
 	def add_user_handler():

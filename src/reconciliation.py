@@ -24,7 +24,8 @@ def open_reconciliation_page():
 	    show_narcs_table,
 	    add_to_audit_log,
 	    show_audit_log,
-	    user_exists
+	    user_exists,
+	    get_user_role
 	)
 
 	# Connect to SQLite database
@@ -223,6 +224,11 @@ def open_reconciliation_page():
 		user_id = ask_user_id()
 		if user_id is None:
 			return  # user cancelled
+
+		role = get_user_role(user_id)
+		if role not in ("Pharmacist", "Tech"):
+			messagebox.showerror("Error", f"Permission denied: '{role}' users cannot initiate reconciliations.")
+			return
 
 		try:
 		# try converting to float instead of int
