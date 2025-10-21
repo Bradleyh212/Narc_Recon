@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from tkinter import messagebox
+from tkinter import messagebox, simpledialog
 
 def safe_destroy(window):
 	try:
@@ -10,11 +10,24 @@ def safe_destroy(window):
 		pass
 	window.destroy()
 
-def create_nav_bar(parent_window, nav_frame, current_page, pages, button_color, button_corner_radius, button_hover_color):
-	"""
-	Create a consistent navigation bar with a dropdown for page switching and a Settings button.
-	"""
+ALLOWED_SETTINGS_ROLES = {"pharmacist"}  # tweak if you later add "manager"
 
+def _open_settings_guard(parent_window):
+	from sqlite3_functions import get_user_role
+	from settings import open_settings_page
+
+	user_id = simpledialog.askstring("Access required", "Enter your user ID:", parent=parent_window)
+	if not user_id:
+		return  # user cancelled
+
+	role = get_user_role(user_id)
+	if role in ALLOWED_SETTINGS_ROLES:
+		# Go to settings like other pages
+		parent_window.after(120, lambda: (safe_destroy(parent_window), open_settings_page()))
+	else:
+		messagebox.showerror("Access denied", "Settings are restricted to pharmacists.")
+
+def create_nav_bar(parent_window, nav_frame, current_page, pages, button_color, button_corner_radius, button_hover_color):
 	def on_select_page(choice):
 		# Delay slightly so the dropdown animation feels smooth
 		parent_window.after(180, lambda: (safe_destroy(parent_window), pages[choice]()))
@@ -27,6 +40,19 @@ def create_nav_bar(parent_window, nav_frame, current_page, pages, button_color, 
 		button_color=button_color,
 		corner_radius=20
 		)
+
 	page_menu._text_label.configure(padx=15)  # keeps text nicely centered
 	page_menu.grid(row=0, column=0, padx=(10, 10))
 	page_menu.set(current_page)  # highlight current page
+
+	# Seperate settins button
+	settings_btn = ctk.CTkButton(
+		nav_frame,
+		text="SETTINGS",
+		width=80,
+		fg_color=button_color,
+		corner_radius=button_corner_radius,
+		hover_color=button_hover_color,
+		command=lambda: _open_settings_guard(parent_window)
+	)
+	settings_btn.grid(row=0, column=1, padx=(10, 60))
