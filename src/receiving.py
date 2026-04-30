@@ -13,6 +13,7 @@ def open_receiving_page():
 	from report import open_report_page
 	from settings import open_settings_page
 	from auth import get_conn
+	import receiving_service
 	from ui_helpers import create_nav_bar
 
 	# === Database Functions ===
@@ -221,8 +222,7 @@ def open_receiving_page():
 
 		# Read old qty, update, commit
 		current_amount = find_quantity_din(din)
-		cur.execute("UPDATE narcs SET quantity = quantity + ? WHERE din = ?", (amt, din))
-		con.commit()
+		receiving_service.increment_inventory_quantity(cur, con, din, amt)
 
 		# Refresh UI
 		show_narcs_table()
