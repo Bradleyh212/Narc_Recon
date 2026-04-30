@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
+import os
 import subprocess, sys # To update the app at lunch if possible
+
+def should_run_dev_update():
+	return os.environ.get("NARC_RECON_DEV_UPDATE") == "1"
 
 def update_code():
 	try:
@@ -17,8 +21,9 @@ def install_requirements():
 		print(f"Error installing requirements: {e}")
 		sys.exit(1)
 
-update_code()
-install_requirements()
+if should_run_dev_update():
+	update_code()
+	install_requirements()
 
 from auth import get_conn, migrate_auth, migrate_users, seed_from_env_if_needed, app_account_exists, create_account_window
 import login
