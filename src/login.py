@@ -5,6 +5,7 @@ from inventory import open_inventory_page
 from customtkinter import CTkImage
 from PIL import Image
 from auth import authenticate_app
+from paths import LOGO_PATH
 
 
 def main():
@@ -80,7 +81,7 @@ def main():
 	right_frame.grid(row=0, column=1)
 
 	# Load the image using PIL, then convert to CTkImage
-	logo_image = Image.open("others/logo_nr.png")
+	logo_image = Image.open(LOGO_PATH)
 	logo = CTkImage(light_image=logo_image, dark_image=logo_image, size=(250, 234))  
 	logo_lbl = customtkinter.CTkLabel(right_frame, image=logo, text='')
 	logo_lbl.grid(row=0, column=0)

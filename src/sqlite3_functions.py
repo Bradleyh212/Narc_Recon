@@ -4,9 +4,10 @@ import sqlite3
 import pandas as pd
 from prettytable import PrettyTable
 from auth import get_conn
+from paths import get_db_path, get_excel_path
 
 # === Database Connection ===
-con = sqlite3.connect("narc_recon.db")
+con = sqlite3.connect(get_db_path())
 cur = con.cursor()
 
 # === Timezone ===
@@ -53,7 +54,7 @@ def create_audit_log_table():
 # === Load Excel and Populate DB ===
 
 def create_narc_list():
-	df = pd.read_excel("med_sheet.xlsx", sheet_name="med_sheet")
+	df = pd.read_excel(get_excel_path(), sheet_name="med_sheet")
 
 	upc_list = df["Upc"].fillna(0).apply(lambda x: str(int(x)).zfill(12)).tolist()
 	drug_name_list = df["Drug Name"].tolist()

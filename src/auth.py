@@ -4,8 +4,9 @@ from datetime import datetime, timezone
 from argon2 import PasswordHasher
 import customtkinter as ctk
 from tkinter import messagebox
+from paths import get_db_path
 
-DB_PATH = "narc_recon.db"
+DB_PATH = get_db_path()
 PEPPER = os.environ.get("NARC_RECON_PEPPER", "dev-pepper-change-me")
 ph = PasswordHasher()
 
