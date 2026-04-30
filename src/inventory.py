@@ -13,19 +13,8 @@ def open_inventory_page():
 	from report import open_report_page
 	from settings import open_settings_page
 	from auth import get_conn
+	import inventory_service
 	from ui_helpers import create_nav_bar
-
-
-	# === Database Functions ===
-	from sqlite3_functions import (
-		find_narcs_upc,
-		find_narcs_din,
-		find_quantity,
-		find_quantity_din,
-		show_narcs_table,
-		add_to_audit_log,
-		show_audit_log,
-	)
 
 	# Connect to SQLite database
 	con = get_conn()
@@ -153,13 +142,13 @@ def open_inventory_page():
 
 	# === Search + Helper Functions ===
 	def search_narc_din(din):
-		tup = find_narcs_din(din)
+		tup = inventory_service.find_narcs_by_din(cur, din)
 		name_lbl_output.configure(text=tup[0][1])
 		din__med_output.configure(text=tup[0][0])
 		strength_lbl_output.configure(text=tup[0][4])
 		drug_form_output.configure(text=tup[0][5])
 		pack_med_output.configure(text="PACK SIZE " + tup[0][6])
-		qty_med_output.configure(text=find_quantity(tup[0][3]))
+		qty_med_output.configure(text=inventory_service.find_quantity_by_upc(cur, tup[0][3]))
 
 	def search_narcs():
 		global search_input
@@ -167,9 +156,9 @@ def open_inventory_page():
 		meds_ent.delete(0, "end")
 
 		if len(search_input) == 12:
-			tup = find_narcs_upc(search_input)
+			tup = inventory_service.find_narcs_by_upc(cur, search_input)
 		elif len(search_input) == 8:
-			tup = find_narcs_din(search_input)
+			tup = inventory_service.find_narcs_by_din(cur, search_input)
 		else:
 			messagebox.showerror("Error", "Drug not found")
 			clear_display_fields()
@@ -189,7 +178,7 @@ def open_inventory_page():
 		strength_lbl_output.configure(text=narc[4])
 		drug_form_output.configure(text=narc[5])
 		pack_med_output.configure(text="PACK SIZE " + narc[6])
-		qty_med_output.configure(text=find_quantity(narc[3]))
+		qty_med_output.configure(text=inventory_service.find_quantity_by_upc(cur, narc[3]))
 
 	def clear_display_fields():
 		name_lbl_output.configure(text="")
