@@ -1,21 +1,11 @@
 from datetime import datetime
 
 import pytz
+import schema_service
 
 
 def create_audit_log_table(cursor):
-	cursor.execute("""
-		CREATE TABLE IF NOT EXISTS audit_log (
-			log_id INTEGER PRIMARY KEY AUTOINCREMENT,
-			din TEXT,
-			old_qty INT,
-			new_qty INT,
-			Updated_By VARCHAR(10),
-			Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-			transaction_type TEXT,
-			discrepancy INT
-		)
-	""")
+	return schema_service.create_audit_log_table(cursor)
 
 
 def local_timestamp(timezone):

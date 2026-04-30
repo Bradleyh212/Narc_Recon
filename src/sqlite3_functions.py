@@ -5,7 +5,6 @@ import sqlite3
 from prettytable import PrettyTable
 from audit_log_service import (
 	add_to_audit_log as add_audit_log_entry,
-	create_audit_log_table as create_audit_log_table_schema,
 	fetch_audit_log,
 	get_audit_log_by_din_and_date as fetch_audit_log_by_din_and_date,
 	get_reconciliation_log_by_date_range as fetch_reconciliation_log_by_date_range,
@@ -20,6 +19,7 @@ from inventory_service import (
 )
 import excel_import_service
 from paths import get_db_path, get_excel_path
+import schema_service
 
 # === Database Connection ===
 con = sqlite3.connect(get_db_path())
@@ -31,29 +31,13 @@ user_timezone = pytz.timezone('America/Toronto')
 # === Create Tables ===
 
 def create_narcs_table():
-	cur.execute("""
-		CREATE TABLE IF NOT EXISTS narcs (
-			din TEXT PRIMARY KEY,
-			name TEXT NOT NULL,
-			quantity INTEGER NOT NULL DEFAULT 0
-		)
-	""")
+	return schema_service.create_narcs_table(cur)
 
 def create_narcs_details_table():
-	cur.execute("""
-		CREATE TABLE IF NOT EXISTS narcs_details (
-			din TEXT NOT NULL,
-			upc TEXT NOT NULL,
-			strength TEXT,
-			form TEXT NOT NULL,
-			pack_size TEXT,
-			PRIMARY KEY (din, upc, pack_size),
-			FOREIGN KEY (din) REFERENCES narcs(din)
-		)
-	""")
+	return schema_service.create_narcs_details_table(cur)
 
 def create_audit_log_table():
-	return create_audit_log_table_schema(cur)
+	return schema_service.create_audit_log_table(cur)
 
 # === Load Excel and Populate DB ===
 
