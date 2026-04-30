@@ -6,6 +6,13 @@ import sqlite3
 import pandas as pd
 from prettytable import PrettyTable
 from auth import get_conn
+from inventory_service import (
+	fetch_narcs_table,
+	find_narcs_by_din,
+	find_narcs_by_upc,
+	find_quantity_by_din,
+	find_quantity_by_upc,
+)
 from paths import get_db_path, get_excel_path
 
 # === Database Connection ===
@@ -154,31 +161,16 @@ def from_excel_to_sql(narc_list):
 # === Query Helpers ===
 
 def find_narcs_upc(upc):
-	cur.execute("""
-		SELECT n.din, n.name, n.quantity, nd.upc, nd.strength, nd.form, nd.pack_size
-		FROM narcs n
-		INNER JOIN narcs_details nd ON n.din = nd.din
-		WHERE nd.upc = ?
-	""", (upc,))
-	return cur.fetchall()
+	return find_narcs_by_upc(cur, upc)
 
 def find_narcs_din(din):
-	cur.execute("""
-		SELECT n.din, n.name, n.quantity, nd.upc, nd.strength, nd.form, nd.pack_size
-		FROM narcs n
-		INNER JOIN narcs_details nd ON n.din = nd.din
-		WHERE nd.din = ?
-	""", (din,))
-	return cur.fetchall()
+	return find_narcs_by_din(cur, din)
 
 def find_quantity(upc):
-	cur.execute("SELECT din FROM narcs_details WHERE upc = ?", (upc,))
-	din = cur.fetchone()[0]
-	return find_quantity_din(din)
+	return find_quantity_by_upc(cur, upc)
 
 def find_quantity_din(din):
-	cur.execute("SELECT quantity FROM narcs WHERE din = ?", (din,))
-	return cur.fetchone()[0]
+	return find_quantity_by_din(cur, din)
 
 # === User Functions ===
 
@@ -252,14 +244,7 @@ def show_audit_log():
 	print(table)
 
 def show_narcs_table():
-	cur.execute("""
-		SELECT n.din, n.name, n.quantity, nd.upc, nd.strength, nd.form, nd.pack_size
-		FROM narcs n
-		INNER JOIN narcs_details nd ON n.din = nd.din
-	""")
-	rows = cur.fetchall()
-
-	column_names = [desc[0] for desc in cur.description]
+	column_names, rows = fetch_narcs_table(cur)
 	table = PrettyTable()
 	table.field_names = column_names
 

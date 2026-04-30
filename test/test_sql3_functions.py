@@ -47,6 +47,42 @@ def test_sqlite3_functions_uses_temp_database(sqlite_env):
 	assert Path(database_path) == db_path
 
 
+def test_inventory_service_find_narcs_by_din(sqlite_env):
+	sqlite3_functions, _, _ = sqlite_env
+	inventory_service = importlib.import_module("inventory_service")
+
+	assert inventory_service.find_narcs_by_din(sqlite3_functions.cur, "02248809") == [
+		("02248809", "ADDERALL XR", 0, "663220111026", "10MG", "CAP", "100")
+	]
+
+
+def test_inventory_service_find_narcs_by_upc(sqlite_env):
+	sqlite3_functions, _, _ = sqlite_env
+	inventory_service = importlib.import_module("inventory_service")
+
+	assert inventory_service.find_narcs_by_upc(sqlite3_functions.cur, "663220111026") == [
+		("02248809", "ADDERALL XR", 0, "663220111026", "10MG", "CAP", "100")
+	]
+
+
+def test_inventory_service_find_quantity(sqlite_env):
+	sqlite3_functions, _, _ = sqlite_env
+	inventory_service = importlib.import_module("inventory_service")
+
+	assert inventory_service.find_quantity_by_din(sqlite3_functions.cur, "02248809") == 0
+	assert inventory_service.find_quantity_by_upc(sqlite3_functions.cur, "663220111026") == 0
+
+
+def test_inventory_service_fetch_narcs_table(sqlite_env):
+	sqlite3_functions, _, _ = sqlite_env
+	inventory_service = importlib.import_module("inventory_service")
+
+	column_names, rows = inventory_service.fetch_narcs_table(sqlite3_functions.cur)
+
+	assert column_names == ["din", "name", "quantity", "upc", "strength", "form", "pack_size"]
+	assert rows == [("02248809", "ADDERALL XR", 0, "663220111026", "10MG", "CAP", "100")]
+
+
 def test_initialize_database_from_excel_creates_expected_tables(sqlite_env):
 	sqlite3_functions, _, _ = sqlite_env
 
