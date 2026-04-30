@@ -79,6 +79,98 @@ def test_initialize_database_from_excel_is_idempotent(sqlite_env):
 	assert after == before
 
 
+def test_validate_excel_columns_missing_required_column_raises(sqlite_env):
+	sqlite3_functions, _, _ = sqlite_env
+	df = FAKE_DF.drop(columns=["Upc"])
+
+	with pytest.raises(ValueError, match="Missing required Excel columns: Upc"):
+		sqlite3_functions.validate_excel_columns(df)
+
+
+def test_normalize_din_and_upc(sqlite_env):
+	sqlite3_functions, _, _ = sqlite_env
+
+	assert sqlite3_functions.normalize_din(2248809) == "02248809"
+	assert sqlite3_functions.normalize_upc(663220111026) == "663220111026"
+	assert sqlite3_functions.normalize_upc(None) == "000000000000"
+
+
+def test_validate_excel_rows_reports_blank_upc_and_duplicate_upc(sqlite_env):
+	sqlite3_functions, _, _ = sqlite_env
+	df = pd.DataFrame([
+		{
+			"DIN": 2248809,
+			"Drug Name": "ADDERALL XR",
+			"Upc": 663220111026,
+			"Strength": "10MG",
+			"Form": "CAP",
+			"Pack size": 100,
+		},
+		{
+			"DIN": 2248812,
+			"Drug Name": "ADDERALL XR",
+			"Upc": 663220111026,
+			"Strength": "15MG",
+			"Form": "CAP",
+			"Pack size": 100,
+		},
+		{
+			"DIN": 2453908,
+			"Drug Name": "ACT-BUPRENORPH/NALOXON",
+			"Upc": None,
+			"Strength": "2MG/0.5MG",
+			"Form": "TAB",
+			"Pack size": None,
+		},
+	])
+
+	report = sqlite3_functions.validate_excel_rows(df)
+
+	assert report["blank_upc_count"] == 1
+	assert report["blank_upc_rows"] == [4]
+	assert report["duplicate_upcs"] == ["663220111026"]
+	assert "02248809" not in report["duplicate_dins"]
+	assert any("blank UPC" in warning for warning in report["warnings"])
+	assert any("Duplicate UPC" in warning for warning in report["warnings"])
+
+
+def test_create_narc_list_keeps_current_blank_upc_skip_behavior(sqlite_env, monkeypatch, tmp_path):
+	sqlite3_functions, _, _ = sqlite_env
+	excel_path = tmp_path / "with-blank-upc.xlsx"
+	df = pd.DataFrame([
+		{
+			"DIN": 2248809,
+			"Drug Name": "ADDERALL XR",
+			"Upc": 663220111026,
+			"Strength": "10MG",
+			"Form": "CAP",
+			"Pack size": 100,
+		},
+		{
+			"DIN": 2453908,
+			"Drug Name": "ACT-BUPRENORPH/NALOXON",
+			"Upc": None,
+			"Strength": "2MG/0.5MG",
+			"Form": "TAB",
+			"Pack size": None,
+		},
+	])
+	df.to_excel(excel_path, sheet_name="med_sheet", index=False)
+	monkeypatch.setenv("NARC_RECON_EXCEL_PATH", str(excel_path))
+
+	narc_list = sqlite3_functions.create_narc_list()
+
+	assert narc_list == {
+		"02248809": [{
+			"name": "ADDERALL XR",
+			"upc": "663220111026",
+			"strength": "10MG",
+			"form": "CAP",
+			"pack_size": 100,
+		}]
+	}
+
+
 def test_find_narcs_din(sqlite_env):
 	sqlite3_functions, _, _ = sqlite_env
 
