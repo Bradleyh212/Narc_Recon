@@ -1,4 +1,5 @@
 from datetime import datetime, UTC
+import os
 import pytz
 import sqlite3
 import pandas as pd
@@ -246,16 +247,25 @@ def get_reconciliation_log_by_date_range(start_date, end_date):
 	""", (start_date, end_date))
 	return cur.fetchall()
 
+def should_debug_startup():
+	return os.environ.get("NARC_RECON_DEBUG_STARTUP") == "1"
+
+
+def initialize_database_from_excel(debug=None):
+	narc_list = create_narc_list()
+	create_narcs_table()
+	create_narcs_details_table()
+	create_audit_log_table()
+	from_excel_to_sql(narc_list)
+
+	if debug is None:
+		debug = should_debug_startup()
+	if debug:
+		show_narcs_table()
+		show_audit_log()
+
+	con.commit()
+
+
 # === Initialize All Tables and Data ===
-
-narc_list = create_narc_list()
-create_narcs_table()
-create_narcs_details_table()
-create_audit_log_table()
-from_excel_to_sql(narc_list)
-
-# === Optional: Show Tables ===
-show_narcs_table()
-show_audit_log()
-
-con.commit()
+initialize_database_from_excel()

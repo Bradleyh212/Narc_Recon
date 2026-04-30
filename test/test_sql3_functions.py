@@ -47,6 +47,38 @@ def test_sqlite3_functions_uses_temp_database(sqlite_env):
 	assert Path(database_path) == db_path
 
 
+def test_initialize_database_from_excel_creates_expected_tables(sqlite_env):
+	sqlite3_functions, _, _ = sqlite_env
+
+	rows = sqlite3_functions.con.execute("""
+		SELECT name
+		FROM sqlite_master
+		WHERE type = 'table'
+		AND name IN ('narcs', 'narcs_details', 'audit_log')
+		ORDER BY name
+	""").fetchall()
+
+	assert rows == [("audit_log",), ("narcs",), ("narcs_details",)]
+
+
+def test_initialize_database_from_excel_is_idempotent(sqlite_env):
+	sqlite3_functions, _, _ = sqlite_env
+
+	before = {
+		table: sqlite3_functions.con.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+		for table in ("narcs", "narcs_details", "audit_log")
+	}
+
+	sqlite3_functions.initialize_database_from_excel()
+
+	after = {
+		table: sqlite3_functions.con.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+		for table in ("narcs", "narcs_details", "audit_log")
+	}
+
+	assert after == before
+
+
 def test_find_narcs_din(sqlite_env):
 	sqlite3_functions, _, _ = sqlite_env
 
