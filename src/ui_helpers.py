@@ -1,5 +1,7 @@
 import customtkinter as ctk
 from tkinter import messagebox, simpledialog
+from auth import get_conn
+import user_service
 
 def safe_destroy(window):
 	try:
@@ -13,14 +15,13 @@ def safe_destroy(window):
 ALLOWED_SETTINGS_ROLES = {"pharmacist"}  # tweak if you later add "manager"
 
 def _open_settings_guard(parent_window):
-	from sqlite3_functions import get_user_role
 	from settings import open_settings_page
 
 	user_id = simpledialog.askstring("Access required", "Enter your user ID:", parent=parent_window)
 	if not user_id:
 		return  # user cancelled
 
-	role = get_user_role(user_id)
+	role = user_service.get_user_role(get_conn(), user_id)
 	if role in ALLOWED_SETTINGS_ROLES:
 		# Go to settings like other pages
 		parent_window.after(120, lambda: (safe_destroy(parent_window), open_settings_page()))

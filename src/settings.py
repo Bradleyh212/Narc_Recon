@@ -2,8 +2,9 @@
 import tkinter as tk
 import customtkinter as ctk
 from tkinter import messagebox
-from sqlite3_functions import add_user, remove_user, list_users, user_exists
+from auth import get_conn
 from ui_helpers import create_nav_bar
+import user_service
 
 def open_settings_page():
 	# === Window Setup ===
@@ -92,7 +93,7 @@ def open_settings_page():
 
 	def refresh_user_list():
 		user_listbox.delete(0, "end")
-		for row in list_users():
+		for row in user_service.list_users(get_conn()):
 			user_listbox.insert("end", f"{row[1]} ({row[2]})")  # user_id (role)
 
 	refresh_user_list()
@@ -112,10 +113,10 @@ def open_settings_page():
 		if not uid:
 			messagebox.showerror("Error", "User ID cannot be empty")
 			return
-		if user_exists(uid):
+		if user_service.user_exists(get_conn(), uid):
 			messagebox.showerror("Error", f"User '{uid}' already exists")
 			return
-		add_user(uid, role)
+		user_service.add_user(get_conn(), uid, role)
 		messagebox.showinfo("Success", f"User '{uid}' added with role '{role}'")
 		user_id_entry.delete(0, "end")
 		role_entry.delete(0, "end")
@@ -128,7 +129,7 @@ def open_settings_page():
 		except:
 			messagebox.showerror("Error", "Select a user to remove")
 			return
-		remove_user(uid)
+		user_service.remove_user(get_conn(), uid)
 		messagebox.showinfo("Success", f"User '{uid}' removed")
 		refresh_user_list()
 
