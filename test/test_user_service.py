@@ -3,6 +3,29 @@ import sqlite3
 import user_service
 
 
+def test_normalize_role_strips_and_lowercases_role_values():
+	assert user_service.normalize_role(" Pharmacist ") == "pharmacist"
+	assert user_service.normalize_role("Tech") == "tech"
+	assert user_service.normalize_role(None) == ""
+
+
+def test_role_allows_settings_accepts_pharmacist_case_insensitively():
+	assert user_service.role_allows_settings("Pharmacist") is True
+	assert user_service.role_allows_settings("pharmacist") is True
+	assert user_service.role_allows_settings(" pharmacist ") is True
+	assert user_service.role_allows_settings("Tech") is False
+	assert user_service.role_allows_settings(None) is False
+
+
+def test_role_allows_reconciliation_accepts_existing_roles_case_insensitively():
+	assert user_service.role_allows_reconciliation("Pharmacist") is True
+	assert user_service.role_allows_reconciliation("pharmacist") is True
+	assert user_service.role_allows_reconciliation("Tech") is True
+	assert user_service.role_allows_reconciliation("tech") is True
+	assert user_service.role_allows_reconciliation("Technician") is False
+	assert user_service.role_allows_reconciliation(None) is False
+
+
 def make_users_connection():
 	connection = sqlite3.connect(":memory:")
 	connection.execute("""

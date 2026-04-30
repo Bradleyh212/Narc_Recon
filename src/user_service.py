@@ -1,6 +1,20 @@
 from datetime import datetime, UTC
 
 
+def normalize_role(role):
+	if role is None:
+		return ""
+	return str(role).strip().lower()
+
+
+def role_allows_settings(role):
+	return normalize_role(role) == "pharmacist"
+
+
+def role_allows_reconciliation(role):
+	return normalize_role(role) in {"pharmacist", "tech"}
+
+
 def add_user(connection, user_id: str, role: str = "Assistant"):
 	"""Add a new user to the users table."""
 	with connection:

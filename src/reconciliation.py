@@ -14,6 +14,7 @@ def open_reconciliation_page():
 	from settings import open_settings_page
 	from auth import get_conn
 	from ui_helpers import create_nav_bar
+	import user_service
 
 	# === Database Functions ===
 	from sqlite3_functions import (
@@ -226,7 +227,7 @@ def open_reconciliation_page():
 			return  # user cancelled
 
 		role = get_user_role(user_id)
-		if role not in ("Pharmacist", "Tech"):
+		if not user_service.role_allows_reconciliation(role):
 			messagebox.showerror("Error", f"Permission denied: '{role}' users cannot initiate reconciliations.")
 			return
 

@@ -12,8 +12,6 @@ def safe_destroy(window):
 		pass
 	window.destroy()
 
-ALLOWED_SETTINGS_ROLES = {"pharmacist"}  # tweak if you later add "manager"
-
 def _open_settings_guard(parent_window):
 	from settings import open_settings_page
 
@@ -22,7 +20,7 @@ def _open_settings_guard(parent_window):
 		return  # user cancelled
 
 	role = user_service.get_user_role(get_conn(), user_id)
-	if role in ALLOWED_SETTINGS_ROLES:
+	if user_service.role_allows_settings(role):
 		# Go to settings like other pages
 		parent_window.after(120, lambda: (safe_destroy(parent_window), open_settings_page()))
 	else:
