@@ -1,4 +1,3 @@
-from datetime import datetime, UTC
 import os
 import pytz
 import sqlite3
@@ -20,6 +19,7 @@ from inventory_service import (
 import excel_import_service
 from paths import get_db_path, get_excel_path
 import schema_service
+import user_service
 
 # === Database Connection ===
 con = sqlite3.connect(get_db_path())
@@ -83,43 +83,22 @@ def find_quantity_din(din):
 # === User Functions ===
 
 def add_user(user_id: str, role: str = "Assistant"):
-	"""Add a new user to the users table."""
-	con = get_conn()
-	with con:
-		con.execute(
-			"INSERT INTO users (user_id, role, created_at) VALUES (?, ?, ?)",
-			(user_id.strip(), role, datetime.now(UTC).isoformat())
-		)
+	return user_service.add_user(get_conn(), user_id, role)
 
 def get_user_role(user_id):
-	"""Add a new user to the users table."""
-	con = get_conn()
-	row = con.execute("SELECT role FROM users where user_id = ?", (user_id.strip(),)).fetchone()
-	return row[0] if row else None
+	return user_service.get_user_role(get_conn(), user_id)
 
 def list_users():
-	"""Return all users as (id, user_id, role, created_at)."""
-	con = get_conn()
-	cur = con.cursor()
-	return cur.execute("SELECT id, user_id, role, created_at FROM users ORDER BY id").fetchall()
+	return user_service.list_users(get_conn())
 
 def list_user_ids():
-	conn = get_conn()
-	rows = conn.execute("SELECT user_id FROM users").fetchall()
-	return [row[0] for row in rows]
+	return user_service.list_user_ids(get_conn())
 
 def remove_user(user_id: str):
-	"""Remove a user by their user_id."""
-	con = get_conn()
-	with con:
-		con.execute("DELETE FROM users WHERE user_id = ?", (user_id.strip(),))
+	return user_service.remove_user(get_conn(), user_id)
 
 def user_exists(user_id: str) -> bool:
-	"""Check if a user already exists."""
-	con = get_conn()
-	cur = con.cursor()
-	row = cur.execute("SELECT 1 FROM users WHERE user_id = ?", (user_id.strip(),)).fetchone()
-	return bool(row)
+	return user_service.user_exists(get_conn(), user_id)
 
 # === Audit Log Functions ===
 
