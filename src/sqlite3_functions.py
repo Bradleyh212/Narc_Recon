@@ -5,6 +5,13 @@ import pytz
 import sqlite3
 import pandas as pd
 from prettytable import PrettyTable
+from audit_log_service import (
+	add_to_audit_log as add_audit_log_entry,
+	create_audit_log_table as create_audit_log_table_schema,
+	fetch_audit_log,
+	get_audit_log_by_din_and_date as fetch_audit_log_by_din_and_date,
+	get_reconciliation_log_by_date_range as fetch_reconciliation_log_by_date_range,
+)
 from auth import get_conn
 from inventory_service import (
 	fetch_narcs_table,
@@ -47,18 +54,7 @@ def create_narcs_details_table():
 	""")
 
 def create_audit_log_table():
-	cur.execute("""
-		CREATE TABLE IF NOT EXISTS audit_log (
-			log_id INTEGER PRIMARY KEY AUTOINCREMENT,
-			din TEXT,
-			old_qty INT,
-			new_qty INT,
-			Updated_By VARCHAR(10),
-			Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-			transaction_type TEXT,
-			discrepancy INT
-		)
-	""")
+	return create_audit_log_table_schema(cur)
 
 # === Load Excel and Populate DB ===
 
@@ -216,25 +212,20 @@ def user_exists(user_id: str) -> bool:
 # === Audit Log Functions ===
 
 def add_to_audit_log(din, old_qty, user, transaction_type):
-	if not user_exists(user):
-		print("Error: Invalid user ID.")
-		return
-
-	new_qty = find_quantity_din(din)
-	formatted_time = datetime.now(pytz.utc).astimezone(user_timezone).strftime('%Y-%m-%d %H:%M:%S')
-	discrepancy = new_qty - old_qty
-
-	cur.execute("""
-		INSERT INTO audit_log (din, old_qty, new_qty, Updated_By, Timestamp, transaction_type, discrepancy)
-		VALUES (?, ?, ?, ?, ?, ?, ?)
-	""", (din, old_qty, new_qty, user, formatted_time, transaction_type, discrepancy))
-	con.commit()
+	return add_audit_log_entry(
+		cur,
+		con,
+		din,
+		old_qty,
+		user,
+		transaction_type,
+		user_exists,
+		find_quantity_din,
+		user_timezone,
+	)
 
 def show_audit_log():
-	cur.execute("SELECT * FROM audit_log")
-	rows = cur.fetchall()
-
-	column_names = [description[0] for description in cur.description]
+	column_names, rows = fetch_audit_log(cur)
 	table = PrettyTable()
 	table.field_names = column_names
 
@@ -255,43 +246,11 @@ def show_narcs_table():
 
 
 def get_audit_log_by_din_and_date(din, start_date, end_date):
-	cur.execute("""
-		SELECT din, old_qty, new_qty, Updated_By, Timestamp
-		FROM audit_log
-		WHERE din = ?
-		AND date(Timestamp) BETWEEN ? AND ?
-		ORDER BY Timestamp ASC
-	""", (din, start_date, end_date))
-	return cur.fetchall()
+	return fetch_audit_log_by_din_and_date(cur, din, start_date, end_date)
 
 # Search for all reconciliation-type audit log entries between start_date and end_date.
 def get_reconciliation_log_by_date_range(start_date, end_date):
-	# name from narcs; strength from a single row per DIN
-	cur.execute("""
-		SELECT
-			n.name,              -- 0
-			nd.strength,         -- 1
-			a.din,               -- 2
-			a.old_qty,           -- 3
-			a.new_qty,           -- 4
-			a.discrepancy,       -- 5
-			a.Timestamp          -- 6
-		FROM audit_log a
-		JOIN narcs n ON n.din = a.din
-		LEFT JOIN (
-			SELECT din, MIN(strength) AS strength
-			FROM narcs_details
-			GROUP BY din
-		) nd ON nd.din = a.din
-		WHERE a.transaction_type = 'reconciliation'
-		  AND DATE(a.Timestamp) BETWEEN ? AND ?
-		ORDER BY
-			n.name COLLATE NOCASE,
-			nd.strength COLLATE NOCASE,
-			a.din,
-			a.Timestamp
-	""", (start_date, end_date))
-	return cur.fetchall()
+	return fetch_reconciliation_log_by_date_range(cur, start_date, end_date)
 
 def should_debug_startup():
 	return os.environ.get("NARC_RECON_DEBUG_STARTUP") == "1"

@@ -83,6 +83,99 @@ def test_inventory_service_fetch_narcs_table(sqlite_env):
 	assert rows == [("02248809", "ADDERALL XR", 0, "663220111026", "10MG", "CAP", "100")]
 
 
+def test_audit_log_service_add_to_audit_log(sqlite_env):
+	sqlite3_functions, _, _ = sqlite_env
+	audit_log_service = importlib.import_module("audit_log_service")
+
+	sqlite3_functions.cur.execute("UPDATE narcs SET quantity = ? WHERE din = ?", (7, "02248809"))
+	sqlite3_functions.con.commit()
+
+	audit_log_service.add_to_audit_log(
+		sqlite3_functions.cur,
+		sqlite3_functions.con,
+		"02248809",
+		2,
+		"BHD",
+		"receiving",
+		sqlite3_functions.user_exists,
+		sqlite3_functions.find_quantity_din,
+		sqlite3_functions.user_timezone,
+	)
+	column_names, rows = audit_log_service.fetch_audit_log(sqlite3_functions.cur)
+
+	assert column_names == [
+		"log_id",
+		"din",
+		"old_qty",
+		"new_qty",
+		"Updated_By",
+		"Timestamp",
+		"transaction_type",
+		"discrepancy",
+	]
+	assert len(rows) == 1
+	assert rows[0][1:5] == ("02248809", 2, 7, "BHD")
+	assert rows[0][6:] == ("receiving", 5)
+
+
+def test_audit_log_service_get_audit_log_by_din_and_date(sqlite_env):
+	sqlite3_functions, _, _ = sqlite_env
+	audit_log_service = importlib.import_module("audit_log_service")
+
+	sqlite3_functions.cur.execute("""
+		INSERT INTO audit_log (din, old_qty, new_qty, Updated_By, Timestamp, transaction_type, discrepancy)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+	""", ("02248809", 0, 5, "BHD", "2026-04-30 10:00:00", "receiving", 5))
+	sqlite3_functions.cur.execute("""
+		INSERT INTO audit_log (din, old_qty, new_qty, Updated_By, Timestamp, transaction_type, discrepancy)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+	""", ("02248812", 0, 2, "BHD", "2026-04-30 11:00:00", "receiving", 2))
+	sqlite3_functions.con.commit()
+
+	assert audit_log_service.get_audit_log_by_din_and_date(
+		sqlite3_functions.cur,
+		"02248809",
+		"2026-04-30",
+		"2026-04-30",
+	) == [("02248809", 0, 5, "BHD", "2026-04-30 10:00:00")]
+
+
+def test_audit_log_service_get_reconciliation_log_by_date_range(sqlite_env):
+	sqlite3_functions, _, _ = sqlite_env
+	audit_log_service = importlib.import_module("audit_log_service")
+
+	sqlite3_functions.cur.execute("""
+		INSERT INTO audit_log (din, old_qty, new_qty, Updated_By, Timestamp, transaction_type, discrepancy)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+	""", ("02248809", 10, 8, "BHD", "2026-04-30 10:00:00", "reconciliation", -2))
+	sqlite3_functions.cur.execute("""
+		INSERT INTO audit_log (din, old_qty, new_qty, Updated_By, Timestamp, transaction_type, discrepancy)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+	""", ("02248809", 8, 9, "BHD", "2026-04-30 11:00:00", "receiving", 1))
+	sqlite3_functions.con.commit()
+
+	assert audit_log_service.get_reconciliation_log_by_date_range(
+		sqlite3_functions.cur,
+		"2026-04-30",
+		"2026-04-30",
+	) == [("ADDERALL XR", "10MG", "02248809", 10, 8, -2, "2026-04-30 10:00:00")]
+
+
+def test_sqlite3_functions_audit_wrappers_still_work(sqlite_env):
+	sqlite3_functions, _, _ = sqlite_env
+
+	sqlite3_functions.cur.execute("UPDATE narcs SET quantity = ? WHERE din = ?", (4, "02248809"))
+	sqlite3_functions.con.commit()
+	sqlite3_functions.add_to_audit_log("02248809", 1, "BHD", "receiving")
+
+	rows = sqlite3_functions.con.execute("""
+		SELECT din, old_qty, new_qty, Updated_By, transaction_type, discrepancy
+		FROM audit_log
+	""").fetchall()
+
+	assert rows == [("02248809", 1, 4, "BHD", "receiving", 3)]
+
+
 def test_initialize_database_from_excel_creates_expected_tables(sqlite_env):
 	sqlite3_functions, _, _ = sqlite_env
 
