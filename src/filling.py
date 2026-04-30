@@ -12,6 +12,7 @@ def open_filling_page():
 	from report import open_report_page
 	from settings import open_settings_page
 	from auth import get_conn
+	import filling_service
 	from ui_helpers import create_nav_bar
 
 	# === Database Functions ===
@@ -216,8 +217,7 @@ def open_filling_page():
 			messagebox.showerror("Error", "Not enough stock to remove that quantity")
 			return
 
-		cur.execute("UPDATE narcs SET quantity = quantity - ? WHERE din = ?", (amount, din))
-		con.commit()
+		filling_service.decrement_inventory_quantity(cur, con, din, amount)
 
 		show_narcs_table()  # Refresh the narcotic table view
 		clear_display_fields()
