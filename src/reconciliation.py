@@ -14,6 +14,7 @@ def open_reconciliation_page():
 	from settings import open_settings_page
 	from auth import get_conn
 	from ui_helpers import create_nav_bar
+	import reconciliation_service
 	import user_service
 
 	# === Database Functions ===
@@ -247,8 +248,7 @@ def open_reconciliation_page():
 			return
 
 		current_amount = find_quantity_din(din)
-		cur.execute("UPDATE narcs SET quantity = ? WHERE din = ?", (amount, din))
-		con.commit()
+		reconciliation_service.set_inventory_quantity(cur, con, din, amount)
 
 		show_narcs_table()  # Refresh the narcotic table view
 		clear_display_fields()
@@ -296,8 +296,7 @@ def open_reconciliation_page():
 			return
 
 		new_amount = current_amount - expired_qty
-		cur.execute("UPDATE narcs SET quantity = ? WHERE din = ?", (new_amount, din))
-		con.commit()
+		reconciliation_service.set_inventory_quantity(cur, con, din, new_amount)
 
 		show_narcs_table()  # Refresh the narcotic table view
 		clear_display_fields()
