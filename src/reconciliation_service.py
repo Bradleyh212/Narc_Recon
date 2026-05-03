@@ -1,3 +1,5 @@
+import inventory_transaction_service
+
+
 def set_inventory_quantity(cursor, connection, din, quantity):
-	cursor.execute("UPDATE narcs SET quantity = ? WHERE din = ?", (quantity, din))
-	connection.commit()
+	return inventory_transaction_service.set_inventory_quantity(cursor, connection, din, quantity)
