@@ -17,11 +17,11 @@ def open_reconciliation_page():
 	import inventory_service
 	import reconciliation_service
 	import user_service
+	import workflow_audit_service
 
 	# === Database Functions ===
 	from sqlite3_functions import (
 	    show_narcs_table,
-	    add_to_audit_log,
 	    show_audit_log,
 	)
 
@@ -251,7 +251,7 @@ def open_reconciliation_page():
 		search_narc_din(din)
 
 		# Log the action to the audit log
-		add_to_audit_log(din, current_amount, user_id, "reconciliation")
+		workflow_audit_service.add_to_audit_log(din, current_amount, user_id, "reconciliation")
 		show_audit_log()
 
 	def mark_as_expired(amount, inpt):
@@ -298,7 +298,7 @@ def open_reconciliation_page():
 		refresh_page()
 		search_narc_din(din)
 
-		add_to_audit_log(din, current_amount, user_id, "expired")
+		workflow_audit_service.add_to_audit_log(din, current_amount, user_id, "expired")
 		show_audit_log()
 
 	def search_narc_din(din): #function to find the meds in meds.py when refreshing the page

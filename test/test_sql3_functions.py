@@ -229,6 +229,24 @@ def test_sqlite3_functions_audit_log_is_visible_from_fresh_connection(sqlite_env
 	assert row[5:] == ("reconciliation", 8)
 
 
+def test_workflow_audit_service_preserves_current_audit_behavior(sqlite_env):
+	sqlite3_functions, _, _ = sqlite_env
+	workflow_audit_service = importlib.import_module("workflow_audit_service")
+
+	sqlite3_functions.cur.execute("UPDATE narcs SET quantity = ? WHERE din = ?", (10, "02248809"))
+	sqlite3_functions.con.commit()
+	workflow_audit_service.add_to_audit_log("02248809", 6, "BHD", "filling")
+
+	row = sqlite3_functions.con.execute("""
+		SELECT din, old_qty, new_qty, Updated_By, Timestamp, transaction_type, discrepancy
+		FROM audit_log
+	""").fetchone()
+
+	assert row[:4] == ("02248809", 6, 10, "BHD")
+	datetime.strptime(row[4], "%Y-%m-%d %H:%M:%S")
+	assert row[5:] == ("filling", 4)
+
+
 def test_sqlite3_functions_invalid_user_keeps_prior_quantity_update_committed(sqlite_env, capsys):
 	sqlite3_functions, _, _ = sqlite_env
 	authmod = importlib.import_module("auth")

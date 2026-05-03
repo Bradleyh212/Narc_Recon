@@ -16,13 +16,13 @@ def open_receiving_page():
 	import inventory_service
 	import receiving_service
 	import user_service
+	import workflow_audit_service
 	from ui_helpers import create_nav_bar
 
 	# === Database Functions ===
 	from sqlite3_functions import (
 		show_narcs_table,
 		show_audit_log,
-		add_to_audit_log,
 	)
 
 	# Connect to SQLite database
@@ -228,7 +228,7 @@ def open_receiving_page():
 		search_narc_din(din)
 
 		# Audit
-		add_to_audit_log(din, current_amount, user_id, "receiving")
+		workflow_audit_service.add_to_audit_log(din, current_amount, user_id, "receiving")
 		show_audit_log()
 
 

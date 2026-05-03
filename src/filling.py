@@ -15,12 +15,12 @@ def open_filling_page():
 	import inventory_service
 	import filling_service
 	import user_service
+	import workflow_audit_service
 	from ui_helpers import create_nav_bar
 
 	# === Database Functions ===
 	from sqlite3_functions import (
 		show_narcs_table,
-		add_to_audit_log,
 		show_audit_log,
 	)
 
@@ -222,7 +222,7 @@ def open_filling_page():
 		search_narc_din(din)
 
 		# Log the action to the audit log
-		add_to_audit_log(din, current_amount, user_id, "filling")
+		workflow_audit_service.add_to_audit_log(din, current_amount, user_id, "filling")
 		show_audit_log()
 
 	def search_narc_din(din): #function to find the meds in meds.py when refreshing the page
