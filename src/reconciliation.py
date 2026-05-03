@@ -14,20 +14,15 @@ def open_reconciliation_page():
 	from settings import open_settings_page
 	from auth import get_conn
 	from ui_helpers import create_nav_bar
+	import inventory_service
 	import reconciliation_service
 	import user_service
 
 	# === Database Functions ===
 	from sqlite3_functions import (
-	    find_narcs_upc,
-	    find_narcs_din,
-	    find_quantity,
-	    find_quantity_din,
 	    show_narcs_table,
 	    add_to_audit_log,
 	    show_audit_log,
-	    user_exists,
-	    get_user_role
 	)
 
 	# Connect to SQLite database
@@ -201,7 +196,7 @@ def open_reconciliation_page():
 				return None  
 
 			# If user exists in DB
-			if user_exists(user_id.strip()):
+			if user_service.user_exists(get_conn(), user_id.strip()):
 				return user_id.strip()
 
 			# If invalid
@@ -209,7 +204,7 @@ def open_reconciliation_page():
 
 	def set_quantity(amount, inpt): 
 		if len(inpt) == 12:
-			rows = find_narcs_upc(inpt)
+			rows = inventory_service.find_narcs_by_upc(cur, inpt)
 			if not rows:
 				messagebox.showerror("Error", "Drug not found for this UPC")
 				set_qty_ent.focus(); meds_ent.focus()
@@ -227,7 +222,7 @@ def open_reconciliation_page():
 		if user_id is None:
 			return  # user cancelled
 
-		role = get_user_role(user_id)
+		role = user_service.get_user_role(get_conn(), user_id)
 		if not user_service.role_allows_reconciliation(role):
 			messagebox.showerror("Error", f"Permission denied: '{role}' users cannot initiate reconciliations.")
 			return
@@ -247,7 +242,7 @@ def open_reconciliation_page():
 			meds_ent.focus()
 			return
 
-		current_amount = find_quantity_din(din)
+		current_amount = inventory_service.find_quantity_by_din(cur, din)
 		reconciliation_service.set_inventory_quantity(cur, con, din, amount)
 
 		show_narcs_table()  # Refresh the narcotic table view
@@ -261,7 +256,7 @@ def open_reconciliation_page():
 
 	def mark_as_expired(amount, inpt):
 		if len(inpt) == 12:
-			rows = find_narcs_upc(inpt)
+			rows = inventory_service.find_narcs_by_upc(cur, inpt)
 			if not rows:
 				messagebox.showerror("Error", "Drug not found for this UPC")
 				set_qty_ent.focus(); meds_ent.focus()
@@ -285,7 +280,7 @@ def open_reconciliation_page():
 			messagebox.showerror("Error", "Please enter a valid number")
 			return
 
-		current_amount = find_quantity_din(din)
+		current_amount = inventory_service.find_quantity_by_din(cur, din)
 
 		if expired_qty <= 0:
 			messagebox.showerror("Error", "Expired quantity must be greater than 0")
@@ -307,13 +302,13 @@ def open_reconciliation_page():
 		show_audit_log()
 
 	def search_narc_din(din): #function to find the meds in meds.py when refreshing the page
-		tup = find_narcs_din(din)
+		tup = inventory_service.find_narcs_by_din(cur, din)
 		name_lbl_output.configure(text = tup[0][1])
 		din__med_output.configure(text = tup[0][0])
 		strength_lbl_output.configure(text = tup[0][4])
 		drug_form_output.configure(text = tup[0][5])
 		pack_med_output.configure(text = "PACK SIZE " + tup[0][6])
-		qty_med_output.configure(text = find_quantity(tup[0][3])) #functions from the meds file to find the qty directly from the database
+		qty_med_output.configure(text = inventory_service.find_quantity_by_upc(cur, tup[0][3])) #functions from the meds file to find the qty directly from the database
 
 	def search_narcs():
 		global search_input
@@ -321,9 +316,9 @@ def open_reconciliation_page():
 		meds_ent.delete(0, "end")  # Clear the entry field
 
 		if len(search_input) == 12:
-			tup = find_narcs_upc(search_input)
+			tup = inventory_service.find_narcs_by_upc(cur, search_input)
 		elif len(search_input) == 8:
-			tup = find_narcs_din(search_input)
+			tup = inventory_service.find_narcs_by_din(cur, search_input)
 		else:
 			messagebox.showerror("Error", "Drug not found")
 			set_qty_ent.focus()
@@ -348,7 +343,7 @@ def open_reconciliation_page():
 		strength_lbl_output.configure(text=narc[4])
 		drug_form_output.configure(text=narc[5])
 		pack_med_output.configure(text= "PACK SIZE " + narc[6])
-		qty_med_output.configure(text=find_quantity(narc[3]))
+		qty_med_output.configure(text=inventory_service.find_quantity_by_upc(cur, narc[3]))
 
 	# Function to clear the display fields
 	def clear_display_fields():
