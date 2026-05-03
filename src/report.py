@@ -19,19 +19,7 @@ def open_report_page():
 	from settings import open_settings_page
 	from auth import get_conn
 	from ui_helpers import create_nav_bar
-
-	# === Database Functions ===
-	from sqlite3_functions import (
-		get_audit_log_by_din_and_date,
-		get_reconciliation_log_by_date_range,
-		find_narcs_upc,
-		find_narcs_din,
-		find_quantity,
-		find_quantity_din,
-		show_narcs_table,
-		add_to_audit_log,
-		show_audit_log,
-	)
+	import audit_log_service
 
 	# Connect to SQLite database
 	con = get_conn()
@@ -236,8 +224,7 @@ def open_report_page():
 			messagebox.showerror("Input Error", "Please enter both dates and a DIN.")
 			return
 
-		from sqlite3_functions import get_audit_log_by_din_and_date
-		rows = get_audit_log_by_din_and_date(din, start_date, end_date)
+		rows = audit_log_service.get_audit_log_by_din_and_date(cur, din, start_date, end_date)
 
 		if not rows:
 			messagebox.showinfo("No Data", "No audit log entries found for the given DIN and date range.")
@@ -278,7 +265,7 @@ def open_report_page():
 			messagebox.showerror("Input Error", "Please enter both start and end dates.")
 			return
 
-		rows = get_reconciliation_log_by_date_range(start_date, end_date)
+		rows = audit_log_service.get_reconciliation_log_by_date_range(cur, start_date, end_date)
 		if not rows:
 			messagebox.showinfo("No Data", "No reconciliation entries found for the given date range.")
 			return
