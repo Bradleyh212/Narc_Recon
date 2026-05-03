@@ -207,6 +207,51 @@ def test_sqlite3_functions_add_to_audit_log_invalid_user_does_not_insert(sqlite_
 	assert "Error: Invalid user ID." in capsys.readouterr().out
 
 
+def test_sqlite3_functions_audit_log_is_visible_from_fresh_connection(sqlite_env):
+	sqlite3_functions, _, _ = sqlite_env
+	authmod = importlib.import_module("auth")
+
+	sqlite3_functions.cur.execute("UPDATE narcs SET quantity = ? WHERE din = ?", (12, "02248809"))
+	sqlite3_functions.con.commit()
+	sqlite3_functions.add_to_audit_log("02248809", 4, "BHD", "reconciliation")
+
+	fresh_conn = authmod.get_conn()
+	try:
+		row = fresh_conn.execute("""
+			SELECT din, old_qty, new_qty, Updated_By, Timestamp, transaction_type, discrepancy
+			FROM audit_log
+		""").fetchone()
+	finally:
+		fresh_conn.close()
+
+	assert row[:4] == ("02248809", 4, 12, "BHD")
+	datetime.strptime(row[4], "%Y-%m-%d %H:%M:%S")
+	assert row[5:] == ("reconciliation", 8)
+
+
+def test_sqlite3_functions_invalid_user_keeps_prior_quantity_update_committed(sqlite_env, capsys):
+	sqlite3_functions, _, _ = sqlite_env
+	authmod = importlib.import_module("auth")
+
+	sqlite3_functions.cur.execute("UPDATE narcs SET quantity = ? WHERE din = ?", (6, "02248809"))
+	sqlite3_functions.con.commit()
+	sqlite3_functions.add_to_audit_log("02248809", 2, "NOPE", "filling")
+
+	fresh_conn = authmod.get_conn()
+	try:
+		quantity = fresh_conn.execute(
+			"SELECT quantity FROM narcs WHERE din = ?",
+			("02248809",),
+		).fetchone()[0]
+		audit_rows = fresh_conn.execute("SELECT * FROM audit_log").fetchall()
+	finally:
+		fresh_conn.close()
+
+	assert quantity == 6
+	assert audit_rows == []
+	assert "Error: Invalid user ID." in capsys.readouterr().out
+
+
 def test_initialize_database_from_excel_creates_expected_tables(sqlite_env):
 	sqlite3_functions, _, _ = sqlite_env
 
