@@ -13,19 +13,16 @@ def open_receiving_page():
 	from report import open_report_page
 	from settings import open_settings_page
 	from auth import get_conn
+	import inventory_service
 	import receiving_service
+	import user_service
 	from ui_helpers import create_nav_bar
 
 	# === Database Functions ===
 	from sqlite3_functions import (
-		find_narcs_upc,
-		find_narcs_din,
-		find_quantity,
-		find_quantity_din,
 		show_narcs_table,
 		show_audit_log,
 		add_to_audit_log,
-		user_exists
 	)
 
 	# Connect to SQLite database
@@ -181,7 +178,7 @@ def open_receiving_page():
 				return None  
 
 			# If user exists in DB
-			if user_exists(user_id.strip()):
+			if user_service.user_exists(get_conn(), user_id.strip()):
 				return user_id.strip()
 
 			# If invalid
@@ -191,7 +188,7 @@ def open_receiving_page():
 	def add_quantity(amount, inpt):
 		# Resolve DIN and user
 		if len(inpt) == 12:
-			rows = find_narcs_upc(inpt)
+			rows = inventory_service.find_narcs_by_upc(cur, inpt)
 			if not rows:
 				messagebox.showerror("Error", "Drug not found for this UPC")
 				add_qty_ent.focus(); meds_ent.focus()
@@ -221,7 +218,7 @@ def open_receiving_page():
 			return
 
 		# Read old qty, update, commit
-		current_amount = find_quantity_din(din)
+		current_amount = inventory_service.find_quantity_by_din(cur, din)
 		receiving_service.increment_inventory_quantity(cur, con, din, amt)
 
 		# Refresh UI
@@ -236,13 +233,13 @@ def open_receiving_page():
 
 
 	def search_narc_din(din): #function to find the meds in meds.py when refreshing the page
-		tup = find_narcs_din(din)
+		tup = inventory_service.find_narcs_by_din(cur, din)
 		name_lbl_output.configure(text = tup[0][1])
 		din__med_output.configure(text = tup[0][0])
 		strength_lbl_output.configure(text = tup[0][4])
 		drug_form_output.configure(text = tup[0][5])
 		pack_med_output.configure(text = "PACK SIZE " + tup[0][6])
-		qty_med_output.configure(text = find_quantity(tup[0][3])) #functions from the meds file to find the qty directly from the database
+		qty_med_output.configure(text = inventory_service.find_quantity_by_upc(cur, tup[0][3])) #functions from the meds file to find the qty directly from the database
 
 	def search_narcs():
 		global search_input
@@ -250,9 +247,9 @@ def open_receiving_page():
 		meds_ent.delete(0, "end")  # Clear the entry field
 
 		if len(search_input) == 12:
-			tup = find_narcs_upc(search_input)
+			tup = inventory_service.find_narcs_by_upc(cur, search_input)
 		elif len(search_input) == 8:
-			tup = find_narcs_din(search_input)
+			tup = inventory_service.find_narcs_by_din(cur, search_input)
 		else:
 			messagebox.showerror("Error", "Drug not found")
 			add_qty_ent.focus()
@@ -277,7 +274,7 @@ def open_receiving_page():
 		strength_lbl_output.configure(text=narc[4])
 		drug_form_output.configure(text=narc[5])
 		pack_med_output.configure(text= "PACK SIZE " + narc[6])
-		qty_med_output.configure(text=find_quantity(narc[3]))
+		qty_med_output.configure(text=inventory_service.find_quantity_by_upc(cur, narc[3]))
 
 	# Function to clear the display fields
 	def clear_display_fields():
