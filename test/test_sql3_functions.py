@@ -1,4 +1,5 @@
 import importlib
+from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
@@ -174,6 +175,36 @@ def test_sqlite3_functions_audit_wrappers_still_work(sqlite_env):
 	""").fetchall()
 
 	assert rows == [("02248809", 1, 4, "BHD", "receiving", 3)]
+
+
+def test_sqlite3_functions_add_to_audit_log_records_current_audit_shape(sqlite_env):
+	sqlite3_functions, _, _ = sqlite_env
+
+	sqlite3_functions.cur.execute("UPDATE narcs SET quantity = ? WHERE din = ?", (9, "02248809"))
+	sqlite3_functions.con.commit()
+	sqlite3_functions.add_to_audit_log("02248809", 3, "BHD", "expired")
+
+	row = sqlite3_functions.con.execute("""
+		SELECT din, old_qty, new_qty, Updated_By, Timestamp, transaction_type, discrepancy
+		FROM audit_log
+	""").fetchone()
+
+	assert row[:4] == ("02248809", 3, 9, "BHD")
+	datetime.strptime(row[4], "%Y-%m-%d %H:%M:%S")
+	assert row[5:] == ("expired", 6)
+
+
+def test_sqlite3_functions_add_to_audit_log_invalid_user_does_not_insert(sqlite_env, capsys):
+	sqlite3_functions, _, _ = sqlite_env
+
+	sqlite3_functions.cur.execute("UPDATE narcs SET quantity = ? WHERE din = ?", (5, "02248809"))
+	sqlite3_functions.con.commit()
+	sqlite3_functions.add_to_audit_log("02248809", 1, "NOPE", "receiving")
+
+	rows = sqlite3_functions.con.execute("SELECT * FROM audit_log").fetchall()
+
+	assert rows == []
+	assert "Error: Invalid user ID." in capsys.readouterr().out
 
 
 def test_initialize_database_from_excel_creates_expected_tables(sqlite_env):
