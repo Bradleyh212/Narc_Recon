@@ -6,3 +6,4 @@ reportlab       # Used to generate PDFs (e.g., printable reports) directly from 
 pytz            # Timezone handling library (helps with UTC/local time conversions)
 customtkinter   # Modern, themed UI framework based on Tkinter for creating the application's GUI
 argon2-cffi     # Argon2 password hashing library, used for secure account authentication
+Pillow          # Image handling library; used by login.py for PIL.Image logo loading
