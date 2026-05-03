@@ -93,6 +93,18 @@ dist/Narc Recon/
 
 The executable will be inside that output folder. The exact file extension depends on the operating system.
 
+On macOS, the spec also creates an app bundle when run on macOS:
+
+```bash
+dist/Narc Recon.app
+```
+
+On Windows, the expected executable is:
+
+```bash
+dist/Narc Recon/Narc Recon.exe
+```
+
 ## Bundled Files
 
 The spec bundles:
@@ -100,7 +112,52 @@ The spec bundles:
 - `src/med_sheet.xlsx`
 - `src/others/logo_nr.png`
 
-No app icon is configured yet because no `.ico` or `.icns` file exists in the project. Icon setup is pending.
+The spec also uses these desktop icon files when they exist:
+
+- `src/others/logo_nr.ico` for Windows `.exe` builds
+- `src/others/logo_nr.icns` for macOS `.app` builds
+
+At the moment, the project only includes `src/others/logo_nr.png`. Generate the platform icon files from that source image before release, then commit the generated `.ico` and/or `.icns` after visually approving them.
+
+## Generate Desktop Icons
+
+Create a Windows `.ico` from the PNG:
+
+```bash
+python - <<'PY'
+from pathlib import Path
+from PIL import Image
+
+source = Path("src/others/logo_nr.png")
+target = Path("src/others/logo_nr.ico")
+
+image = Image.open(source).convert("RGBA")
+image.save(
+    target,
+    sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)],
+)
+PY
+```
+
+Create a macOS `.icns` on macOS:
+
+```bash
+mkdir -p build/icon.iconset
+sips -z 16 16 src/others/logo_nr.png --out build/icon.iconset/icon_16x16.png
+sips -z 32 32 src/others/logo_nr.png --out build/icon.iconset/icon_16x16@2x.png
+sips -z 32 32 src/others/logo_nr.png --out build/icon.iconset/icon_32x32.png
+sips -z 64 64 src/others/logo_nr.png --out build/icon.iconset/icon_32x32@2x.png
+sips -z 128 128 src/others/logo_nr.png --out build/icon.iconset/icon_128x128.png
+sips -z 256 256 src/others/logo_nr.png --out build/icon.iconset/icon_128x128@2x.png
+sips -z 256 256 src/others/logo_nr.png --out build/icon.iconset/icon_256x256.png
+sips -z 512 512 src/others/logo_nr.png --out build/icon.iconset/icon_256x256@2x.png
+sips -z 512 512 src/others/logo_nr.png --out build/icon.iconset/icon_512x512.png
+sips -z 1024 1024 src/others/logo_nr.png --out build/icon.iconset/icon_512x512@2x.png
+iconutil -c icns build/icon.iconset -o src/others/logo_nr.icns
+rm -rf build/icon.iconset
+```
+
+If either icon file is missing, the packaged app still builds, but it uses the operating system or PyInstaller default icon for that platform.
 
 ## Packaging-Relevant Dependencies
 
@@ -123,6 +180,7 @@ Do not commit:
 
 - `dist/`
 - PyInstaller generated work output, except the committed spec file
+- temporary iconset folders like `build/icon.iconset/`
 - `*.db`
 - `*.db-wal`
 - `*.db-shm`
@@ -157,6 +215,8 @@ Use a test database path first.
 15. Export an inventory PDF and confirm it appears in Downloads.
 16. Close and reopen the app.
 17. Confirm catalog rows did not duplicate and quantities/audit rows persisted.
+18. On macOS, drag `dist/Narc Recon.app` to Applications, launch it, and use Dock `Options > Keep in Dock` if the workstation needs a persistent launcher.
+19. On Windows, copy the full `dist/Narc Recon/` folder to the install location, create a desktop shortcut to `Narc Recon.exe`, and pin the running app to the taskbar if needed.
 
 ## Deployment Notes
 

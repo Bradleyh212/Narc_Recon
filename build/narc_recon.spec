@@ -1,5 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+import sys
 from pathlib import Path
 
 from PyInstaller.utils.hooks import collect_submodules
@@ -7,6 +8,8 @@ from PyInstaller.utils.hooks import collect_submodules
 
 ROOT_DIR = Path(SPECPATH).resolve().parent
 SRC_DIR = ROOT_DIR / "src"
+WINDOWS_ICON = SRC_DIR / "others" / "logo_nr.ico"
+MAC_ICON = SRC_DIR / "others" / "logo_nr.icns"
 
 
 def collect_optional_submodules(package_name):
@@ -64,7 +67,7 @@ exe = EXE(
 	target_arch=None,
 	codesign_identity=None,
 	entitlements_file=None,
-	icon=None,
+	icon=str(WINDOWS_ICON) if WINDOWS_ICON.exists() else None,
 )
 
 coll = COLLECT(
@@ -76,3 +79,11 @@ coll = COLLECT(
 	upx_exclude=[],
 	name="Narc Recon",
 )
+
+if sys.platform == "darwin":
+	app = BUNDLE(
+		coll,
+		name="Narc Recon.app",
+		icon=str(MAC_ICON) if MAC_ICON.exists() else None,
+		bundle_identifier=None,
+	)
