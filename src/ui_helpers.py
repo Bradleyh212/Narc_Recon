@@ -26,10 +26,17 @@ def _open_settings_guard(parent_window):
 	else:
 		messagebox.showerror("Access denied", "Settings are restricted to pharmacists.")
 
+def open_nav_choice(parent_window, pages, choice):
+	if choice == "SETTINGS":
+		_open_settings_guard(parent_window)
+		return
+
+	# Delay slightly so the dropdown animation feels smooth
+	parent_window.after(180, lambda: (safe_destroy(parent_window), pages[choice]()))
+
 def create_nav_bar(parent_window, nav_frame, current_page, pages, button_color, button_corner_radius, button_hover_color):
 	def on_select_page(choice):
-		# Delay slightly so the dropdown animation feels smooth
-		parent_window.after(180, lambda: (safe_destroy(parent_window), pages[choice]()))
+		open_nav_choice(parent_window, pages, choice)
 
 	page_menu = ctk.CTkOptionMenu(
 		nav_frame,
