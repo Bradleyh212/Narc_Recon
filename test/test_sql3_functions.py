@@ -247,6 +247,20 @@ def test_workflow_audit_service_preserves_current_audit_behavior(sqlite_env):
 	assert row[5:] == ("filling", 4)
 
 
+def test_workflow_debug_service_delegates_to_sqlite3_functions(sqlite_env, monkeypatch):
+	sqlite3_functions, _, _ = sqlite_env
+	workflow_debug_service = importlib.import_module("workflow_debug_service")
+	calls = []
+
+	monkeypatch.setattr(sqlite3_functions, "show_narcs_table", lambda: calls.append("narcs"))
+	monkeypatch.setattr(sqlite3_functions, "show_audit_log", lambda: calls.append("audit"))
+
+	workflow_debug_service.show_narcs_table()
+	workflow_debug_service.show_audit_log()
+
+	assert calls == ["narcs", "audit"]
+
+
 def test_sqlite3_functions_invalid_user_keeps_prior_quantity_update_committed(sqlite_env, capsys):
 	sqlite3_functions, _, _ = sqlite_env
 	authmod = importlib.import_module("auth")
