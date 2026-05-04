@@ -119,17 +119,17 @@ The script builds with the existing PyInstaller spec:
 pyinstaller --clean --noconfirm build/narc_recon.spec
 ```
 
-Then it installs the built app to a stable per-user path:
+Then it installs the built app to the standard macOS Applications folder:
 
 ```bash
-~/Applications/Narc Recon.app
+/Applications/Narc Recon.app
 ```
 
 First-time install behavior:
 
-- creates `~/Applications/` if it does not exist
 - creates `~/NarcReconData/` if it does not exist
-- copies `dist/Narc Recon.app` into `~/Applications/Narc Recon.app`
+- asks for administrator permission only for the `/Applications` install step
+- copies `dist/Narc Recon.app` into `/Applications/Narc Recon.app`
 - prints the recommended database and pepper environment variables
 - opens the installed app
 
@@ -138,7 +138,7 @@ Update behavior:
 - rebuilds the app first
 - stops before changing the installed app if the build fails
 - copies the new app bundle to a temporary path first
-- replaces only `~/Applications/Narc Recon.app`
+- replaces only `/Applications/Narc Recon.app`
 - leaves `~/NarcReconData/` untouched
 - does not delete or overwrite `*.db`, `*.db-wal`, or `*.db-shm` files
 
@@ -149,7 +149,15 @@ export NARC_RECON_DB_PATH="$HOME/NarcReconData/narc_recon.db"
 export NARC_RECON_PEPPER="<set-a-real-secret>"
 ```
 
-The script does not modify the Dock. Add `~/Applications/Narc Recon.app` to the Dock once; future script runs replace the app at the same path, so the Dock item continues pointing to the updated app.
+The script does not modify the Dock. Add `/Applications/Narc Recon.app` to the Dock once; future script runs replace the app at the same path, so the Dock item continues pointing to the updated app.
+
+To uninstall the app bundle:
+
+```bash
+sudo rm -rf "/Applications/Narc Recon.app"
+```
+
+Do not remove `~/NarcReconData/` unless you intentionally want to delete local database files and supporting data.
 
 ## Bundled Files
 
@@ -227,8 +235,8 @@ Do not commit:
 - `dist/`
 - PyInstaller generated work output, except the committed spec file
 - temporary iconset folders like `build/icon.iconset/`
-- temporary macOS installer app bundles like `~/Applications/.Narc Recon.app.tmp.*`
-- temporary macOS installer backup app bundles like `~/Applications/.Narc Recon.app.backup.*`
+- temporary macOS installer app bundles like `/Applications/.Narc Recon.app.tmp.*`
+- temporary macOS installer backup app bundles like `/Applications/.Narc Recon.app.backup.*`
 - `*.db`
 - `*.db-wal`
 - `*.db-shm`

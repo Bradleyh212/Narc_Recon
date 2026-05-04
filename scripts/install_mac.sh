@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 DIST_APP="$ROOT_DIR/dist/Narc Recon.app"
-INSTALL_DIR="$HOME/Applications"
+INSTALL_DIR="/Applications"
 DATA_DIR="$HOME/NarcReconData"
 INSTALL_APP="$INSTALL_DIR/Narc Recon.app"
 TEMP_APP="$INSTALL_DIR/.Narc Recon.app.tmp.$$"
@@ -13,11 +13,11 @@ BACKUP_APP="$INSTALL_DIR/.Narc Recon.app.backup.$$"
 
 cleanup() {
 	if [ -e "$TEMP_APP" ]; then
-		rm -rf "$TEMP_APP"
+		sudo rm -rf "$TEMP_APP" || true
 	fi
 
 	if [ -e "$BACKUP_APP" ] && [ ! -e "$INSTALL_APP" ]; then
-		mv "$BACKUP_APP" "$INSTALL_APP"
+		sudo mv "$BACKUP_APP" "$INSTALL_APP" || true
 	fi
 }
 
@@ -43,14 +43,16 @@ if [ ! -d "$DIST_APP" ]; then
 	exit 1
 fi
 
-mkdir -p "$INSTALL_DIR"
 mkdir -p "$DATA_DIR"
 
-rm -rf "$TEMP_APP"
-rm -rf "$BACKUP_APP"
+echo "Administrator permission may be required to install to $INSTALL_DIR."
+sudo -v
+
+sudo rm -rf "$TEMP_APP"
+sudo rm -rf "$BACKUP_APP"
 
 echo "Copying app to temporary install path..."
-ditto "$DIST_APP" "$TEMP_APP"
+sudo ditto "$DIST_APP" "$TEMP_APP"
 
 if [ ! -d "$TEMP_APP" ]; then
 	echo "Temporary app copy failed: $TEMP_APP" >&2
@@ -59,13 +61,13 @@ fi
 
 if [ -e "$INSTALL_APP" ]; then
 	echo "Replacing existing app at $INSTALL_APP..."
-	mv "$INSTALL_APP" "$BACKUP_APP"
+	sudo mv "$INSTALL_APP" "$BACKUP_APP"
 fi
 
-mv "$TEMP_APP" "$INSTALL_APP"
+sudo mv "$TEMP_APP" "$INSTALL_APP"
 
 if [ -e "$BACKUP_APP" ]; then
-	rm -rf "$BACKUP_APP"
+	sudo rm -rf "$BACKUP_APP"
 fi
 
 trap - EXIT
