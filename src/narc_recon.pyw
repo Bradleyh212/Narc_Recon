@@ -26,23 +26,34 @@ if should_run_dev_update():
 	install_requirements()
 
 from auth import get_conn, migrate_auth, migrate_users, seed_from_env_if_needed, app_account_exists, create_account_window
+import catalog_database_service
 import login
+from paths import get_excel_path
 
-if __name__ == "__main__":
+def initialize_startup_database():
 	# DB connection + migrations
 	conn = get_conn()
-	migrate_auth(conn)
-	migrate_users(conn)
+	try:
+		migrate_auth(conn)
+		migrate_users(conn)
+		catalog_database_service.initialize_database_from_excel(conn.cursor(), conn, get_excel_path())
 
-	# If no account exists
-	if not app_account_exists(conn):
-		# Try env var seeding
-		seed_from_env_if_needed(conn)
-		# If still no account, show Create Account window
+		# If no account exists
 		if not app_account_exists(conn):
-			create_account_window(conn)
+			# Try env var seeding
+			seed_from_env_if_needed(conn)
+			# If still no account, show Create Account window
+			if not app_account_exists(conn):
+				create_account_window(conn)
+	finally:
+		conn.close()
 
-	conn.close()
 
+def main():
+	initialize_startup_database()
 	# Launch login screen
 	login.main()
+
+
+if __name__ == "__main__":
+	main()

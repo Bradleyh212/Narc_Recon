@@ -1,12 +1,21 @@
 from pathlib import Path
 import os
+import sys
 
 
 APP_DIR = Path(__file__).resolve().parent
 
+def _resource_dir() -> Path:
+	if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+		return Path(sys._MEIPASS)
+	return APP_DIR
+
+
+RESOURCE_DIR = _resource_dir()
+
 DEFAULT_DB_PATH = Path.home() / "NarcReconData" / "narc_recon.db"
-DEFAULT_EXCEL_PATH = APP_DIR / "med_sheet.xlsx"
-LOGO_PATH = APP_DIR / "others" / "logo_nr.png"
+DEFAULT_EXCEL_PATH = RESOURCE_DIR / "med_sheet.xlsx"
+LOGO_PATH = RESOURCE_DIR / "others" / "logo_nr.png"
 
 
 def _env_path(name: str, default: Path) -> Path:

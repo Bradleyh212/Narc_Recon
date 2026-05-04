@@ -9,6 +9,7 @@ from audit_log_service import (
 	get_reconciliation_log_by_date_range as fetch_reconciliation_log_by_date_range,
 )
 from auth import get_conn
+import catalog_database_service
 from inventory_service import (
 	fetch_narcs_table,
 	find_narcs_by_din,
@@ -148,19 +149,13 @@ def should_debug_startup():
 
 
 def initialize_database_from_excel(debug=None):
-	narc_list = create_narc_list()
-	create_narcs_table()
-	create_narcs_details_table()
-	create_audit_log_table()
-	from_excel_to_sql(narc_list)
+	catalog_database_service.initialize_database_from_excel(cur, con, get_excel_path())
 
 	if debug is None:
 		debug = should_debug_startup()
 	if debug:
 		show_narcs_table()
 		show_audit_log()
-
-	con.commit()
 
 
 # === Initialize All Tables and Data ===
