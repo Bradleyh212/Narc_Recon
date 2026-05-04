@@ -2,22 +2,25 @@ import importlib
 from pathlib import Path
 
 
-SRC = Path(__file__).resolve().parents[1] / "src"
-
-
-def test_get_db_path_defaults_to_src_database(monkeypatch, fresh_app_modules):
+def test_get_db_path_defaults_to_user_data_database(monkeypatch, tmp_path, fresh_app_modules):
+	home_path = tmp_path / "home"
+	monkeypatch.setenv("HOME", str(home_path))
 	monkeypatch.delenv("NARC_RECON_DB_PATH", raising=False)
 	paths = importlib.import_module("paths")
 
-	assert paths.get_db_path() == SRC / "narc_recon.db"
+	db_path = paths.get_db_path()
+
+	assert db_path == home_path / "NarcReconData" / "narc_recon.db"
+	assert db_path.parent.is_dir()
 
 
 def test_get_db_path_uses_env_override(monkeypatch, tmp_path, fresh_app_modules):
-	db_path = tmp_path / "override.db"
+	db_path = tmp_path / "nested" / "override.db"
 	monkeypatch.setenv("NARC_RECON_DB_PATH", str(db_path))
 	paths = importlib.import_module("paths")
 
 	assert paths.get_db_path() == db_path
+	assert db_path.parent.is_dir()
 
 
 def test_get_excel_path_uses_env_override(monkeypatch, tmp_path, fresh_app_modules):

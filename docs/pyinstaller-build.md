@@ -20,7 +20,13 @@ build/narc_recon.spec
 
 Do not bundle a live production database.
 
-The production SQLite database must live outside the app bundle and be configured with:
+The production SQLite database must live outside the app bundle. If `NARC_RECON_DB_PATH` is not set, Narc Recon defaults to:
+
+```bash
+~/NarcReconData/narc_recon.db
+```
+
+Use `NARC_RECON_DB_PATH` only when a deployment needs an explicit database location:
 
 ```bash
 NARC_RECON_DB_PATH="/path/to/narc_recon.db"
@@ -56,12 +62,19 @@ Packaging note: `login.py` imports `PIL.Image`. If Pillow is not already install
 python -m pip install Pillow
 ```
 
-## Required Environment Variables For Smoke Testing
+## Environment Variables For Smoke Testing
 
-Set these before launching the packaged app:
+When launching from Terminal, you can override the database path for smoke testing:
 
 ```bash
 export NARC_RECON_DB_PATH="/absolute/path/to/test-or-production/narc_recon.db"
+```
+
+If no override is set, the packaged app uses `~/NarcReconData/narc_recon.db`. This matters for Finder and Dock launches because macOS apps opened that way do not inherit Terminal environment variables.
+
+Set the pepper before creating test or production login credentials:
+
+```bash
 export NARC_RECON_PEPPER="a-long-random-secret-kept-outside-git"
 ```
 
@@ -145,9 +158,10 @@ Update behavior:
 The database should live outside the app bundle so app updates do not replace pharmacy data:
 
 ```bash
-export NARC_RECON_DB_PATH="$HOME/NarcReconData/narc_recon.db"
 export NARC_RECON_PEPPER="<set-a-real-secret>"
 ```
+
+The default database path is already `~/NarcReconData/narc_recon.db`. Set `NARC_RECON_DB_PATH` only when intentionally using another database location.
 
 The script does not modify the Dock. Add `/Applications/Narc Recon.app` to the Dock once; future script runs replace the app at the same path, so the Dock item continues pointing to the updated app.
 
@@ -250,7 +264,7 @@ Do not commit:
 
 Use a test database path first.
 
-1. Set `NARC_RECON_DB_PATH` to a test database location outside `dist/`.
+1. Confirm the app is using either the default database path `~/NarcReconData/narc_recon.db` or an explicit `NARC_RECON_DB_PATH` test location outside `dist/`.
 2. Set `NARC_RECON_PEPPER`.
 3. Launch the packaged app.
 4. Create the first-run account if needed.

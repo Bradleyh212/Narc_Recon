@@ -4,15 +4,22 @@ This checklist is for a small pharmacy desktop deployment of Narc Recon. It focu
 
 ## 1. Production Database Path Recommendation
 
-Do not rely on the default database path inside the application source directory.
+Do not store the production database inside the application source directory or app bundle.
 
 Recommended production setup:
 
-- Set `NARC_RECON_DB_PATH` to a writable, backed-up location outside the app bundle/source folder.
+- If `NARC_RECON_DB_PATH` is not set, Narc Recon uses `~/NarcReconData/narc_recon.db`.
+- Use `NARC_RECON_DB_PATH` only when a deployment needs an explicit writable, backed-up location outside the app bundle/source folder.
 - Use a per-pharmacy shared local path only if one workstation owns access at a time and backups are reliable.
 - Prefer a location with restricted filesystem permissions so regular users cannot casually edit or delete the database.
 
-Example:
+Default local path:
+
+```bash
+~/NarcReconData/narc_recon.db
+```
+
+Explicit override example:
 
 ```bash
 NARC_RECON_DB_PATH="/Users/shared/NarcRecon/narc_recon.db"
@@ -84,9 +91,16 @@ Use restore only while Narc Recon is closed.
 Required for production:
 
 ```bash
-NARC_RECON_DB_PATH="/path/to/narc_recon.db"
 NARC_RECON_PEPPER="a-long-random-secret-kept-outside-git"
 ```
+
+Optional database override:
+
+```bash
+NARC_RECON_DB_PATH="/path/to/narc_recon.db"
+```
+
+If this override is not set, Narc Recon creates and uses `~/NarcReconData/narc_recon.db`.
 
 Recommended when the Excel file is external to the app bundle:
 
