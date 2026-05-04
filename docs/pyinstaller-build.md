@@ -105,6 +105,52 @@ On Windows, the expected executable is:
 dist/Narc Recon/Narc Recon.exe
 ```
 
+## macOS Local Install/Update Script
+
+For local macOS development and testing, use:
+
+```bash
+scripts/install_mac.sh
+```
+
+The script builds with the existing PyInstaller spec:
+
+```bash
+pyinstaller --clean --noconfirm build/narc_recon.spec
+```
+
+Then it installs the built app to a stable per-user path:
+
+```bash
+~/Applications/Narc Recon.app
+```
+
+First-time install behavior:
+
+- creates `~/Applications/` if it does not exist
+- creates `~/NarcReconData/` if it does not exist
+- copies `dist/Narc Recon.app` into `~/Applications/Narc Recon.app`
+- prints the recommended database and pepper environment variables
+- opens the installed app
+
+Update behavior:
+
+- rebuilds the app first
+- stops before changing the installed app if the build fails
+- copies the new app bundle to a temporary path first
+- replaces only `~/Applications/Narc Recon.app`
+- leaves `~/NarcReconData/` untouched
+- does not delete or overwrite `*.db`, `*.db-wal`, or `*.db-shm` files
+
+The database should live outside the app bundle so app updates do not replace pharmacy data:
+
+```bash
+export NARC_RECON_DB_PATH="$HOME/NarcReconData/narc_recon.db"
+export NARC_RECON_PEPPER="<set-a-real-secret>"
+```
+
+The script does not modify the Dock. Add `~/Applications/Narc Recon.app` to the Dock once; future script runs replace the app at the same path, so the Dock item continues pointing to the updated app.
+
 ## Bundled Files
 
 The spec bundles:
@@ -181,6 +227,8 @@ Do not commit:
 - `dist/`
 - PyInstaller generated work output, except the committed spec file
 - temporary iconset folders like `build/icon.iconset/`
+- temporary macOS installer app bundles like `~/Applications/.Narc Recon.app.tmp.*`
+- temporary macOS installer backup app bundles like `~/Applications/.Narc Recon.app.backup.*`
 - `*.db`
 - `*.db-wal`
 - `*.db-shm`
