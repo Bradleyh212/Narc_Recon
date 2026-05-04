@@ -129,6 +129,7 @@ Important:
 - Set `NARC_RECON_PEPPER` before creating the production login account.
 - Keep the pepper stable. Changing it after account creation can prevent existing passwords from verifying.
 - Do not store production secrets in git.
+- On fresh first-run setup, create the initial pharmacist staff user ID when prompted. This creates the first `users` row with role `Pharmacist` so Settings access is available without a hardcoded default user.
 
 ## 5. Manual QA Checklist Before Release
 
@@ -137,6 +138,8 @@ Run these checks against a copied test database before touching production data.
 Login and startup:
 
 - First-run account creation works.
+- First-run setup requires an initial pharmacist user ID.
+- The initial pharmacist user can open Settings.
 - Existing login works.
 - Invalid password is rejected.
 - App opens Inventory after login.

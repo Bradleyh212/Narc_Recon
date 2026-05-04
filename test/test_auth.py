@@ -1,4 +1,5 @@
 import importlib
+import sqlite3
 from pathlib import Path
 
 
@@ -76,3 +77,54 @@ def test_blank_spaces(auth_env):
 
 	assert authmod._verify_secret(h, "123") is True
 	assert authmod._verify_secret(h, "123 ") is False
+
+
+def make_auth_connection(authmod):
+	conn = sqlite3.connect(":memory:", isolation_level=None)
+	authmod.migrate_auth(conn)
+	authmod.migrate_users(conn)
+	return conn
+
+
+def test_create_initial_app_setup_creates_account_and_initial_pharmacist_user(auth_env):
+	authmod, _ = auth_env
+	conn = make_auth_connection(authmod)
+
+	authmod.create_initial_app_setup(conn, " pharmacy ", "secret-password", " RPH1 ")
+
+	account = conn.execute("SELECT username, password_hash FROM app_account").fetchone()
+	user = conn.execute("SELECT user_id, role, created_at FROM users").fetchone()
+
+	assert account[0] == "pharmacy"
+	assert "secret-password" not in account[1]
+	assert authmod._verify_secret(account[1], "secret-password") is True
+	assert user[0:2] == ("RPH1", "Pharmacist")
+	assert user[2]
+
+
+def test_create_initial_app_setup_rejects_blank_pharmacist_user_id(auth_env):
+	authmod, _ = auth_env
+	conn = make_auth_connection(authmod)
+
+	with pytest.raises(ValueError, match="Initial pharmacist user ID is required."):
+		authmod.create_initial_app_setup(conn, "pharmacy", "secret-password", " ")
+
+	assert conn.execute("SELECT COUNT(*) FROM app_account").fetchone()[0] == 0
+	assert conn.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0
+
+
+def test_create_initial_app_setup_rolls_back_app_account_when_initial_user_insert_fails(auth_env):
+	authmod, _ = auth_env
+	conn = make_auth_connection(authmod)
+	conn.execute(
+		"INSERT INTO users (user_id, role, created_at) VALUES (?, ?, ?)",
+		("RPH1", "Pharmacist", "existing"),
+	)
+
+	with pytest.raises(sqlite3.IntegrityError):
+		authmod.create_initial_app_setup(conn, "pharmacy", "secret-password", "RPH1")
+
+	assert conn.execute("SELECT COUNT(*) FROM app_account").fetchone()[0] == 0
+	assert conn.execute("SELECT user_id, role, created_at FROM users").fetchall() == [
+		("RPH1", "Pharmacist", "existing")
+	]

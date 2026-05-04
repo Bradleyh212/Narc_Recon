@@ -86,6 +86,30 @@ def _insert_app_account(conn, username: str, password: str):
 			(username.strip(), _hash_secret(password))
 		)
 
+def create_initial_app_setup(conn, username: str, password: str, pharmacist_user_id: str):
+	username = username.strip()
+	pharmacist_user_id = pharmacist_user_id.strip()
+
+	if not username or not password:
+		raise ValueError("Username and password are required.")
+	if not pharmacist_user_id:
+		raise ValueError("Initial pharmacist user ID is required.")
+
+	try:
+		conn.execute("BEGIN")
+		conn.execute(
+			"INSERT INTO app_account (id, username, password_hash) VALUES (1, ?, ?)",
+			(username, _hash_secret(password))
+		)
+		conn.execute(
+			"INSERT INTO users (user_id, role, created_at) VALUES (?, ?, ?)",
+			(pharmacist_user_id, "Pharmacist", _now_iso())
+		)
+		conn.commit()
+	except Exception:
+		conn.rollback()
+		raise
+
 def create_account_window(conn):
 	# GUI for first-run account creation
 	class SetupWindow(ctk.CTk):
@@ -97,7 +121,7 @@ def create_account_window(conn):
 			ctk.set_appearance_mode("dark")
 			ctk.set_default_color_theme("dark-blue")
 
-			w, h = 420, 300
+			w, h = 420, 350
 			sel_width = self.winfo_screenwidth()
 			self_height = self.winfo_screenheight()
 			x = (sel_width / 2) - (w / 2)
@@ -108,6 +132,9 @@ def create_account_window(conn):
 
 			self.username = ctk.CTkEntry(self, width=100, height=35, placeholder_text="Username (e.g., pharmacy)", corner_radius=20)
 			self.username.pack(padx=20, pady=(10, 6), fill="x")
+
+			self.pharmacist_user_id = ctk.CTkEntry(self, width=100, height=35, placeholder_text="Initial pharmacist user ID", corner_radius=20)
+			self.pharmacist_user_id.pack(padx=20, pady=6, fill="x")
 
 			self.pw = ctk.CTkEntry(self, width=100, height=35, placeholder_text="Password", show="*", corner_radius=20)
 			self.pw.pack(padx=20, pady=6, fill="x")
@@ -129,18 +156,24 @@ def create_account_window(conn):
 
 		def _create(self):
 			u = self.username.get().strip()
+			pharmacist_user_id = self.pharmacist_user_id.get().strip()
 			p1 = self.pw.get()
 			p2 = self.pw2.get()
 			if not u or not p1:
 				messagebox.showerror("Error", "Username and password are required.")
 				return
+			if not pharmacist_user_id:
+				messagebox.showerror("Error", "Initial pharmacist user ID is required.")
+				return
 			if p1 != p2:
 				messagebox.showerror("Error", "Passwords do not match.")
 				return
 			try:
-				_insert_app_account(conn, u, p1)
-				messagebox.showinfo("Success", "Pharmacy account created. Please log in.")
+				create_initial_app_setup(conn, u, p1, pharmacist_user_id)
+				messagebox.showinfo("Success", "Pharmacy account and initial pharmacist user created. Please log in.")
 				self.destroy()
+			except ValueError as e:
+				messagebox.showerror("Error", str(e))
 			except sqlite3.IntegrityError as e:
 				messagebox.showerror("Error", f"Failed to create account: {e}")
 
