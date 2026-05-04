@@ -7,3 +7,7 @@ __pycache__/
 *.db-wal
 *.pyc
 ~$*.xlsx
+
+# PyInstaller build outputs
+build/narc_recon/
+dist/
