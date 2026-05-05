@@ -120,7 +120,7 @@ dist/Narc Recon/Narc Recon.exe
 
 ## macOS Local Install/Update Script
 
-For local macOS development and testing, use:
+For local macOS development and testing, finish any active Narc Recon workflow, then use:
 
 ```bash
 scripts/install_mac.sh
@@ -144,16 +144,32 @@ First-time install behavior:
 - asks for administrator permission only for the `/Applications` install step
 - copies `dist/Narc Recon.app` into `/Applications/Narc Recon.app`
 - prints the recommended database and pepper environment variables
-- opens the installed app
+- prints the command to open the installed app
 
 Update behavior:
 
 - rebuilds the app first
 - stops before changing the installed app if the build fails
+- gracefully closes Narc Recon before replacing the app bundle
+- uses `pkill` only as a fallback if a Narc Recon process is still running
 - copies the new app bundle to a temporary path first
 - replaces only `/Applications/Narc Recon.app`
 - leaves `~/NarcReconData/` untouched
 - does not delete or overwrite `*.db`, `*.db-wal`, or `*.db-shm` files
+
+The script does not open the app by default. After install/update, open it manually:
+
+```bash
+open "/Applications/Narc Recon.app"
+```
+
+To explicitly open the app after installing, use:
+
+```bash
+scripts/install_mac.sh --open
+```
+
+The `--open` option uses `open -n` so macOS starts a new app instance instead of activating an existing one.
 
 The database should live outside the app bundle so app updates do not replace pharmacy data:
 

@@ -10,6 +10,24 @@ DATA_DIR="$HOME/NarcReconData"
 INSTALL_APP="$INSTALL_DIR/Narc Recon.app"
 TEMP_APP="$INSTALL_DIR/.Narc Recon.app.tmp.$$"
 BACKUP_APP="$INSTALL_DIR/.Narc Recon.app.backup.$$"
+OPEN_AFTER_INSTALL=0
+
+for arg in "$@"; do
+	case "$arg" in
+		--open)
+			OPEN_AFTER_INSTALL=1
+			;;
+		-h|--help)
+			echo "Usage: scripts/install_mac.sh [--open]"
+			exit 0
+			;;
+		*)
+			echo "Unknown argument: $arg" >&2
+			echo "Usage: scripts/install_mac.sh [--open]" >&2
+			exit 1
+			;;
+	esac
+done
 
 cleanup() {
 	if [ -e "$TEMP_APP" ]; then
@@ -19,6 +37,31 @@ cleanup() {
 	if [ -e "$BACKUP_APP" ] && [ ! -e "$INSTALL_APP" ]; then
 		sudo mv "$BACKUP_APP" "$INSTALL_APP" || true
 	fi
+}
+
+close_running_app() {
+	echo "Closing any running Narc Recon app before update..."
+
+	if ! pgrep -x "Narc Recon" >/dev/null 2>&1; then
+		echo "Narc Recon is not currently running."
+		return
+	fi
+
+	osascript -e 'tell application "Narc Recon" to quit' >/dev/null 2>&1 || true
+	sleep 2
+
+	if pgrep -x "Narc Recon" >/dev/null 2>&1; then
+		echo "Narc Recon is still running; forcing it to close..."
+		pkill -x "Narc Recon" || true
+		sleep 1
+	fi
+
+	if pgrep -x "Narc Recon" >/dev/null 2>&1; then
+		echo "Narc Recon is still running. Close it manually and rerun this script." >&2
+		exit 1
+	fi
+
+	echo "Narc Recon was closed before update."
 }
 
 trap cleanup EXIT
@@ -35,6 +78,8 @@ fi
 
 cd "$ROOT_DIR"
 
+echo "Before updating, finish any active Narc Recon workflow."
+echo
 echo "Building Narc Recon with PyInstaller..."
 pyinstaller --clean --noconfirm build/narc_recon.spec
 
@@ -42,6 +87,8 @@ if [ ! -d "$DIST_APP" ]; then
 	echo "Expected built app was not found: $DIST_APP" >&2
 	exit 1
 fi
+
+close_running_app
 
 mkdir -p "$DATA_DIR"
 
@@ -83,5 +130,11 @@ echo "Recommended environment variables:"
 echo "  export NARC_RECON_DB_PATH=\"$HOME/NarcReconData/narc_recon.db\""
 echo "  export NARC_RECON_PEPPER=\"<set-a-real-secret>\""
 echo
-echo "Opening installed app..."
-open "$INSTALL_APP"
+echo "Open the installed app with:"
+echo "  open \"$INSTALL_APP\""
+
+if [ "$OPEN_AFTER_INSTALL" -eq 1 ]; then
+	echo
+	echo "Opening installed app as a new instance..."
+	open -n "$INSTALL_APP"
+fi
