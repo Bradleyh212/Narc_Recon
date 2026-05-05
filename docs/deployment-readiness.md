@@ -86,13 +86,26 @@ Use restore only while Narc Recon is closed.
    - User list is intact.
 8. If validation fails, close the app and restore the rollback copy.
 
-## 4. Required Environment Variables
+## 4. Local Config And Environment Variables
 
-Required for production:
+For packaged desktop launches, prefer a local config file so Finder/Dock launches use the same settings as Terminal launches:
 
 ```bash
-NARC_RECON_PEPPER="a-long-random-secret-kept-outside-git"
+mkdir -p "$HOME/NarcReconData"
+chmod 700 "$HOME/NarcReconData"
+cat > "$HOME/NarcReconData/config.env" <<'EOF'
+NARC_RECON_DB_PATH=/Users/example/NarcReconData/narc_recon.db
+NARC_RECON_EXCEL_PATH=/Users/example/NarcReconData/med_sheet.xlsx
+NARC_RECON_PEPPER=replace-with-a-long-random-secret
+EOF
+chmod 600 "$HOME/NarcReconData/config.env"
 ```
+
+Config priority:
+
+1. Environment variables
+2. `~/NarcReconData/config.env`
+3. Safe defaults
 
 Optional database override:
 

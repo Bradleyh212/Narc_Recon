@@ -26,6 +26,40 @@ def test_get_conn_uses_temp_database(auth_env):
 	assert Path(database_path) == db_path
 
 
+def test_auth_uses_local_config_pepper_when_env_missing(monkeypatch, tmp_path, fresh_app_modules):
+	home_path = tmp_path / "home"
+	config_dir = home_path / "NarcReconData"
+	config_dir.mkdir(parents=True)
+	(config_dir / "config.env").write_text(
+		"NARC_RECON_PEPPER=fake-config-pepper\n",
+		encoding="utf-8",
+	)
+	monkeypatch.setenv("HOME", str(home_path))
+	monkeypatch.setenv("NARC_RECON_DB_PATH", str(tmp_path / "auth-test.db"))
+	monkeypatch.delenv("NARC_RECON_PEPPER", raising=False)
+
+	authmod = importlib.import_module("auth")
+
+	assert authmod.PEPPER == "fake-config-pepper"
+
+
+def test_auth_env_pepper_overrides_local_config(monkeypatch, tmp_path, fresh_app_modules):
+	home_path = tmp_path / "home"
+	config_dir = home_path / "NarcReconData"
+	config_dir.mkdir(parents=True)
+	(config_dir / "config.env").write_text(
+		"NARC_RECON_PEPPER=fake-config-pepper\n",
+		encoding="utf-8",
+	)
+	monkeypatch.setenv("HOME", str(home_path))
+	monkeypatch.setenv("NARC_RECON_DB_PATH", str(tmp_path / "auth-test.db"))
+	monkeypatch.setenv("NARC_RECON_PEPPER", "fake-env-pepper")
+
+	authmod = importlib.import_module("auth")
+
+	assert authmod.PEPPER == "fake-env-pepper"
+
+
 def test_hash_is_not_plaintext_and_has_reasonable_length(auth_env):
 	authmod, _ = auth_env
 	pwd = "123"

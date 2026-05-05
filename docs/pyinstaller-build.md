@@ -72,6 +72,25 @@ export NARC_RECON_DB_PATH="/absolute/path/to/test-or-production/narc_recon.db"
 
 If no override is set, the packaged app uses `~/NarcReconData/narc_recon.db`. This matters for Finder and Dock launches because macOS apps opened that way do not inherit Terminal environment variables.
 
+For stable Finder/Dock launches, create a local config file:
+
+```bash
+mkdir -p "$HOME/NarcReconData"
+chmod 700 "$HOME/NarcReconData"
+cat > "$HOME/NarcReconData/config.env" <<'EOF'
+NARC_RECON_DB_PATH=/Users/example/NarcReconData/narc_recon.db
+NARC_RECON_EXCEL_PATH=/Users/example/NarcReconData/med_sheet.xlsx
+NARC_RECON_PEPPER=replace-with-a-long-random-secret
+EOF
+chmod 600 "$HOME/NarcReconData/config.env"
+```
+
+Config priority is:
+
+1. Environment variables
+2. `~/NarcReconData/config.env`
+3. Safe defaults
+
 Set the pepper before creating test or production login credentials:
 
 ```bash

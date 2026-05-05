@@ -4,10 +4,11 @@ from datetime import datetime, timezone
 from argon2 import PasswordHasher
 import customtkinter as ctk
 from tkinter import messagebox
+import app_config
 from paths import get_db_path
 
 DB_PATH = get_db_path()
-PEPPER = os.environ.get("NARC_RECON_PEPPER", "dev-pepper-change-me")
+PEPPER = app_config.get_config_value("NARC_RECON_PEPPER", "dev-pepper-change-me")
 ph = PasswordHasher()
 
 def _now_iso():

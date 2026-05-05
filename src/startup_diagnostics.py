@@ -3,6 +3,7 @@ from pathlib import Path
 import os
 import sys
 
+import app_config
 from paths import get_db_path, get_excel_path
 
 
@@ -48,7 +49,10 @@ def write_startup_log(connection=None):
 			f"home={Path.home()}",
 			f"db_path={get_db_path()}",
 			f"excel_path={get_excel_path()}",
+			f"config_path={app_config.get_config_path()}",
+			f"config_env_exists={app_config.local_config_exists()}",
 			f"narc_recon_db_path_set={bool(os.environ.get('NARC_RECON_DB_PATH'))}",
+			f"narc_recon_excel_path_set={bool(os.environ.get('NARC_RECON_EXCEL_PATH'))}",
 		]
 
 		if connection is not None:
