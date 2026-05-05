@@ -50,12 +50,33 @@ def test_add_user_preserves_current_insert_behavior():
 	assert row[2].endswith("+00:00")
 
 
+def test_user_service_add_user_preserves_current_insert_behavior():
+	connection = make_users_connection()
+	service = user_service.UserService(connection)
+
+	service.add_user(" TMP ", "Pharmacist")
+
+	row = connection.execute("SELECT user_id, role, created_at FROM users").fetchone()
+	assert row[0:2] == ("TMP", "Pharmacist")
+	assert "T" in row[2]
+	assert row[2].endswith("+00:00")
+
+
 def test_get_user_role_returns_role_or_none():
 	connection = make_users_connection()
 	user_service.add_user(connection, "BHD", "admin")
 
 	assert user_service.get_user_role(connection, " BHD ") == "admin"
 	assert user_service.get_user_role(connection, "NOPE") is None
+
+
+def test_user_service_get_user_role_returns_role_or_none():
+	connection = make_users_connection()
+	service = user_service.UserService(connection)
+	service.add_user("BHD", "admin")
+
+	assert service.get_user_role(" BHD ") == "admin"
+	assert service.get_user_role("NOPE") is None
 
 
 def test_list_users_returns_current_shape_ordered_by_id():
@@ -75,6 +96,24 @@ def test_list_users_returns_current_shape_ordered_by_id():
 	]
 
 
+def test_user_service_list_users_returns_current_shape_ordered_by_id():
+	connection = make_users_connection()
+	service = user_service.UserService(connection)
+	connection.execute(
+		"INSERT INTO users (user_id, role, created_at) VALUES (?, ?, ?)",
+		("BHD", "admin", "Today"),
+	)
+	connection.execute(
+		"INSERT INTO users (user_id, role, created_at) VALUES (?, ?, ?)",
+		("TMP", "staff", "Tomorrow"),
+	)
+
+	assert service.list_users() == [
+		(1, "BHD", "admin", "Today"),
+		(2, "TMP", "staff", "Tomorrow"),
+	]
+
+
 def test_list_user_ids_returns_current_shape():
 	connection = make_users_connection()
 	connection.execute(
@@ -89,6 +128,21 @@ def test_list_user_ids_returns_current_shape():
 	assert user_service.list_user_ids(connection) == ["BHD", "TMP"]
 
 
+def test_user_service_list_user_ids_returns_current_shape():
+	connection = make_users_connection()
+	service = user_service.UserService(connection)
+	connection.execute(
+		"INSERT INTO users (user_id, role, created_at) VALUES (?, ?, ?)",
+		("BHD", "admin", "Today"),
+	)
+	connection.execute(
+		"INSERT INTO users (user_id, role, created_at) VALUES (?, ?, ?)",
+		("TMP", "staff", "Tomorrow"),
+	)
+
+	assert service.list_user_ids() == ["BHD", "TMP"]
+
+
 def test_remove_user_deletes_row_and_user_exists_returns_bool():
 	connection = make_users_connection()
 	user_service.add_user(connection, "TMP", "staff")
@@ -99,3 +153,16 @@ def test_remove_user_deletes_row_and_user_exists_returns_bool():
 
 	assert user_service.user_exists(connection, "TMP") is False
 	assert user_service.list_users(connection) == []
+
+
+def test_user_service_remove_user_deletes_row_and_user_exists_returns_bool():
+	connection = make_users_connection()
+	service = user_service.UserService(connection)
+	service.add_user("TMP", "staff")
+
+	assert service.user_exists(" TMP ") is True
+
+	service.remove_user(" TMP ")
+
+	assert service.user_exists("TMP") is False
+	assert service.list_users() == []
