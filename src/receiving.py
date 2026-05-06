@@ -13,11 +13,11 @@ def open_receiving_page():
 	from report import open_report_page
 	from settings import open_settings_page
 	from auth import get_conn
-	import inventory_service
-	import receiving_service
-	import user_service
-	import workflow_audit_service
-	import workflow_debug_service
+	from services import inventory_service
+	from services import receiving_service
+	from services import user_service
+	from services import workflow_audit_service
+	from services import workflow_debug_service
 	from ui_helpers import create_nav_bar
 
 	# Connect to SQLite database

@@ -7,15 +7,15 @@ import pytest
 
 @pytest.fixture(autouse=True)
 def unload_workflow_audit_service():
-	sys.modules.pop("workflow_audit_service", None)
+	sys.modules.pop("services.workflow_audit_service", None)
 	yield
-	sys.modules.pop("workflow_audit_service", None)
+	sys.modules.pop("services.workflow_audit_service", None)
 
 
 def load_workflow_audit_service(monkeypatch, tmp_path, fresh_app_modules):
 	db_path = tmp_path / "workflow-audit.db"
 	monkeypatch.setenv("NARC_RECON_DB_PATH", str(db_path))
-	sys.modules.pop("workflow_audit_service", None)
+	sys.modules.pop("services.workflow_audit_service", None)
 
 	auth = importlib.import_module("auth")
 	schema_service = importlib.import_module("db.schema_service")
@@ -43,7 +43,7 @@ def load_workflow_audit_service(monkeypatch, tmp_path, fresh_app_modules):
 	finally:
 		connection.close()
 
-	return importlib.import_module("workflow_audit_service"), auth, db_path
+	return importlib.import_module("services.workflow_audit_service"), auth, db_path
 
 
 def update_quantity(auth, quantity):

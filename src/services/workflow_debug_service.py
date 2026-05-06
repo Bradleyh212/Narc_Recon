@@ -1,8 +1,8 @@
 from prettytable import PrettyTable
 
-import audit_log_service
 from auth import get_conn
-import inventory_service
+from services import audit_log_service
+from services import inventory_service
 
 
 def show_narcs_table():

@@ -1,6 +1,6 @@
 import sqlite3
 
-import workflow_debug_service
+from services import workflow_debug_service
 
 
 def create_inventory_connection():

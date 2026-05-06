@@ -14,14 +14,14 @@ import os
 import pytz
 from prettytable import PrettyTable
 
-import audit_log_service
 from auth import get_conn
 from db import catalog_database_service
 from db import schema_service
-import excel_import_service
-import inventory_service
 from config.paths import get_excel_path
-import user_service
+from services import audit_log_service
+from services import excel_import_service
+from services import inventory_service
+from services import user_service
 
 
 user_timezone = pytz.timezone("America/Toronto")

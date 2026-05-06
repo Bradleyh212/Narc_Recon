@@ -3,7 +3,7 @@ import sqlite3
 
 import pytz
 
-import audit_log_service
+from services import audit_log_service
 
 
 class CommitTrackingConnection:

@@ -14,11 +14,11 @@ def open_reconciliation_page():
 	from settings import open_settings_page
 	from auth import get_conn
 	from ui_helpers import create_nav_bar
-	import inventory_service
-	import reconciliation_service
-	import user_service
-	import workflow_audit_service
-	import workflow_debug_service
+	from services import inventory_service
+	from services import reconciliation_service
+	from services import user_service
+	from services import workflow_audit_service
+	from services import workflow_debug_service
 
 	# Connect to SQLite database
 	con = get_conn()

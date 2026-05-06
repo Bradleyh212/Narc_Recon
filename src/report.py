@@ -19,7 +19,7 @@ def open_report_page():
 	from settings import open_settings_page
 	from auth import get_conn
 	from ui_helpers import create_nav_bar
-	import audit_log_service
+	from services import audit_log_service
 
 	# Connect to SQLite database
 	con = get_conn()

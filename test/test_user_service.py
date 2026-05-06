@@ -1,6 +1,6 @@
 import sqlite3
 
-import user_service
+from services import user_service
 
 
 def test_normalize_role_strips_and_lowercases_role_values():

@@ -1,5 +1,5 @@
-import excel_import_service
 from db import schema_service
+from services import excel_import_service
 
 
 class CatalogDatabaseService:

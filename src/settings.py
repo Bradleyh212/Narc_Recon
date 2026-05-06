@@ -4,7 +4,7 @@ import customtkinter as ctk
 from tkinter import messagebox
 from auth import get_conn
 from ui_helpers import create_nav_bar
-import user_service
+from services import user_service
 
 def open_settings_page():
 	# === Window Setup ===

@@ -1,6 +1,6 @@
 import sqlite3
 
-import reconciliation_service
+from services import reconciliation_service
 
 
 def make_inventory_connection(quantity=10):

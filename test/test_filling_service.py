@@ -1,6 +1,6 @@
 import sqlite3
 
-import filling_service
+from services import filling_service
 
 
 def make_inventory_connection(quantity=10):

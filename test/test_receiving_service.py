@@ -1,6 +1,6 @@
 import sqlite3
 
-import receiving_service
+from services import receiving_service
 
 
 def make_inventory_connection(quantity=10):

@@ -1,6 +1,6 @@
 import sqlite3
 
-import inventory_service
+from services import inventory_service
 
 
 def make_inventory_connection():

@@ -1,6 +1,6 @@
 import sqlite3
 
-import inventory_transaction_service
+from services import inventory_transaction_service
 
 
 class CommitTrackingConnection:

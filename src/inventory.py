@@ -13,7 +13,7 @@ def open_inventory_page():
 	from report import open_report_page
 	from settings import open_settings_page
 	from auth import get_conn
-	import inventory_service
+	from services import inventory_service
 	from ui_helpers import create_nav_bar
 
 	# Connect to SQLite database

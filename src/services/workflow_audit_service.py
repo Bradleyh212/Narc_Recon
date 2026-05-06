@@ -1,9 +1,9 @@
 import pytz
 
-import audit_log_service
 from auth import get_conn
-import inventory_service
-import user_service
+from services import audit_log_service
+from services import inventory_service
+from services import user_service
 
 
 def add_to_audit_log(din, old_qty, user, transaction_type):

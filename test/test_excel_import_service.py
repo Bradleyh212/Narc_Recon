@@ -3,7 +3,7 @@ import sqlite3
 import pandas as pd
 import pytest
 
-import excel_import_service
+from services import excel_import_service
 
 
 def sample_excel_df():

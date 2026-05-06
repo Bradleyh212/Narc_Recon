@@ -1,4 +1,4 @@
-import inventory_transaction_service
+from services import inventory_transaction_service
 
 
 def set_inventory_quantity(cursor, connection, din, quantity):
