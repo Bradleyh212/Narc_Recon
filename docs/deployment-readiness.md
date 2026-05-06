@@ -314,3 +314,7 @@ These items should not block a controlled deployment if backup, audit, login, an
 - Adding advanced import previews or import logs.
 
 For first deployment, prioritize a controlled rollout with known users, verified backups, and daily audit review.
+
+### Legacy Compatibility Note
+
+`sqlite3_functions.py` is legacy compatibility only. New production app code should use the focused service modules directly. Future cleanup should migrate the remaining tests away from `sqlite3_functions.py` before deleting it or removing its import-time initialization.

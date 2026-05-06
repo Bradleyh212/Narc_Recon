@@ -1,3 +1,14 @@
+"""
+Legacy compatibility module.
+
+Production app code should use the focused service modules instead of importing
+from this file. This module is kept temporarily for tests and old compatibility
+callers while the remaining legacy coverage is migrated.
+
+Do not add new dependencies on this module. Importing it is not neutral: it
+opens a database connection and runs catalog initialization at import time.
+"""
+
 import os
 import pytz
 import sqlite3
