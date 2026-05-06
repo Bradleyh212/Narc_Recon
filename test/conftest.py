@@ -24,8 +24,12 @@ def unload_app_modules():
 		"config",
 		"diagnostics.startup_diagnostics",
 		"diagnostics",
+		"services.auth_service",
 	):
 		sys.modules.pop(module_name, None)
+	services_pkg = sys.modules.get("services")
+	if services_pkg is not None and hasattr(services_pkg, "auth_service"):
+		delattr(services_pkg, "auth_service")
 
 
 @pytest.fixture
