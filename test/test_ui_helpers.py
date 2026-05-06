@@ -1,4 +1,4 @@
-import ui_helpers
+from ui import ui_helpers
 
 
 class FakeParent:

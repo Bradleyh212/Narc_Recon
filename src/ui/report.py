@@ -12,13 +12,13 @@ def open_report_page():
 	from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 
 	# === Project Modules ===
-	from inventory import open_inventory_page
-	from filling import open_filling_page
-	from receiving import open_receiving_page
-	from reconciliation import open_reconciliation_page
-	from settings import open_settings_page
+	from ui.inventory import open_inventory_page
+	from ui.filling import open_filling_page
+	from ui.receiving import open_receiving_page
+	from ui.reconciliation import open_reconciliation_page
+	from ui.settings import open_settings_page
 	from auth import get_conn
-	from ui_helpers import create_nav_bar
+	from ui.ui_helpers import create_nav_bar
 	from services import audit_log_service
 
 	# Connect to SQLite database

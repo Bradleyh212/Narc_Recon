@@ -1,4 +1,5 @@
-def open_filling_page():
+def open_receiving_page():
+	# Receiving page setup, full-screen, non-resizable window
 
 	# === Standard Library ===
 	import tkinter as tk
@@ -6,25 +7,26 @@ def open_filling_page():
 	from tkinter import ttk, messagebox, simpledialog
 
 	# === Project Modules ===
-	from inventory import open_inventory_page
-	from receiving import open_receiving_page
-	from reconciliation import open_reconciliation_page
-	from report import open_report_page
-	from settings import open_settings_page
+	from ui.inventory import open_inventory_page
+	from ui.filling import open_filling_page
+	from ui.reconciliation import open_reconciliation_page
+	from ui.report import open_report_page
+	from ui.settings import open_settings_page
 	from auth import get_conn
-	from services import filling_service
 	from services import inventory_service
+	from services import receiving_service
 	from services import user_service
 	from services import workflow_audit_service
 	from services import workflow_debug_service
-	from ui_helpers import create_nav_bar
+	from ui.ui_helpers import create_nav_bar
 
 	# Connect to SQLite database
 	con = get_conn()
 	cur = con.cursor()
 
-	filling_window = ctk.CTk()
-	filling_window.title("Narc Recon")
+	# Initialize the main Tkinter window
+	receiving_window = ctk.CTk()
+	receiving_window.title("Narc Recon")
 
 	main_background_color = "#1C1C1C"
 	nav_and_header_background_color = "#181818"
@@ -34,64 +36,66 @@ def open_filling_page():
 	button_hover_color="#468189"
 
 
-	# Initialize the filling Tkinter window
+	# Initialize the main page Tkinter window
 	ctk.set_appearance_mode("dark")
 	ctk.set_default_color_theme("dark-blue")
-	filling_window.configure(fg_color=main_background_color)
+	receiving_window.configure(fg_color=main_background_color)
 
 	w = 1000
 	h = 600
-	window_width = filling_window.winfo_screenwidth()
-	window_height = filling_window.winfo_screenheight()
+	window_width = receiving_window.winfo_screenwidth()
+	window_height = receiving_window.winfo_screenheight()
 	x = (window_width / 2) - (w / 2)
 	y = (window_height / 2) - (h / 2)
-	filling_window.geometry(f'{w}x{h}+{int(x)}+{int(y)}')
+	receiving_window.geometry(f'{w}x{h}+{int(x)}+{int(y)}')
 
 	# Disable resizing
-	filling_window.resizable(False, False)
-
+	receiving_window.resizable(False, False)
 
 	# Creating the fonts
 	header_font = ("Inter", 40)
 	font = ("Inter", 30) # Define a font for the Entry widget
+	# The size of the text changes the height of the Entry widget
 
 	# Frame setup: header, body, and navigation
-	header_frame = tk.Frame(filling_window, width = w, height = 75, bg = nav_and_header_background_color)
+	header_frame = tk.Frame(receiving_window, width = w, height = 75, bg = nav_and_header_background_color) # using)
 	header_frame.grid(row = 0, column = 0)
 
+	# Configure header_frame columns
 	header_frame.columnconfigure(1, weight=1)
-	header_frame.grid_propagate(False)
+	header_frame.grid_propagate(False) # Prevent the header frame from resizing based on its content
 
-	# Navigation frame
+	# Navigation frame on the right
 	nav_frame = ctk.CTkFrame(header_frame, width=700, height=20, fg_color = nav_and_header_background_color)
 	nav_frame.grid(row=0, column=1, sticky="e", pady=20)
-	nav_frame.pack_propagate(False)
+	nav_frame.pack_propagate(False) # Prevent the nav frame from resizing based on its content
 
-	body_frame = ctk.CTkFrame(filling_window, width = 1000, height = 400)
+	body_frame = ctk.CTkFrame(receiving_window, width = 1000, height = 400)
 	body_frame.grid(row = 1, column = 0, pady=(60,0))
 
 	body_frame.columnconfigure(0, weight=1)
 	body_frame.columnconfigure(1, weight=1)
-	body_frame.grid_propagate(False)
+	body_frame.grid_propagate(False) # Prevent the body frame from resizing based on its content
 	body_frame.configure(fg_color=main_background_color)
 
 	left_body_frame = ctk.CTkFrame(body_frame, width = 500, height = 400, corner_radius=20)
 	left_body_frame.grid(row = 0, column = 0, sticky="w", padx=(60,0), pady=(0, 200))
-	left_body_frame.columnconfigure(0, weight=1)
-	left_body_frame.columnconfigure(1, weight=1)
-	left_body_frame.grid_propagate(False)
+	left_body_frame.columnconfigure(0, weight=1) # So column 0 can expand if need, if weight=2 it would expand twice as fast
+	left_body_frame.columnconfigure(1, weight=1) # So column 1 can expand if need
+	left_body_frame.grid_propagate(False) # Prevent the left_body_frame frame from resizing based on its content
 
 	right_body_frame = ctk.CTkFrame(body_frame, width = 300, height = 400, corner_radius=20)
 	right_body_frame.grid(row = 0, column = 1, sticky="e", padx=(0, 60), pady=(0, 200))
 	right_body_frame.grid_propagate(False)
 
-	filling_window.bind('<Return>', lambda event: search_narcs())
+	receiving_window.bind('<Return>', lambda event: search_narcs())
+
 
 	def refresh_page():
-		global meds_ent, name_lbl_output, din__med_output, strength_lbl_output, drug_form_output,pack_med_lbl, pack_med_output, qty_med_output, remove_qty_ent
-		
+		global meds_ent, name_lbl_output, din__med_output, strength_lbl_output, drug_form_output,pack_med_lbl, pack_med_output, qty_med_output, add_qty_ent
+
 		# Title
-		page_title = ctk.CTkLabel(header_frame, text="FILLING", font=header_font)
+		page_title = ctk.CTkLabel(header_frame, text="RECEIVING", font=header_font)
 		page_title.grid(row=0, column=0, sticky="w", padx=(60,0), pady=(10,5))
 
 		# --- Dropdown Menu + Settings Button ---
@@ -105,9 +109,9 @@ def open_filling_page():
 		}
 
 		create_nav_bar(
-			filling_window,
+			receiving_window,
 			nav_frame,
-			"FILLING",
+			"RECEIVING",
 			pages,
 			button_color,
 			button_corner_radius,
@@ -148,17 +152,20 @@ def open_filling_page():
 		qty_med_output.grid(row = 2, pady=(0, 50))
 
 
-		remove_qty_ent = ctk.CTkEntry(right_body_frame, placeholder_text = "Quantity", font = font, width = 200, justify="center", corner_radius=20)
-		remove_qty_ent.grid(row = 3, padx=50, pady=(0, 25))
+		add_qty_ent = ctk.CTkEntry(right_body_frame, placeholder_text = "Quantity", font = font, width = 200, justify="center", corner_radius=20)
+		add_qty_ent.grid(row = 3, padx=50, pady=(0, 25))
 
-		remove_qty_btn = ctk.CTkButton(right_body_frame, text = "FILL", command=lambda: remove_quantity(remove_qty_ent.get(), search_input), fg_color=button_color, corner_radius=button_corner_radius, hover_color=button_hover_color)
-		remove_qty_btn.grid(row = 4)
+		add_qty_btn = ctk.CTkButton(right_body_frame, text="ADD", command=lambda: add_quantity(add_qty_ent.get(), search_input), fg_color=button_color, corner_radius=button_corner_radius, hover_color=button_hover_color)
+		add_qty_btn.grid(row = 4)
+
+
+
 
 
 	# Function to request a valid user ID
 	def ask_user_id():
 		while True:
-			user_id = simpledialog.askstring("Input", "Please enter your user ID:", parent=filling_window)
+			user_id = simpledialog.askstring("Input", "Please enter your user ID:", parent=receiving_window)
 
 			# If cancelled or closed
 			if user_id is None:
@@ -172,20 +179,21 @@ def open_filling_page():
 			# If invalid
 			messagebox.showerror("Error", "Please enter a valid user ID")
 
-	def remove_quantity(amount, inpt):
+	# Function to add quantity to a narcotic record
+	def add_quantity(amount, inpt):
+		# Resolve DIN and user
 		if len(inpt) == 12:
 			rows = inventory_service.find_narcs_by_upc(cur, inpt)
 			if not rows:
 				messagebox.showerror("Error", "Drug not found for this UPC")
-				remove_qty_ent.focus(); meds_ent.focus()
+				add_qty_ent.focus(); meds_ent.focus()
 				return
 			din = rows[0][0]
 		elif len(inpt) == 8:
-			din = inpt  # Input is DIN
-
+			din = inpt
 		else:
 			messagebox.showerror("Error", "Please enter a valid DIN or UPC")
-			remove_qty_ent.focus(); meds_ent.focus()
+			add_qty_ent.focus(); meds_ent.focus()
 			return
 
 		user_id = ask_user_id()
@@ -193,32 +201,31 @@ def open_filling_page():
 			return  # user cancelled
 
 		try:
-			amount = float(amount)
+			amt = float(amount)
 		except ValueError:
 			messagebox.showerror("Error", "Please enter a valid number")
+			add_qty_ent.focus(); meds_ent.focus()
 			return
 
-		if amount <= 0:
-			messagebox.showerror("Error", "Please enter a valid positive quantity to fill")
+		if amt < 0:
+			messagebox.showerror("Error", "Please enter a non-negative number")
+			add_qty_ent.focus(); meds_ent.focus()
 			return
 
-		# Perform database update and refresh UI
+		# Read old qty, update, commit
 		current_amount = inventory_service.find_quantity_by_din(cur, din)
+		receiving_service.increment_inventory_quantity(cur, con, din, amt)
 
-		if amount > current_amount:
-			messagebox.showerror("Error", "Not enough stock to remove that quantity")
-			return
-
-		filling_service.decrement_inventory_quantity(cur, con, din, amount)
-
-		workflow_debug_service.show_narcs_table()  # Refresh the narcotic table view
+		# Refresh UI
+		workflow_debug_service.show_narcs_table()
 		clear_display_fields()
 		refresh_page()
 		search_narc_din(din)
 
-		# Log the action to the audit log
-		workflow_audit_service.add_to_audit_log(din, current_amount, user_id, "filling")
+		# Audit
+		workflow_audit_service.add_to_audit_log(din, current_amount, user_id, "receiving")
 		workflow_debug_service.show_audit_log()
+
 
 	def search_narc_din(din): #function to find the meds in meds.py when refreshing the page
 		tup = inventory_service.find_narcs_by_din(cur, din)
@@ -240,7 +247,7 @@ def open_filling_page():
 			tup = inventory_service.find_narcs_by_din(cur, search_input)
 		else:
 			messagebox.showerror("Error", "Drug not found")
-			remove_qty_ent.focus()
+			add_qty_ent.focus()
 			meds_ent.focus()
 			clear_display_fields()
 			return
@@ -251,7 +258,7 @@ def open_filling_page():
 			select_pack_size(tup)
 		else:
 			messagebox.showerror("Error", "Drug not found")
-			remove_qty_ent.focus()
+			add_qty_ent.focus()
 			meds_ent.focus()
 			clear_display_fields()
 
@@ -273,9 +280,10 @@ def open_filling_page():
 		pack_med_output.configure(text="")
 		qty_med_output.configure(text="")
 
+
 	# Function to handle pack size selection when multiple results are found
 	def select_pack_size(tup):
-		choice_window = tk.Toplevel(filling_window)
+		choice_window = tk.Toplevel(receiving_window)
 		choice_window.title("Choose Pack Size")
 		choice_window.geometry("400x100")
 		choice_window.wm_attributes("-topmost", True)
@@ -304,7 +312,6 @@ def open_filling_page():
 
 
 
-
 	# Initialize the UI and start the Tkinter event loop
 	refresh_page()
-	filling_window.mainloop()
+	receiving_window.mainloop()

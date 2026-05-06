@@ -29,7 +29,7 @@ from auth import get_conn, migrate_auth, migrate_users, seed_from_env_if_needed,
 from config.paths import get_excel_path
 from db import catalog_database_service
 from diagnostics import startup_diagnostics
-import login
+from ui.login import main as login_main
 
 def initialize_startup_database():
 	# DB connection + migrations
@@ -54,7 +54,7 @@ def initialize_startup_database():
 def main():
 	initialize_startup_database()
 	# Launch login screen
-	login.main()
+	login_main()
 
 
 if __name__ == "__main__":

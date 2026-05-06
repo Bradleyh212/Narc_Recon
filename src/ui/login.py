@@ -1,7 +1,7 @@
 import tkinter as tk
 import customtkinter
 from tkinter import ttk, font, messagebox, PhotoImage
-from inventory import open_inventory_page
+from ui.inventory import open_inventory_page
 from customtkinter import CTkImage
 from PIL import Image
 from auth import authenticate_app

@@ -7,14 +7,14 @@ def open_inventory_page():
 	from tkinter import ttk, messagebox, simpledialog
 
 	# === Project Modules ===
-	from filling import open_filling_page
-	from receiving import open_receiving_page
-	from reconciliation import open_reconciliation_page
-	from report import open_report_page
-	from settings import open_settings_page
+	from ui.filling import open_filling_page
+	from ui.receiving import open_receiving_page
+	from ui.reconciliation import open_reconciliation_page
+	from ui.report import open_report_page
+	from ui.settings import open_settings_page
 	from auth import get_conn
 	from services import inventory_service
-	from ui_helpers import create_nav_bar
+	from ui.ui_helpers import create_nav_bar
 
 	# Connect to SQLite database
 	con = get_conn()

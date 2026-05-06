@@ -13,7 +13,7 @@ def safe_destroy(window):
 	window.destroy()
 
 def _open_settings_guard(parent_window):
-	from settings import open_settings_page
+	from ui.settings import open_settings_page
 
 	user_id = simpledialog.askstring("Access required", "Enter your user ID:", parent=parent_window)
 	if not user_id:
