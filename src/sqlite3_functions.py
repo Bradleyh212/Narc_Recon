@@ -1,59 +1,55 @@
 """
-Legacy compatibility module.
+Legacy compatibility shim.
 
 Production app code should use the focused service modules instead of importing
-from this file. This module is kept temporarily for tests and old compatibility
-callers while the remaining legacy coverage is migrated.
+from this file. This module is kept temporarily for old compatibility callers
+while the remaining legacy facade usage is retired.
 
-Do not add new dependencies on this module. Importing it is not neutral: it
-opens a database connection and runs catalog initialization at import time.
+Importing this module is intentionally passive: it does not open a database
+connection, create tables, or import the Excel catalog.
 """
 
 import os
+
 import pytz
-import sqlite3
 from prettytable import PrettyTable
-from audit_log_service import (
-	add_to_audit_log as add_audit_log_entry,
-	fetch_audit_log,
-	get_audit_log_by_din_and_date as fetch_audit_log_by_din_and_date,
-	get_reconciliation_log_by_date_range as fetch_reconciliation_log_by_date_range,
-)
+
+import audit_log_service
 from auth import get_conn
 import catalog_database_service
-from inventory_service import (
-	fetch_narcs_table,
-	find_narcs_by_din,
-	find_narcs_by_upc,
-	find_quantity_by_din,
-	find_quantity_by_upc,
-)
 import excel_import_service
-from paths import get_db_path, get_excel_path
+import inventory_service
+from paths import get_excel_path
 import schema_service
 import user_service
 
-# === Database Connection ===
-con = sqlite3.connect(get_db_path())
-cur = con.cursor()
 
-# === Timezone ===
-user_timezone = pytz.timezone('America/Toronto')
+user_timezone = pytz.timezone("America/Toronto")
+REQUIRED_EXCEL_COLUMNS = excel_import_service.REQUIRED_EXCEL_COLUMNS
 
-# === Create Tables ===
+
+def _with_connection(callback):
+	connection = get_conn()
+	try:
+		return callback(connection)
+	finally:
+		connection.close()
+
+
+def _with_cursor(callback):
+	return _with_connection(lambda connection: callback(connection.cursor(), connection))
+
 
 def create_narcs_table():
-	return schema_service.create_narcs_table(cur)
+	return _with_cursor(lambda cursor, _connection: schema_service.create_narcs_table(cursor))
+
 
 def create_narcs_details_table():
-	return schema_service.create_narcs_details_table(cur)
+	return _with_cursor(lambda cursor, _connection: schema_service.create_narcs_details_table(cursor))
+
 
 def create_audit_log_table():
-	return schema_service.create_audit_log_table(cur)
-
-# === Load Excel and Populate DB ===
-
-REQUIRED_EXCEL_COLUMNS = excel_import_service.REQUIRED_EXCEL_COLUMNS
+	return _with_cursor(lambda cursor, _connection: schema_service.create_audit_log_table(cursor))
 
 
 def validate_excel_columns(df):
@@ -75,92 +71,128 @@ def validate_excel_rows(df):
 def create_narc_list():
 	return excel_import_service.create_narc_list(get_excel_path())
 
-def from_excel_to_sql(narc_list):
-	return excel_import_service.from_excel_to_sql(cur, narc_list)
 
-# === Query Helpers ===
+def from_excel_to_sql(narc_list):
+	def import_rows(cursor, connection):
+		excel_import_service.from_excel_to_sql(cursor, narc_list)
+		connection.commit()
+
+	return _with_cursor(import_rows)
+
 
 def find_narcs_upc(upc):
-	return find_narcs_by_upc(cur, upc)
+	return _with_cursor(lambda cursor, _connection: inventory_service.find_narcs_by_upc(cursor, upc))
+
 
 def find_narcs_din(din):
-	return find_narcs_by_din(cur, din)
+	return _with_cursor(lambda cursor, _connection: inventory_service.find_narcs_by_din(cursor, din))
+
 
 def find_quantity(upc):
-	return find_quantity_by_upc(cur, upc)
+	return _with_cursor(lambda cursor, _connection: inventory_service.find_quantity_by_upc(cursor, upc))
+
 
 def find_quantity_din(din):
-	return find_quantity_by_din(cur, din)
+	return _with_cursor(lambda cursor, _connection: inventory_service.find_quantity_by_din(cursor, din))
 
-# === User Functions ===
 
 def add_user(user_id: str, role: str = "Assistant"):
-	return user_service.add_user(get_conn(), user_id, role)
+	return _with_connection(lambda connection: user_service.add_user(connection, user_id, role))
+
 
 def get_user_role(user_id):
-	return user_service.get_user_role(get_conn(), user_id)
+	return _with_connection(lambda connection: user_service.get_user_role(connection, user_id))
+
 
 def list_users():
-	return user_service.list_users(get_conn())
+	return _with_connection(user_service.list_users)
+
 
 def list_user_ids():
-	return user_service.list_user_ids(get_conn())
+	return _with_connection(user_service.list_user_ids)
+
 
 def remove_user(user_id: str):
-	return user_service.remove_user(get_conn(), user_id)
+	return _with_connection(lambda connection: user_service.remove_user(connection, user_id))
+
 
 def user_exists(user_id: str) -> bool:
-	return user_service.user_exists(get_conn(), user_id)
+	return _with_connection(lambda connection: user_service.user_exists(connection, user_id))
 
-# === Audit Log Functions ===
 
 def add_to_audit_log(din, old_qty, user, transaction_type):
-	return add_audit_log_entry(
-		cur,
-		con,
-		din,
-		old_qty,
-		user,
-		transaction_type,
-		user_exists,
-		find_quantity_din,
-		user_timezone,
-	)
+	def write_audit_entry(cursor, connection):
+		return audit_log_service.add_to_audit_log(
+			cursor,
+			connection,
+			din,
+			old_qty,
+			user,
+			transaction_type,
+			lambda user_id: user_service.user_exists(connection, user_id),
+			lambda narc_din: inventory_service.find_quantity_by_din(cursor, narc_din),
+			user_timezone,
+		)
+
+	return _with_cursor(write_audit_entry)
+
 
 def show_audit_log():
-	column_names, rows = fetch_audit_log(cur)
-	table = PrettyTable()
-	table.field_names = column_names
+	def print_audit_table(cursor, _connection):
+		column_names, rows = audit_log_service.fetch_audit_log(cursor)
+		table = PrettyTable()
+		table.field_names = column_names
 
-	for row in rows:
-		table.add_row(row)
+		for row in rows:
+			table.add_row(row)
 
-	print(table)
+		print(table)
+
+	return _with_cursor(print_audit_table)
+
 
 def show_narcs_table():
-	column_names, rows = fetch_narcs_table(cur)
-	table = PrettyTable()
-	table.field_names = column_names
+	def build_narcs_table(cursor, _connection):
+		column_names, rows = inventory_service.fetch_narcs_table(cursor)
+		table = PrettyTable()
+		table.field_names = column_names
 
-	for row in rows:
-		table.add_row(row)
+		for row in rows:
+			table.add_row(row)
 
-	# print(table)
+	return _with_cursor(build_narcs_table)
 
 
 def get_audit_log_by_din_and_date(din, start_date, end_date):
-	return fetch_audit_log_by_din_and_date(cur, din, start_date, end_date)
+	return _with_cursor(
+		lambda cursor, _connection: audit_log_service.get_audit_log_by_din_and_date(
+			cursor,
+			din,
+			start_date,
+			end_date,
+		)
+	)
 
-# Search for all reconciliation-type audit log entries between start_date and end_date.
+
 def get_reconciliation_log_by_date_range(start_date, end_date):
-	return fetch_reconciliation_log_by_date_range(cur, start_date, end_date)
+	return _with_cursor(
+		lambda cursor, _connection: audit_log_service.get_reconciliation_log_by_date_range(
+			cursor,
+			start_date,
+			end_date,
+		)
+	)
+
 
 def should_debug_startup():
 	return os.environ.get("NARC_RECON_DEBUG_STARTUP") == "1"
 
 
 def initialize_database_from_excel(debug=None):
-	catalog_database_service.initialize_database_from_excel(cur, con, get_excel_path())
+	def initialize(cursor, connection):
+		catalog_database_service.initialize_database_from_excel(cursor, connection, get_excel_path())
+
+	return_value = _with_cursor(initialize)
 
 	if debug is None:
 		debug = should_debug_startup()
@@ -168,6 +200,4 @@ def initialize_database_from_excel(debug=None):
 		show_narcs_table()
 		show_audit_log()
 
-
-# === Initialize All Tables and Data ===
-initialize_database_from_excel()
+	return return_value

@@ -12,15 +12,6 @@ if str(SRC) not in sys.path:
 
 
 def unload_app_modules():
-	sqlite_module = sys.modules.get("sqlite3_functions")
-	if sqlite_module is not None:
-		con = getattr(sqlite_module, "con", None)
-		if con is not None:
-			try:
-				con.close()
-			except Exception:
-				pass
-
 	for module_name in ("sqlite3_functions", "auth", "paths"):
 		sys.modules.pop(module_name, None)
 

@@ -305,7 +305,7 @@ Excel catalog:
 These items should not block a controlled deployment if backup, audit, login, and packaging checks pass:
 
 - Further service refactoring.
-- Removing `sqlite3_functions.py` import-time initialization.
+- Deleting the legacy `sqlite3_functions.py` compatibility shim.
 - Changing audit internals.
 - Redesigning database connection ownership.
 - Changing report styling.
@@ -317,4 +317,4 @@ For first deployment, prioritize a controlled rollout with known users, verified
 
 ### Legacy Compatibility Note
 
-`sqlite3_functions.py` is legacy compatibility only. New production app code should use the focused service modules directly. Future cleanup should migrate the remaining tests away from `sqlite3_functions.py` before deleting it or removing its import-time initialization.
+`sqlite3_functions.py` is legacy compatibility only. New production app code should use the focused service modules directly. The module no longer performs catalog initialization at import time; future cleanup can delete the shim after remaining compatibility tests are retired.
