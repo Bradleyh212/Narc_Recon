@@ -2,7 +2,7 @@ import sqlite3
 
 import pandas as pd
 
-import catalog_database_service
+from db import catalog_database_service
 
 
 def sample_catalog_df():

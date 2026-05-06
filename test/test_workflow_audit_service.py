@@ -18,7 +18,7 @@ def load_workflow_audit_service(monkeypatch, tmp_path, fresh_app_modules):
 	sys.modules.pop("workflow_audit_service", None)
 
 	auth = importlib.import_module("auth")
-	schema_service = importlib.import_module("schema_service")
+	schema_service = importlib.import_module("db.schema_service")
 
 	connection = auth.get_conn()
 	try:

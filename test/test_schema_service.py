@@ -1,6 +1,6 @@
 import sqlite3
 
-import schema_service
+from db import schema_service
 
 
 def table_info(cursor, table_name):

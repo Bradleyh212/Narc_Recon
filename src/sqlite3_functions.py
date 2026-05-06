@@ -16,11 +16,11 @@ from prettytable import PrettyTable
 
 import audit_log_service
 from auth import get_conn
-import catalog_database_service
+from db import catalog_database_service
+from db import schema_service
 import excel_import_service
 import inventory_service
 from config.paths import get_excel_path
-import schema_service
 import user_service
 
 

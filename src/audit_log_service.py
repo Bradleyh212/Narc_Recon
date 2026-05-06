@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import pytz
-import schema_service
+from db import schema_service
 
 
 def local_timestamp(timezone):
