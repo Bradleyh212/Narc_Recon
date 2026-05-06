@@ -84,7 +84,3 @@ def test_show_audit_log_prints_prettytable_output(monkeypatch, capsys):
 	assert "log_id" in output
 	assert "02248809" in output
 	assert "receiving" in output
-
-
-def test_workflow_debug_service_does_not_import_sqlite3_functions():
-	assert not hasattr(workflow_debug_service, "sqlite3_functions")

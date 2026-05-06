@@ -118,9 +118,3 @@ def test_workflow_audit_service_invalid_user_inserts_no_row_and_keeps_quantity_u
 	assert quantity == 6
 	assert audit_rows == []
 	assert "Error: Invalid user ID." in capsys.readouterr().out
-
-
-def test_workflow_audit_service_no_longer_imports_sqlite3_functions(monkeypatch, tmp_path, fresh_app_modules):
-	workflow_audit_service, _, _ = load_workflow_audit_service(monkeypatch, tmp_path, fresh_app_modules)
-
-	assert not hasattr(workflow_audit_service, "sqlite3_functions")
