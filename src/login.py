@@ -5,7 +5,7 @@ from inventory import open_inventory_page
 from customtkinter import CTkImage
 from PIL import Image
 from auth import authenticate_app
-from paths import LOGO_PATH
+from config.paths import LOGO_PATH
 
 
 def main():

@@ -27,9 +27,9 @@ if should_run_dev_update():
 
 from auth import get_conn, migrate_auth, migrate_users, seed_from_env_if_needed, app_account_exists, create_account_window
 import catalog_database_service
+from config.paths import get_excel_path
+from diagnostics import startup_diagnostics
 import login
-from paths import get_excel_path
-import startup_diagnostics
 
 def initialize_startup_database():
 	# DB connection + migrations

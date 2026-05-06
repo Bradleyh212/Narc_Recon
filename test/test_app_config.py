@@ -2,7 +2,7 @@ import importlib
 
 
 def import_app_config():
-	return importlib.import_module("app_config")
+	return importlib.import_module("config.app_config")
 
 
 def test_read_local_config_parses_supported_key_value_lines(tmp_path):

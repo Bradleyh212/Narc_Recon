@@ -18,8 +18,8 @@ def make_diagnostic_connection():
 
 
 def import_startup_diagnostics():
-	sys.modules.pop("startup_diagnostics", None)
-	return importlib.import_module("startup_diagnostics")
+	sys.modules.pop("diagnostics.startup_diagnostics", None)
+	return importlib.import_module("diagnostics.startup_diagnostics")
 
 
 def test_write_startup_log_records_paths_and_table_counts(monkeypatch, tmp_path, fresh_app_modules):

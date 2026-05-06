@@ -7,7 +7,7 @@ def test_get_db_path_defaults_to_user_data_database(monkeypatch, tmp_path, fresh
 	home_path = tmp_path / "home"
 	monkeypatch.setenv("HOME", str(home_path))
 	monkeypatch.delenv("NARC_RECON_DB_PATH", raising=False)
-	paths = importlib.import_module("paths")
+	paths = importlib.import_module("config.paths")
 
 	db_path = paths.get_db_path()
 
@@ -26,7 +26,7 @@ def test_get_db_path_uses_env_override(monkeypatch, tmp_path, fresh_app_modules)
 	db_path = tmp_path / "nested" / "override.db"
 	monkeypatch.setenv("HOME", str(home_path))
 	monkeypatch.setenv("NARC_RECON_DB_PATH", str(db_path))
-	paths = importlib.import_module("paths")
+	paths = importlib.import_module("config.paths")
 
 	assert paths.get_db_path() == db_path
 	assert db_path.parent.is_dir()
@@ -43,7 +43,7 @@ def test_get_db_path_uses_local_config_when_env_missing(monkeypatch, tmp_path, f
 	)
 	monkeypatch.setenv("HOME", str(home_path))
 	monkeypatch.delenv("NARC_RECON_DB_PATH", raising=False)
-	paths = importlib.import_module("paths")
+	paths = importlib.import_module("config.paths")
 
 	db_path = paths.get_db_path()
 
@@ -62,7 +62,7 @@ def test_get_excel_path_uses_env_override(monkeypatch, tmp_path, fresh_app_modul
 	excel_path = tmp_path / "override.xlsx"
 	monkeypatch.setenv("HOME", str(home_path))
 	monkeypatch.setenv("NARC_RECON_EXCEL_PATH", str(excel_path))
-	paths = importlib.import_module("paths")
+	paths = importlib.import_module("config.paths")
 
 	assert paths.get_excel_path() == excel_path
 
@@ -78,7 +78,7 @@ def test_get_excel_path_uses_local_config_when_env_missing(monkeypatch, tmp_path
 	)
 	monkeypatch.setenv("HOME", str(home_path))
 	monkeypatch.delenv("NARC_RECON_EXCEL_PATH", raising=False)
-	paths = importlib.import_module("paths")
+	paths = importlib.import_module("config.paths")
 
 	assert paths.get_excel_path() == excel_path
 
@@ -89,7 +89,7 @@ def test_bundled_resource_paths_use_pyinstaller_resource_directory(monkeypatch, 
 	monkeypatch.setattr(sys, "frozen", True, raising=False)
 	monkeypatch.setattr(sys, "_MEIPASS", str(tmp_path), raising=False)
 
-	paths = importlib.import_module("paths")
+	paths = importlib.import_module("config.paths")
 
 	assert paths.get_excel_path() == tmp_path / "med_sheet.xlsx"
 	assert paths.LOGO_PATH == tmp_path / "others" / "logo_nr.png"

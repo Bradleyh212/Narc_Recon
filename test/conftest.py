@@ -12,7 +12,15 @@ if str(SRC) not in sys.path:
 
 
 def unload_app_modules():
-	for module_name in ("sqlite3_functions", "auth", "paths"):
+	for module_name in (
+		"sqlite3_functions",
+		"auth",
+		"config.paths",
+		"config.app_config",
+		"config",
+		"diagnostics.startup_diagnostics",
+		"diagnostics",
+	):
 		sys.modules.pop(module_name, None)
 
 

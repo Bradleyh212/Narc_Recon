@@ -19,7 +19,7 @@ from auth import get_conn
 import catalog_database_service
 import excel_import_service
 import inventory_service
-from paths import get_excel_path
+from config.paths import get_excel_path
 import schema_service
 import user_service
 
