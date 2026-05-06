@@ -5,6 +5,7 @@ from argon2 import PasswordHasher
 import customtkinter as ctk
 from tkinter import messagebox
 from config import app_config
+from db import auth_schema
 from db import connection
 
 DB_PATH = connection.DB_PATH
@@ -27,26 +28,10 @@ def get_conn():
 	return connection.get_conn()
 
 def migrate_auth(conn):
-	with conn:
-		conn.executescript("""
-		CREATE TABLE IF NOT EXISTS app_account (
-			id INTEGER PRIMARY KEY CHECK (id = 1),
-			username TEXT NOT NULL UNIQUE,
-			password_hash TEXT NOT NULL,
-			last_login_utc TEXT
-		);
-		""")
+	return auth_schema.migrate_auth(conn)
 
 def migrate_users(conn):
-	with conn:
-		conn.executescript("""
-		CREATE TABLE IF NOT EXISTS users (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			user_id TEXT NOT NULL UNIQUE,
-			role TEXT DEFAULT 'staff',
-			created_at TEXT NOT NULL
-		);
-		""")
+	return auth_schema.migrate_users(conn)
 
 def app_account_exists(conn) -> bool:
 	row = conn.execute("SELECT COUNT(*) FROM app_account").fetchone()

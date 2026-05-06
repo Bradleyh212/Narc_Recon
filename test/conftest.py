@@ -14,6 +14,7 @@ if str(SRC) not in sys.path:
 def unload_app_modules():
 	for module_name in (
 		"auth",
+		"db.auth_schema",
 		"db.catalog_database_service",
 		"db.connection",
 		"db.schema_service",
