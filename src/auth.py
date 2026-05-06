@@ -5,9 +5,9 @@ from argon2 import PasswordHasher
 import customtkinter as ctk
 from tkinter import messagebox
 from config import app_config
-from config.paths import get_db_path
+from db import connection
 
-DB_PATH = get_db_path()
+DB_PATH = connection.DB_PATH
 PEPPER = app_config.get_config_value("NARC_RECON_PEPPER", "dev-pepper-change-me")
 ph = PasswordHasher()
 
@@ -24,10 +24,7 @@ def _verify_secret(hashv: str, secret: str) -> bool:
 		return False
 
 def get_conn():
-	conn = sqlite3.connect(DB_PATH, timeout=10, isolation_level=None)
-	conn.execute("PRAGMA foreign_keys = ON;")
-	conn.execute("PRAGMA journal_mode = WAL;")
-	return conn
+	return connection.get_conn()
 
 def migrate_auth(conn):
 	with conn:
