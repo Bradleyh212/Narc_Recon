@@ -1,93 +1,39 @@
-def open_inventory_page():
-	# Inventory page setup, full-screen, non-resizable window
+import tkinter as tk
+from tkinter import ttk, messagebox
 
-	# === Standard Library ===
-	import tkinter as tk
-	import customtkinter as ctk
-	from tkinter import ttk, messagebox, simpledialog
+import customtkinter as ctk
 
-	# === Project Modules ===
-	from ui.filling import open_filling_page
-	from ui.receiving import open_receiving_page
-	from ui.reconciliation import open_reconciliation_page
-	from ui.report import open_report_page
-	from ui.settings import open_settings_page
-	from db.connection import get_conn
-	from services import inventory_service
-	from ui.ui_helpers import create_nav_bar
+from db.connection import get_conn
+from services import inventory_service
+from ui.base_page import BasePage
+from ui.ui_helpers import create_nav_bar
 
-	# Connect to SQLite database
-	con = get_conn()
-	cur = con.cursor()
 
-	# Initialize Inventory window
-	inventory_window = ctk.CTk()
-	inventory_window.title("Narc Recon")
+class InventoryPage(BasePage):
+	def __init__(self):
+		super().__init__()
+		self.con = get_conn()
+		self.cur = self.con.cursor()
+		self.configure_root()
+		self.create_shell_frames()
+		self.root.bind('<Return>', lambda event: self.search_narcs())
 
-	main_background_color = "#1C1C1C"
-	nav_and_header_background_color = "#181818"
+	def run(self):
+		self.refresh_page()
+		self.root.mainloop()
 
-	button_color = "#3B4B59"
-	button_corner_radius = 20
-	button_hover_color="#468189"
+	def refresh_page(self):
+		self.create_title_label("INVENTORY")
+		self.create_nav()
+		self.create_inventory_widgets()
 
-	ctk.set_appearance_mode("dark")
-	ctk.set_default_color_theme("dark-blue")
-	inventory_window.configure(fg_color=main_background_color)
+	def create_nav(self):
+		from ui.filling import open_filling_page
+		from ui.receiving import open_receiving_page
+		from ui.reconciliation import open_reconciliation_page
+		from ui.report import open_report_page
+		from ui.settings import open_settings_page
 
-	w = 1000
-	h = 600
-	window_width = inventory_window.winfo_screenwidth()
-	window_height = inventory_window.winfo_screenheight()
-	x = (window_width / 2) - (w / 2)
-	y = (window_height / 2) - (h / 2)
-	inventory_window.geometry(f'{w}x{h}+{int(x)}+{int(y)}')
-
-	# Disable resizing
-	inventory_window.resizable(False, False)
-
-	# Fonts
-	header_font = ("Inter", 40)
-	font = ("Inter", 30)
-
-	# === Frames ===
-	header_frame = tk.Frame(inventory_window, width=w, height=75, bg=nav_and_header_background_color)
-	header_frame.grid(row=0, column=0)
-	header_frame.columnconfigure(1, weight=1)
-	header_frame.grid_propagate(False)
-
-	# Navigation frame
-	nav_frame = ctk.CTkFrame(header_frame, width=700, height=20, fg_color=nav_and_header_background_color)
-	nav_frame.grid(row=0, column=1, sticky="e", pady=20)
-	nav_frame.pack_propagate(False)
-
-	body_frame = ctk.CTkFrame(inventory_window, width=1000, height=400)
-	body_frame.grid(row=1, column=0, pady=(60,0))
-	body_frame.columnconfigure(0, weight=1)
-	body_frame.columnconfigure(1, weight=1)
-	body_frame.grid_propagate(False)
-	body_frame.configure(fg_color=main_background_color)
-
-	left_body_frame = ctk.CTkFrame(body_frame, width=500, height=400, corner_radius=20)
-	left_body_frame.grid(row=0, column=0, sticky="w", padx=(60,0), pady=(0, 200))
-	left_body_frame.columnconfigure(0, weight=1)
-	left_body_frame.columnconfigure(1, weight=1)
-	left_body_frame.grid_propagate(False)
-
-	right_body_frame = ctk.CTkFrame(body_frame, width=300, height=400, corner_radius=20)
-	right_body_frame.grid(row=0, column=1, sticky="e", padx=(0, 60), pady=(0, 200))
-	right_body_frame.grid_propagate(False)
-
-	inventory_window.bind('<Return>', lambda event: search_narcs())
-
-	def refresh_page():
-		global meds_ent, name_lbl_output, din__med_output, strength_lbl_output, drug_form_output, pack_med_output, qty_med_output
-
-		# Title
-		page_title = ctk.CTkLabel(header_frame, text="INVENTORY", font=header_font)
-		page_title.grid(row=0, column=0, sticky="w", padx=(60,0), pady=(10,5))
-
-		# --- Dropdown Menu + Settings Button ---
 		pages = {
 			"INVENTORY": open_inventory_page,
 			"FILLING": open_filling_page,
@@ -98,98 +44,109 @@ def open_inventory_page():
 		}
 
 		create_nav_bar(
-			inventory_window,
-			nav_frame,
+			self.root,
+			self.nav_frame,
 			"INVENTORY",
 			pages,
-			button_color,
-			button_corner_radius,
-			button_hover_color
+			self.button_color,
+			self.button_corner_radius,
+			self.button_hover_color
 		)
 
-		### Left Frame
-		meds_ent = ctk.CTkEntry(left_body_frame, placeholder_text="Enter upc or din", width=200, font=font, justify="center", corner_radius=20)
-		meds_ent.grid(row=0, column=0, sticky="ew", pady=30, padx=10)
-		meds_ent.focus()
-		meds_ent.bind("<FocusIn>", on_focus_in)
-		meds_ent.bind("<FocusOut>", on_focus_out)
+	def create_inventory_widgets(self):
+		self.meds_ent = ctk.CTkEntry(
+			self.left_body_frame,
+			placeholder_text="Enter upc or din",
+			width=200,
+			font=self.font,
+			justify="center",
+			corner_radius=20,
+		)
+		self.meds_ent.grid(row=0, column=0, sticky="ew", pady=30, padx=10)
+		self.meds_ent.focus()
+		self.meds_ent.bind("<FocusIn>", lambda event: self.on_focus_in(self.meds_ent))
+		self.meds_ent.bind("<FocusOut>", lambda event: self.on_focus_out(self.meds_ent))
 
-		search_btn = ctk.CTkButton(left_body_frame, text="SEARCH", command=search_narcs, width=100,
-			fg_color=button_color, corner_radius=button_corner_radius, hover_color=button_hover_color)
+		search_btn = ctk.CTkButton(
+			self.left_body_frame,
+			text="SEARCH",
+			command=self.search_narcs,
+			width=100,
+			fg_color=self.button_color,
+			corner_radius=self.button_corner_radius,
+			hover_color=self.button_hover_color,
+		)
 		search_btn.grid(row=0, column=1, sticky="ew", pady=20, padx=10)
 
-		name_lbl_output = ctk.CTkLabel(left_body_frame, font=font, text="")
-		name_lbl_output.grid(row=2, columnspan=2, pady=(20,0))
+		self.name_lbl_output = ctk.CTkLabel(self.left_body_frame, font=self.font, text="")
+		self.name_lbl_output.grid(row=2, columnspan=2, pady=(20, 0))
 
-		din__med_output = ctk.CTkLabel(left_body_frame, font=font, text="")
-		din__med_output.grid(row=3, columnspan=2, pady=(20,0))
+		self.din__med_output = ctk.CTkLabel(self.left_body_frame, font=self.font, text="")
+		self.din__med_output.grid(row=3, columnspan=2, pady=(20, 0))
 
-		strength_lbl_output = ctk.CTkLabel(left_body_frame, font=font, text="")
-		strength_lbl_output.grid(row=4, columnspan=2, pady=(20,0))
+		self.strength_lbl_output = ctk.CTkLabel(self.left_body_frame, font=self.font, text="")
+		self.strength_lbl_output.grid(row=4, columnspan=2, pady=(20, 0))
 
-		drug_form_output = ctk.CTkLabel(left_body_frame, font=font, text="")
-		drug_form_output.grid(row=5, columnspan=2, pady=(20,0))
+		self.drug_form_output = ctk.CTkLabel(self.left_body_frame, font=self.font, text="")
+		self.drug_form_output.grid(row=5, columnspan=2, pady=(20, 0))
 
-		pack_med_output = ctk.CTkLabel(left_body_frame, font=font, text="")
-		pack_med_output.grid(row=6, columnspan=2, pady=(20,0))
+		self.pack_med_output = ctk.CTkLabel(self.left_body_frame, font=self.font, text="")
+		self.pack_med_output.grid(row=6, columnspan=2, pady=(20, 0))
 
-		### Right Frame
-		qty_med_lbl = ctk.CTkLabel(right_body_frame, text="ON HAND", width=10, font=font)
+		qty_med_lbl = ctk.CTkLabel(self.right_body_frame, text="ON HAND", width=10, font=self.font)
 		qty_med_lbl.grid(row=1, padx=(80, 0), pady=(30, 15))
 
-		qty_med_output = ctk.CTkLabel(right_body_frame, width=10, font=font, text="")
-		qty_med_output.grid(row=2, padx=(80, 0), pady=(0, 50))
+		self.qty_med_output = ctk.CTkLabel(self.right_body_frame, width=10, font=self.font, text="")
+		self.qty_med_output.grid(row=2, padx=(80, 0), pady=(0, 50))
 
-	# === Search + Helper Functions ===
-	def search_narc_din(din):
-		tup = inventory_service.find_narcs_by_din(cur, din)
-		name_lbl_output.configure(text=tup[0][1])
-		din__med_output.configure(text=tup[0][0])
-		strength_lbl_output.configure(text=tup[0][4])
-		drug_form_output.configure(text=tup[0][5])
-		pack_med_output.configure(text="PACK SIZE " + tup[0][6])
-		qty_med_output.configure(text=inventory_service.find_quantity_by_upc(cur, tup[0][3]))
+	def search_narc_din(self, din):
+		tup = inventory_service.find_narcs_by_din(self.cur, din)
+		self.name_lbl_output.configure(text=tup[0][1])
+		self.din__med_output.configure(text=tup[0][0])
+		self.strength_lbl_output.configure(text=tup[0][4])
+		self.drug_form_output.configure(text=tup[0][5])
+		self.pack_med_output.configure(text="PACK SIZE " + tup[0][6])
+		self.qty_med_output.configure(text=inventory_service.find_quantity_by_upc(self.cur, tup[0][3]))
 
-	def search_narcs():
-		global search_input
-		search_input = meds_ent.get()
-		meds_ent.delete(0, "end")
+	def search_narcs(self):
+		search_input = self.meds_ent.get()
+		self.meds_ent.delete(0, "end")
 
 		if len(search_input) == 12:
-			tup = inventory_service.find_narcs_by_upc(cur, search_input)
+			tup = inventory_service.find_narcs_by_upc(self.cur, search_input)
 		elif len(search_input) == 8:
-			tup = inventory_service.find_narcs_by_din(cur, search_input)
+			tup = inventory_service.find_narcs_by_din(self.cur, search_input)
 		else:
 			messagebox.showerror("Error", "Drug not found")
-			clear_display_fields()
+			self.clear_display_fields()
 			return
 
 		if len(tup) == 1:
-			display_narcotic_info(tup[0])
+			self.display_narcotic_info(tup[0])
 		elif len(tup) > 1:
-			select_pack_size(tup)
+			self.select_pack_size(tup)
 		else:
 			messagebox.showerror("Error", "Drug not found")
-			clear_display_fields()
+			self.clear_display_fields()
 
-	def display_narcotic_info(narc):
-		name_lbl_output.configure(text=narc[1])
-		din__med_output.configure(text=narc[0])
-		strength_lbl_output.configure(text=narc[4])
-		drug_form_output.configure(text=narc[5])
-		pack_med_output.configure(text="PACK SIZE " + narc[6])
-		qty_med_output.configure(text=inventory_service.find_quantity_by_upc(cur, narc[3]))
+	def display_narcotic_info(self, narc):
+		self.name_lbl_output.configure(text=narc[1])
+		self.din__med_output.configure(text=narc[0])
+		self.strength_lbl_output.configure(text=narc[4])
+		self.drug_form_output.configure(text=narc[5])
+		self.pack_med_output.configure(text="PACK SIZE " + narc[6])
+		self.qty_med_output.configure(text=inventory_service.find_quantity_by_upc(self.cur, narc[3]))
 
-	def clear_display_fields():
-		name_lbl_output.configure(text="")
-		din__med_output.configure(text="")
-		strength_lbl_output.configure(text="")
-		drug_form_output.configure(text="")
-		pack_med_output.configure(text="")
-		qty_med_output.configure(text="")
+	def clear_display_fields(self):
+		self.name_lbl_output.configure(text="")
+		self.din__med_output.configure(text="")
+		self.strength_lbl_output.configure(text="")
+		self.drug_form_output.configure(text="")
+		self.pack_med_output.configure(text="")
+		self.qty_med_output.configure(text="")
 
-	def select_pack_size(tup):
-		choice_window = tk.Toplevel(inventory_window)
+	def select_pack_size(self, tup):
+		choice_window = tk.Toplevel(self.root)
 		choice_window.title("Choose Pack Size")
 		choice_window.geometry("400x100")
 		choice_window.wm_attributes("-topmost", True)
@@ -204,18 +161,12 @@ def open_inventory_page():
 		def on_select_pack_size():
 			selected_index = pack_size_dropdown.current()
 			selected_pack = tup[selected_index]
-			display_narcotic_info(selected_pack)
+			self.display_narcotic_info(selected_pack)
 			choice_window.destroy()
 
 		select_btn = tk.Button(choice_window, text="Select", command=on_select_pack_size)
 		select_btn.pack()
 
-	def on_focus_in(event):
-		meds_ent.configure(border_color="#3B4B59")
 
-	def on_focus_out(event):
-		meds_ent.configure(border_color="#444")
-
-	# Run UI
-	refresh_page()
-	inventory_window.mainloop()
+def open_inventory_page():
+	InventoryPage().run()
