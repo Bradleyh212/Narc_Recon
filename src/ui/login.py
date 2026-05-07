@@ -4,7 +4,7 @@ from tkinter import ttk, font, messagebox, PhotoImage
 from ui.inventory import open_inventory_page
 from customtkinter import CTkImage
 from PIL import Image
-from auth import authenticate_app
+from services.auth_service import authenticate_app
 from config.paths import LOGO_PATH
 
 
