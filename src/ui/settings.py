@@ -2,7 +2,7 @@
 import tkinter as tk
 import customtkinter as ctk
 from tkinter import messagebox
-from auth import get_conn
+from db.connection import get_conn
 from ui.ui_helpers import create_nav_bar
 from services import user_service
 

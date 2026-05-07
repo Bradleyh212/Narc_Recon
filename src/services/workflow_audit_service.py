@@ -1,6 +1,6 @@
 import pytz
 
-from auth import get_conn
+from db.connection import get_conn
 from services import audit_log_service
 from services import inventory_service
 from services import user_service

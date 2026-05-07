@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from tkinter import messagebox, simpledialog
-from auth import get_conn
+from db.connection import get_conn
 from services import user_service
 
 def safe_destroy(window):

@@ -12,7 +12,7 @@ def open_reconciliation_page():
 	from ui.receiving import open_receiving_page
 	from ui.report import open_report_page
 	from ui.settings import open_settings_page
-	from auth import get_conn
+	from db.connection import get_conn
 	from ui.ui_helpers import create_nav_bar
 	from services import inventory_service
 	from services import reconciliation_service
