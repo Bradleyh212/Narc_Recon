@@ -25,10 +25,13 @@ if should_run_dev_update():
 	update_code()
 	install_requirements()
 
-from auth import get_conn, migrate_auth, migrate_users, seed_from_env_if_needed, app_account_exists, create_account_window
 from config.paths import get_excel_path
+from db.auth_schema import migrate_auth, migrate_users
 from db import catalog_database_service
+from db.connection import get_conn
 from diagnostics import startup_diagnostics
+from services.auth_service import seed_from_env_if_needed, app_account_exists
+from ui.first_run_setup import create_account_window
 from ui.login import main as login_main
 
 def initialize_startup_database():
