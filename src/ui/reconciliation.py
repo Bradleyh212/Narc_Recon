@@ -1,4 +1,4 @@
-from tkinter import messagebox, simpledialog
+from tkinter import messagebox
 
 import customtkinter as ctk
 
@@ -91,22 +91,6 @@ class ReconciliationPage(BaseNarcoticPage):
 			hover_color="#D64545",
 		)
 		expired_btn.grid(row=0, column=1, padx=4)
-
-	def ask_user_id(self):
-		while True:
-			user_id = simpledialog.askstring("Input", "Please enter your user ID:", parent=self.root)
-
-			# If cancelled or closed
-			if user_id is None:
-				messagebox.showinfo("Cancelled", "Operation cancelled")
-				return None
-
-			# If user exists in DB
-			if user_service.user_exists(get_conn(), user_id.strip()):
-				return user_id.strip()
-
-			# If invalid
-			messagebox.showerror("Error", "Please enter a valid user ID")
 
 	def set_quantity(self, amount, inpt):
 		if len(inpt) == 12:

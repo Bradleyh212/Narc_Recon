@@ -1,11 +1,9 @@
-from tkinter import messagebox, simpledialog
+from tkinter import messagebox
 
 import customtkinter as ctk
 
-from db.connection import get_conn
 from services import filling_service
 from services import inventory_service
-from services import user_service
 from services import workflow_audit_service
 from services import workflow_debug_service
 from ui.base_narcotic_page import BaseNarcoticPage
@@ -78,22 +76,6 @@ class FillingPage(BaseNarcoticPage):
 			hover_color=self.button_hover_color,
 		)
 		remove_qty_btn.grid(row=4)
-
-	def ask_user_id(self):
-		while True:
-			user_id = simpledialog.askstring("Input", "Please enter your user ID:", parent=self.root)
-
-			# If cancelled or closed
-			if user_id is None:
-				messagebox.showinfo("Cancelled", "Operation cancelled")
-				return None
-
-			# If user exists in DB
-			if user_service.user_exists(get_conn(), user_id.strip()):
-				return user_id.strip()
-
-			# If invalid
-			messagebox.showerror("Error", "Please enter a valid user ID")
 
 	def remove_quantity(self, amount, inpt):
 		if len(inpt) == 12:

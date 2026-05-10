@@ -1,10 +1,11 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox, simpledialog
 
 import customtkinter as ctk
 
 from db.connection import get_conn
 from services import inventory_service
+from services import user_service
 from ui.base_page import BasePage
 
 
@@ -73,6 +74,22 @@ class BaseNarcoticPage(BasePage):
 		if output_padx is not None:
 			output_grid_options["padx"] = output_padx
 		self.qty_med_output.grid(**output_grid_options)
+
+	def ask_user_id(self):
+		while True:
+			user_id = simpledialog.askstring("Input", "Please enter your user ID:", parent=self.root)
+
+			# If cancelled or closed
+			if user_id is None:
+				messagebox.showinfo("Cancelled", "Operation cancelled")
+				return None
+
+			# If user exists in DB
+			if user_service.user_exists(get_conn(), user_id.strip()):
+				return user_id.strip()
+
+			# If invalid
+			messagebox.showerror("Error", "Please enter a valid user ID")
 
 	def search_narc_din(self, din):
 		tup = inventory_service.find_narcs_by_din(self.cur, din)
