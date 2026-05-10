@@ -1,6 +1,3 @@
-from tkinter import messagebox
-
-from services import inventory_service
 from ui.base_narcotic_page import BaseNarcoticPage
 from ui.ui_helpers import create_nav_bar
 
@@ -56,28 +53,6 @@ class InventoryPage(BaseNarcoticPage):
 			output_padx=(80, 0),
 			output_pady=(0, 50),
 		)
-
-	def search_narcs(self):
-		search_input = self.meds_ent.get()
-		self.meds_ent.delete(0, "end")
-
-		if len(search_input) == 12:
-			tup = inventory_service.find_narcs_by_upc(self.cur, search_input)
-		elif len(search_input) == 8:
-			tup = inventory_service.find_narcs_by_din(self.cur, search_input)
-		else:
-			messagebox.showerror("Error", "Drug not found")
-			self.clear_display_fields()
-			return
-
-		if len(tup) == 1:
-			self.display_narcotic_info(tup[0])
-		elif len(tup) > 1:
-			self.select_pack_size(tup)
-		else:
-			messagebox.showerror("Error", "Drug not found")
-			self.clear_display_fields()
-
 
 def open_inventory_page():
 	InventoryPage().run()

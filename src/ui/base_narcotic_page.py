@@ -10,6 +10,9 @@ from ui.base_page import BasePage
 
 
 class BaseNarcoticPage(BasePage):
+	store_search_input = False
+	search_error_focus_attr = None
+
 	def __init__(self):
 		super().__init__()
 		self.con = get_conn()
@@ -90,6 +93,36 @@ class BaseNarcoticPage(BasePage):
 
 			# If invalid
 			messagebox.showerror("Error", "Please enter a valid user ID")
+
+	def search_narcs(self):
+		search_input = self.meds_ent.get()
+		self.meds_ent.delete(0, "end")
+
+		if self.store_search_input:
+			self.search_input = search_input
+
+		if len(search_input) == 12:
+			tup = inventory_service.find_narcs_by_upc(self.cur, search_input)
+		elif len(search_input) == 8:
+			tup = inventory_service.find_narcs_by_din(self.cur, search_input)
+		else:
+			messagebox.showerror("Error", "Drug not found")
+			self.handle_search_error()
+			return
+
+		if len(tup) == 1:
+			self.display_narcotic_info(tup[0])
+		elif len(tup) > 1:
+			self.select_pack_size(tup)
+		else:
+			messagebox.showerror("Error", "Drug not found")
+			self.handle_search_error()
+
+	def handle_search_error(self):
+		if self.search_error_focus_attr is not None:
+			getattr(self, self.search_error_focus_attr).focus()
+			self.meds_ent.focus()
+		self.clear_display_fields()
 
 	def search_narc_din(self, din):
 		tup = inventory_service.find_narcs_by_din(self.cur, din)
