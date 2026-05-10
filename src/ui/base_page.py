@@ -14,9 +14,15 @@ class BasePage:
 	header_font = ("Inter", 40)
 	font = ("Inter", 30)
 
-	def __init__(self):
-		self.root = ctk.CTk()
-		self.root.title("Narc Recon")
+	def __init__(self, app=None, parent=None):
+		self.app = app
+		self.is_standalone = app is None
+		if self.is_standalone:
+			self.root = ctk.CTk()
+			self.root.title("Narc Recon")
+		else:
+			self.root = app.root
+		self.parent = parent if parent is not None else self.root
 
 	def configure_root(self):
 		ctk.set_appearance_mode("dark")
@@ -34,7 +40,7 @@ class BasePage:
 
 	def create_shell_frames(self):
 		self.header_frame = tk.Frame(
-			self.root,
+			self.parent,
 			width=self.window_width,
 			height=75,
 			bg=self.nav_and_header_background_color,
@@ -52,7 +58,7 @@ class BasePage:
 		self.nav_frame.grid(row=0, column=1, sticky="e", pady=20)
 		self.nav_frame.pack_propagate(False)
 
-		self.body_frame = ctk.CTkFrame(self.root, width=1000, height=400)
+		self.body_frame = ctk.CTkFrame(self.parent, width=1000, height=400)
 		self.body_frame.grid(row=1, column=0, pady=(60, 0))
 		self.body_frame.columnconfigure(0, weight=1)
 		self.body_frame.columnconfigure(1, weight=1)

@@ -13,8 +13,8 @@ class BaseNarcoticPage(BasePage):
 	store_search_input = False
 	search_error_focus_attr = None
 
-	def __init__(self):
-		super().__init__()
+	def __init__(self, app=None, parent=None):
+		super().__init__(app=app, parent=parent)
 		self.con = get_conn()
 		self.cur = self.con.cursor()
 

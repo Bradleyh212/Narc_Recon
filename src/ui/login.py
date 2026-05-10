@@ -1,7 +1,7 @@
 import tkinter as tk
 import customtkinter
 from tkinter import ttk, font, messagebox, PhotoImage
-from ui.inventory import open_inventory_page
+from ui.app_router import AppRouter
 from customtkinter import CTkImage
 from PIL import Image
 from services.auth_service import authenticate_app
@@ -30,7 +30,7 @@ def main():
 		if ok: 
 			messagebox.showinfo("Login", "Login successful!")
 			window.withdraw()  # Close the login window
-			open_inventory_page()  # Open the main page
+			AppRouter(initial_page="INVENTORY").run()  # Open the main page
 		else:
 			# Display error message and clear password entry
 			messagebox.showerror("Login", "Invalid username or password")
