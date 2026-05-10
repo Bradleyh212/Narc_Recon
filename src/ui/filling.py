@@ -14,15 +14,17 @@ class FillingPage(BaseNarcoticPage):
 	store_search_input = True
 	search_error_focus_attr = "remove_qty_ent"
 
-	def __init__(self):
-		super().__init__()
-		self.configure_root()
+	def __init__(self, app=None, parent=None):
+		super().__init__(app=app, parent=parent)
+		if self.is_standalone:
+			self.configure_root()
 		self.create_shell_frames()
 		self.root.bind('<Return>', lambda event: self.search_narcs())
 
 	def run(self):
 		self.refresh_page()
-		self.root.mainloop()
+		if self.is_standalone:
+			self.root.mainloop()
 
 	def refresh_page(self):
 		self.create_title_label("FILLING")
@@ -52,7 +54,8 @@ class FillingPage(BaseNarcoticPage):
 			pages,
 			self.button_color,
 			self.button_corner_radius,
-			self.button_hover_color
+			self.button_hover_color,
+			app=self.app
 		)
 
 	def create_filling_widgets(self):

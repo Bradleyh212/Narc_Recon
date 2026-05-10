@@ -1,12 +1,18 @@
 import customtkinter as ctk
 
 from ui.base_page import BasePage
+from ui.filling import FillingPage
 from ui.inventory import InventoryPage
+from ui.receiving import ReceivingPage
+from ui.reconciliation import ReconciliationPage
 
 
 class AppRouter:
 	page_classes = {
 		"INVENTORY": InventoryPage,
+		"RECEIVING": ReceivingPage,
+		"FILLING": FillingPage,
+		"RECONCILIATION": ReconciliationPage,
 	}
 
 	def __init__(self, initial_page="INVENTORY"):

@@ -43,7 +43,8 @@ class InventoryPage(BaseNarcoticPage):
 			pages,
 			self.button_color,
 			self.button_corner_radius,
-			self.button_hover_color
+			self.button_hover_color,
+			app=self.app
 		)
 
 	def create_inventory_widgets(self):
