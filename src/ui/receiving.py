@@ -11,6 +11,9 @@ from ui.ui_helpers import create_nav_bar
 
 
 class ReceivingPage(BaseNarcoticPage):
+	store_search_input = True
+	search_error_focus_attr = "add_qty_ent"
+
 	def __init__(self):
 		super().__init__()
 		self.configure_root()
@@ -122,31 +125,6 @@ class ReceivingPage(BaseNarcoticPage):
 		# Audit
 		workflow_audit_service.add_to_audit_log(din, current_amount, user_id, "receiving")
 		workflow_debug_service.show_audit_log()
-
-	def search_narcs(self):
-		self.search_input = self.meds_ent.get()
-		self.meds_ent.delete(0, "end")
-
-		if len(self.search_input) == 12:
-			tup = inventory_service.find_narcs_by_upc(self.cur, self.search_input)
-		elif len(self.search_input) == 8:
-			tup = inventory_service.find_narcs_by_din(self.cur, self.search_input)
-		else:
-			messagebox.showerror("Error", "Drug not found")
-			self.add_qty_ent.focus()
-			self.meds_ent.focus()
-			self.clear_display_fields()
-			return
-
-		if len(tup) == 1:
-			self.display_narcotic_info(tup[0])
-		elif len(tup) > 1:
-			self.select_pack_size(tup)
-		else:
-			messagebox.showerror("Error", "Drug not found")
-			self.add_qty_ent.focus()
-			self.meds_ent.focus()
-			self.clear_display_fields()
 
 
 def open_receiving_page():
