@@ -292,7 +292,3 @@ class ReportPage(BasePage):
 		]))
 		pdf.build([table])
 		messagebox.showinfo("Reconciliation Report Created", f"PDF saved to:\n{pdf_path}")
-
-
-def open_report_page():
-	ReportPage().run()

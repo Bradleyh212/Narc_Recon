@@ -40,6 +40,3 @@ class InventoryPage(BaseNarcoticPage):
 			output_padx=(80, 0),
 			output_pady=(0, 50),
 		)
-
-def open_inventory_page():
-	InventoryPage().run()

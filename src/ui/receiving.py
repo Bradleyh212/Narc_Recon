@@ -112,7 +112,3 @@ class ReceivingPage(BaseNarcoticPage):
 		# Audit
 		workflow_audit_service.add_to_audit_log(din, current_amount, user_id, "receiving")
 		workflow_debug_service.show_audit_log()
-
-
-def open_receiving_page():
-	ReceivingPage().run()

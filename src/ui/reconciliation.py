@@ -180,7 +180,3 @@ class ReconciliationPage(BaseNarcoticPage):
 
 		workflow_audit_service.add_to_audit_log(din, current_amount, user_id, "expired")
 		workflow_debug_service.show_audit_log()
-
-
-def open_reconciliation_page():
-	ReconciliationPage().run()

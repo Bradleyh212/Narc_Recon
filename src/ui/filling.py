@@ -114,7 +114,3 @@ class FillingPage(BaseNarcoticPage):
 		# Log the action to the audit log
 		workflow_audit_service.add_to_audit_log(din, current_amount, user_id, "filling")
 		workflow_debug_service.show_audit_log()
-
-
-def open_filling_page():
-	FillingPage().run()

@@ -146,7 +146,3 @@ class SettingsPage(BasePage):
 		user_service.remove_user(get_conn(), uid)
 		messagebox.showinfo("Success", f"User '{uid}' removed")
 		self.refresh_user_list()
-
-
-def open_settings_page():
-	SettingsPage().run()
