@@ -226,6 +226,7 @@ Before packaging:
 
 PyInstaller checklist:
 
+- Use the committed spec file at `build/narc_recon.spec`.
 - Use `src/narc_recon.pyw` as the entry point.
 - Bundle required data files listed below.
 - Test the packaged app on the target OS account, not only from the dev machine.
@@ -243,6 +244,7 @@ Application assets:
 
 - `src/med_sheet.xlsx`, unless `NARC_RECON_EXCEL_PATH` points to an external managed file.
 - `src/others/logo_nr.png`
+- `src/others/logo_nr.icns` for macOS app icon support.
 
 Python modules under `src/` must be included by the packaged app.
 
@@ -259,6 +261,9 @@ Never commit:
 - `*.db`
 - `*.db-wal`
 - `*.db-shm`
+- `__pycache__/`
+- `*.pyc`
+- `.DS_Store`
 - `.env`
 - Excel lock files like `~$*.xlsx`
 - Production backups
@@ -272,7 +277,8 @@ The current `.gitignore` should continue excluding runtime database files and Ex
 
 Database location:
 
-- The default DB path is inside `src/`. That is not suitable for a packaged production app unless the folder is writable and backed up.
+- The default DB path is `~/NarcReconData/narc_recon.db`. Confirm this folder is backed up and writable by the workstation user.
+- Finder/Dock launches should use `~/NarcReconData/config.env` for stable local config when environment variables are not available.
 
 SQLite backup:
 
@@ -292,7 +298,7 @@ Audit integrity:
 
 Packaging:
 
-- There is no committed PyInstaller spec yet.
+- `build/narc_recon.spec` is committed and should be used for repeatable builds.
 - Dependency versions are not pinned.
 - The app depends on local files and environment variables that must be configured carefully.
 
@@ -305,7 +311,7 @@ Excel catalog:
 These items should not block a controlled deployment if backup, audit, login, and packaging checks pass:
 
 - Further service refactoring.
-- Additional service/package cleanup after the legacy SQLite facade removal.
+- Additional service/package cleanup after the legacy SQLite facade and thin workflow wrappers removal.
 - Changing audit internals.
 - Redesigning database connection ownership.
 - Changing report styling.
@@ -317,4 +323,8 @@ For first deployment, prioritize a controlled rollout with known users, verified
 
 ### Legacy SQLite Facade Note
 
-The old project-level `sqlite3_functions.py` facade has been removed. Production app code now uses focused service modules directly for catalog startup, inventory lookups, audit logging, users/settings, and workflow quantity updates.
+The old project-level SQLite facade has been removed. Production app code now uses focused service modules directly for catalog startup, inventory lookups, audit logging, users/settings, and workflow quantity updates.
+
+### Current UI/Service Architecture Note
+
+The main application pages are hosted by `AppRouter` in one CTk root window. Inventory, Receiving, Filling, Reconciliation, Report, and Settings are router-hosted pages. The old standalone page wrapper functions and thin workflow service wrappers have been removed.

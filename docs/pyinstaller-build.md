@@ -220,7 +220,7 @@ The spec also uses these desktop icon files when they exist:
 - `src/others/logo_nr.ico` for Windows `.exe` builds
 - `src/others/logo_nr.icns` for macOS `.app` builds
 
-At the moment, the project only includes `src/others/logo_nr.png`. Generate the platform icon files from that source image before release, then commit the generated `.ico` and/or `.icns` after visually approving them.
+At the moment, the project includes `src/others/logo_nr.png` and `src/others/logo_nr.icns`. Windows icon support still needs `src/others/logo_nr.ico` generated from the approved PNG before a Windows release.
 
 ## Generate Desktop Icons
 
@@ -274,8 +274,7 @@ Current `src/requirements.txt` includes:
 - `pytz`
 - `customtkinter`
 - `argon2-cffi`
-
-Also verify `Pillow` is installed for `PIL.Image`.
+- `Pillow`
 
 ## Files That Must Not Be Committed
 
@@ -294,6 +293,9 @@ Do not commit:
 - production backups
 - generated pharmacy PDFs
 - Excel lock files like `~$*.xlsx`
+- `__pycache__/`
+- `*.pyc`
+- `.DS_Store`
 
 ## Smoke Test The Packaged App
 

@@ -17,12 +17,13 @@ def load_workflow_audit_service(monkeypatch, tmp_path, fresh_app_modules):
 	monkeypatch.setenv("NARC_RECON_DB_PATH", str(db_path))
 	sys.modules.pop("services.workflow_audit_service", None)
 
-	auth = importlib.import_module("auth")
+	connection_module = importlib.import_module("db.connection")
+	auth_schema = importlib.import_module("db.auth_schema")
 	schema_service = importlib.import_module("db.schema_service")
 
-	connection = auth.get_conn()
+	connection = connection_module.get_conn()
 	try:
-		auth.migrate_users(connection)
+		auth_schema.migrate_users(connection)
 		schema_service.SchemaService(connection.cursor()).create_all_catalog_tables()
 		connection.execute(
 			"INSERT INTO users (user_id, role, created_at) VALUES (?, ?, ?)",
@@ -43,11 +44,11 @@ def load_workflow_audit_service(monkeypatch, tmp_path, fresh_app_modules):
 	finally:
 		connection.close()
 
-	return importlib.import_module("services.workflow_audit_service"), auth, db_path
+	return importlib.import_module("services.workflow_audit_service"), connection_module, db_path
 
 
-def update_quantity(auth, quantity):
-	connection = auth.get_conn()
+def update_quantity(connection_module, quantity):
+	connection = connection_module.get_conn()
 	try:
 		connection.execute("UPDATE narcs SET quantity = ? WHERE din = ?", (quantity, "02248809"))
 		connection.commit()
@@ -55,8 +56,8 @@ def update_quantity(auth, quantity):
 		connection.close()
 
 
-def fetch_audit_row(auth):
-	connection = auth.get_conn()
+def fetch_audit_row(connection_module):
+	connection = connection_module.get_conn()
 	try:
 		return connection.execute("""
 			SELECT din, old_qty, new_qty, Updated_By, Timestamp, transaction_type, discrepancy
@@ -67,12 +68,12 @@ def fetch_audit_row(auth):
 
 
 def test_workflow_audit_service_valid_insert_records_current_audit_shape(monkeypatch, tmp_path, fresh_app_modules):
-	workflow_audit_service, auth, _ = load_workflow_audit_service(monkeypatch, tmp_path, fresh_app_modules)
-	update_quantity(auth, 10)
+	workflow_audit_service, connection_module, _ = load_workflow_audit_service(monkeypatch, tmp_path, fresh_app_modules)
+	update_quantity(connection_module, 10)
 
 	workflow_audit_service.add_to_audit_log("02248809", 6, "BHD", "filling")
 
-	row = fetch_audit_row(auth)
+	row = fetch_audit_row(connection_module)
 	assert row[:4] == ("02248809", 6, 10, "BHD")
 	datetime.strptime(row[4], "%Y-%m-%d %H:%M:%S")
 	assert row[5:] == ("filling", 4)
@@ -83,12 +84,12 @@ def test_workflow_audit_service_reads_new_quantity_after_committed_update_and_fr
 	tmp_path,
 	fresh_app_modules,
 ):
-	workflow_audit_service, auth, _ = load_workflow_audit_service(monkeypatch, tmp_path, fresh_app_modules)
-	update_quantity(auth, 12)
+	workflow_audit_service, connection_module, _ = load_workflow_audit_service(monkeypatch, tmp_path, fresh_app_modules)
+	update_quantity(connection_module, 12)
 
 	workflow_audit_service.add_to_audit_log("02248809", 4, "BHD", "reconciliation")
 
-	row = fetch_audit_row(auth)
+	row = fetch_audit_row(connection_module)
 	assert row[:4] == ("02248809", 4, 12, "BHD")
 	datetime.strptime(row[4], "%Y-%m-%d %H:%M:%S")
 	assert row[5:] == ("reconciliation", 8)
@@ -100,12 +101,12 @@ def test_workflow_audit_service_invalid_user_inserts_no_row_and_keeps_quantity_u
 	fresh_app_modules,
 	capsys,
 ):
-	workflow_audit_service, auth, _ = load_workflow_audit_service(monkeypatch, tmp_path, fresh_app_modules)
-	update_quantity(auth, 6)
+	workflow_audit_service, connection_module, _ = load_workflow_audit_service(monkeypatch, tmp_path, fresh_app_modules)
+	update_quantity(connection_module, 6)
 
 	workflow_audit_service.add_to_audit_log("02248809", 2, "NOPE", "receiving")
 
-	connection = auth.get_conn()
+	connection = connection_module.get_conn()
 	try:
 		quantity = connection.execute(
 			"SELECT quantity FROM narcs WHERE din = ?",
