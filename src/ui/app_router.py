@@ -5,6 +5,8 @@ from ui.filling import FillingPage
 from ui.inventory import InventoryPage
 from ui.receiving import ReceivingPage
 from ui.reconciliation import ReconciliationPage
+from ui.report import ReportPage
+from ui.settings import SettingsPage
 
 
 class AppRouter:
@@ -13,6 +15,8 @@ class AppRouter:
 		"RECEIVING": ReceivingPage,
 		"FILLING": FillingPage,
 		"RECONCILIATION": ReconciliationPage,
+		"REPORT": ReportPage,
+		"SETTINGS": SettingsPage,
 	}
 
 	def __init__(self, initial_page="INVENTORY"):

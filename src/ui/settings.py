@@ -11,9 +11,10 @@ from ui.ui_helpers import create_nav_bar
 
 
 class SettingsPage(BasePage):
-	def __init__(self):
-		super().__init__()
-		self.configure_root()
+	def __init__(self, app=None, parent=None):
+		super().__init__(app=app, parent=parent)
+		if self.is_standalone:
+			self.configure_root()
 		self.create_settings_shell_frames()
 
 	def run(self):
@@ -22,11 +23,12 @@ class SettingsPage(BasePage):
 		self.create_user_list()
 		self.refresh_user_list()
 		self.create_controls()
-		self.root.mainloop()
+		if self.is_standalone:
+			self.root.mainloop()
 
 	def create_settings_shell_frames(self):
 		self.header_frame = tk.Frame(
-			self.root,
+			self.parent,
 			width=self.window_width,
 			height=75,
 			bg=self.nav_and_header_background_color,
@@ -46,7 +48,7 @@ class SettingsPage(BasePage):
 		self.nav_frame.pack_propagate(False)
 
 		self.body_frame = ctk.CTkFrame(
-			self.root,
+			self.parent,
 			width=1000,
 			height=500,
 			fg_color=self.main_background_color,
@@ -87,7 +89,8 @@ class SettingsPage(BasePage):
 			pages,
 			self.button_color,
 			self.button_corner_radius,
-			self.button_hover_color
+			self.button_hover_color,
+			app=self.app,
 		)
 
 	def create_user_list(self):

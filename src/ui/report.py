@@ -13,19 +13,21 @@ from ui.ui_helpers import create_nav_bar
 
 
 class ReportPage(BasePage):
-	def __init__(self):
-		super().__init__()
+	def __init__(self, app=None, parent=None):
+		super().__init__(app=app, parent=parent)
 		self.con = get_conn()
 		self.cur = self.con.cursor()
 		self.font = ("Inter", 20)
-		self.configure_root()
+		if self.is_standalone:
+			self.configure_root()
 		self.configure_table_style()
 		self.create_report_shell_frames()
 		self.create_report_table()
 
 	def run(self):
 		self.refresh_page()
-		self.root.mainloop()
+		if self.is_standalone:
+			self.root.mainloop()
 
 	def configure_table_style(self):
 		self.style = ttk.Style(self.root)
@@ -38,7 +40,7 @@ class ReportPage(BasePage):
 
 	def create_report_shell_frames(self):
 		self.header_frame = tk.Frame(
-			self.root,
+			self.parent,
 			width=self.window_width,
 			height=75,
 			bg=self.nav_and_header_background_color,
@@ -56,7 +58,7 @@ class ReportPage(BasePage):
 		self.nav_frame.grid(row=0, column=1, sticky="e", pady=20)
 		self.nav_frame.pack_propagate(False)
 
-		self.body_frame = ctk.CTkFrame(self.root, width=1000, height=525)
+		self.body_frame = ctk.CTkFrame(self.parent, width=1000, height=525)
 		self.body_frame.grid(row=1, column=0, pady=(0, 0))
 		self.body_frame.columnconfigure(0, weight=1)
 		self.body_frame.grid_propagate(False)
@@ -134,7 +136,8 @@ class ReportPage(BasePage):
 			pages,
 			self.button_color,
 			self.button_corner_radius,
-			self.button_hover_color
+			self.button_hover_color,
+			app=self.app,
 		)
 
 	def create_search_controls(self):
