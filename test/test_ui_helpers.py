@@ -10,9 +10,6 @@ class FakeParent:
 		self.after_calls.append(delay)
 		callback()
 
-	def destroy(self):
-		self.destroyed = True
-
 
 class FakeApp:
 	page_classes = {"INVENTORY": object, "SETTINGS": object}
@@ -26,16 +23,17 @@ class FakeApp:
 
 def test_open_nav_choice_routes_settings_through_guard(monkeypatch):
 	parent = FakeParent()
+	app = FakeApp()
 	calls = []
 
-	def fake_guard(window, app=None, pages=None):
-		calls.append(("guard", window, app, pages))
+	def fake_guard(window, app):
+		calls.append(("guard", window, app))
 
 	monkeypatch.setattr(ui_helpers, "_open_settings_guard", fake_guard)
 
-	ui_helpers.open_nav_choice(parent, "SETTINGS")
+	ui_helpers.open_nav_choice(parent, "SETTINGS", app=app)
 
-	assert calls == [("guard", parent, None, None)]
+	assert calls == [("guard", parent, app)]
 	assert parent.after_calls == []
 	assert parent.destroyed is False
 
@@ -51,14 +49,18 @@ def test_open_nav_choice_routes_non_settings_page_through_app():
 	assert parent.destroyed is False
 
 
-def test_open_nav_choice_keeps_standalone_fallback(monkeypatch):
+def test_open_settings_guard_denies_disallowed_role(monkeypatch):
 	parent = FakeParent()
 	calls = []
-	pages = {"INVENTORY": lambda: calls.append("opened")}
+	app = FakeApp()
 
-	monkeypatch.setattr(ui_helpers, "safe_destroy", lambda window: calls.append(("destroy", window)))
+	monkeypatch.setattr(ui_helpers.simpledialog, "askstring", lambda *args, **kwargs: "tech-1")
+	monkeypatch.setattr(ui_helpers.user_service, "get_user_role", lambda conn, user_id: "Technician")
+	monkeypatch.setattr(ui_helpers.user_service, "role_allows_settings", lambda role: False)
+	monkeypatch.setattr(ui_helpers.messagebox, "showerror", lambda title, message: calls.append((title, message)))
 
-	ui_helpers.open_nav_choice(parent, "INVENTORY", pages=pages)
+	ui_helpers._open_settings_guard(parent, app=app)
 
-	assert parent.after_calls == [180]
-	assert calls == [("destroy", parent), "opened"]
+	assert calls == [("Access denied", "Settings are restricted to pharmacists.")]
+	assert app.shown_pages == []
+	assert parent.after_calls == []
