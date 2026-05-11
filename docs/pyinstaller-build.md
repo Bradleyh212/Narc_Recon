@@ -329,7 +329,7 @@ Use a test database path first.
 
 - Keep the production database external and backed up.
 - Keep `NARC_RECON_PEPPER` stable after creating production login credentials.
-- Keep `med_sheet.xlsx` closed while testing startup/import behavior.
+- Keep `med_sheet.xlsx` closed while testing initial catalog seed or import behavior.
 - Test the packaged app on the target workstation account, not only on the development machine.
 - Run `pytest` before building:
 

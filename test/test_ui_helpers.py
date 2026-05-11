@@ -55,6 +55,7 @@ def test_open_settings_guard_denies_disallowed_role(monkeypatch):
 	app = FakeApp()
 
 	monkeypatch.setattr(ui_helpers.simpledialog, "askstring", lambda *args, **kwargs: "tech-1")
+	monkeypatch.setattr(ui_helpers, "get_conn", lambda: object())
 	monkeypatch.setattr(ui_helpers.user_service, "get_user_role", lambda conn, user_id: "Technician")
 	monkeypatch.setattr(ui_helpers.user_service, "role_allows_settings", lambda role: False)
 	monkeypatch.setattr(ui_helpers.messagebox, "showerror", lambda title, message: calls.append((title, message)))

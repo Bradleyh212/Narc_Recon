@@ -304,7 +304,8 @@ Packaging:
 
 Excel catalog:
 
-- Startup imports the Excel catalog. The production Excel file must be present, readable, and not locked by Excel.
+- Fresh startup seeds an empty catalog from Excel. Once `narcs` and `narcs_details` contain rows, normal startup uses SQLite and skips Excel.
+- The production Excel file must still be available for initial seed or future controlled import workflows.
 
 ## 10. What Can Wait Until After First Controlled Deployment
 

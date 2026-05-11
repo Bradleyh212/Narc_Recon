@@ -8,6 +8,7 @@ This project does not claim regulatory compliance by itself. It is intended for 
 
 - Local desktop application built with Python and CustomTkinter.
 - SQLite database stored outside the app bundle by default at `~/NarcReconData/narc_recon.db`.
+- Normal startup uses SQLite after the initial catalog seed.
 - macOS packaging/install workflow is supported.
 - Windows packaging is planned for future deployment work.
 - Intended for controlled, local pharmacy use after proper testing.
@@ -195,6 +196,6 @@ Do not commit:
 ## Roadmap
 
 - Windows packaging.
-- SQLite-first normal startup with optional admin Excel import.
+- Optional admin Excel import tooling.
 - Backup/restore procedure.
 - Production deployment checklist.

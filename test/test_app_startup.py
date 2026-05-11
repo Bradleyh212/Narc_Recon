@@ -105,3 +105,32 @@ def test_startup_initialization_is_idempotent_and_does_not_reset_existing_quanti
 		assert connection.execute("SELECT COUNT(*) FROM narcs_details").fetchone()[0] == 1
 	finally:
 		connection.close()
+
+
+def test_startup_initialization_skips_excel_when_catalog_already_exists(
+	monkeypatch,
+	tmp_path,
+	fresh_app_modules,
+):
+	db_path = prepare_startup_env(monkeypatch, tmp_path)
+	excel_path = tmp_path / "med_sheet.xlsx"
+	narc_recon = load_narc_recon_module()
+
+	narc_recon.initialize_startup_database()
+	excel_path.unlink()
+	connection = sqlite3.connect(db_path)
+	try:
+		connection.execute("UPDATE narcs SET quantity = ? WHERE din = ?", (42, "02248809"))
+		connection.commit()
+	finally:
+		connection.close()
+
+	narc_recon.initialize_startup_database()
+
+	connection = sqlite3.connect(db_path)
+	try:
+		assert connection.execute("SELECT quantity FROM narcs WHERE din = ?", ("02248809",)).fetchone()[0] == 42
+		assert connection.execute("SELECT COUNT(*) FROM narcs").fetchone()[0] == 1
+		assert connection.execute("SELECT COUNT(*) FROM narcs_details").fetchone()[0] == 1
+	finally:
+		connection.close()

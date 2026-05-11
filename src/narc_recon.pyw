@@ -40,7 +40,7 @@ def initialize_startup_database():
 	try:
 		migrate_auth(conn)
 		migrate_users(conn)
-		catalog_database_service.initialize_database_from_excel(conn.cursor(), conn, get_excel_path())
+		catalog_database_service.initialize_catalog_for_startup(conn.cursor(), conn, get_excel_path())
 
 		# If no account exists
 		if not app_account_exists(conn):
