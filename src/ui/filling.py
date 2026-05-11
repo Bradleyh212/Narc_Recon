@@ -2,8 +2,8 @@ from tkinter import messagebox
 
 import customtkinter as ctk
 
-from services import filling_service
 from services import inventory_service
+from services import inventory_transaction_service
 from services import workflow_audit_service
 from services import workflow_debug_service
 from ui.base_narcotic_page import BaseNarcoticPage
@@ -100,7 +100,7 @@ class FillingPage(BaseNarcoticPage):
 			messagebox.showerror("Error", "Not enough stock to remove that quantity")
 			return
 
-		filling_service.decrement_inventory_quantity(self.cur, self.con, din, amount)
+		inventory_transaction_service.decrement_inventory_quantity(self.cur, self.con, din, amount)
 
 		workflow_debug_service.show_narcs_table()  # Refresh the narcotic table view
 		self.clear_display_fields()

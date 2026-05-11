@@ -4,7 +4,7 @@ import customtkinter as ctk
 
 from db.connection import get_conn
 from services import inventory_service
-from services import reconciliation_service
+from services import inventory_transaction_service
 from services import user_service
 from services import workflow_audit_service
 from services import workflow_debug_service
@@ -119,7 +119,7 @@ class ReconciliationPage(BaseNarcoticPage):
 			return
 
 		current_amount = inventory_service.find_quantity_by_din(self.cur, din)
-		reconciliation_service.set_inventory_quantity(self.cur, self.con, din, amount)
+		inventory_transaction_service.set_inventory_quantity(self.cur, self.con, din, amount)
 
 		workflow_debug_service.show_narcs_table()  # Refresh the narcotic table view
 		self.clear_display_fields()
@@ -167,7 +167,7 @@ class ReconciliationPage(BaseNarcoticPage):
 			return
 
 		new_amount = current_amount - expired_qty
-		reconciliation_service.set_inventory_quantity(self.cur, self.con, din, new_amount)
+		inventory_transaction_service.set_inventory_quantity(self.cur, self.con, din, new_amount)
 
 		workflow_debug_service.show_narcs_table()  # Refresh the narcotic table view
 		self.clear_display_fields()

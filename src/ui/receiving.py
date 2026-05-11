@@ -3,7 +3,7 @@ from tkinter import messagebox
 import customtkinter as ctk
 
 from services import inventory_service
-from services import receiving_service
+from services import inventory_transaction_service
 from services import workflow_audit_service
 from services import workflow_debug_service
 from ui.base_narcotic_page import BaseNarcoticPage
@@ -97,7 +97,7 @@ class ReceivingPage(BaseNarcoticPage):
 
 		# Read old qty, update, commit
 		current_amount = inventory_service.find_quantity_by_din(self.cur, din)
-		receiving_service.increment_inventory_quantity(self.cur, self.con, din, amt)
+		inventory_transaction_service.increment_inventory_quantity(self.cur, self.con, din, amt)
 
 		# Refresh UI
 		workflow_debug_service.show_narcs_table()
