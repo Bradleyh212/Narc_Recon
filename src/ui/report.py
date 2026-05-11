@@ -114,26 +114,10 @@ class ReportPage(BasePage):
 		export_btn.grid(row=3, column=0)
 
 	def create_nav(self):
-		from ui.inventory import open_inventory_page
-		from ui.filling import open_filling_page
-		from ui.receiving import open_receiving_page
-		from ui.reconciliation import open_reconciliation_page
-		from ui.settings import open_settings_page
-
-		pages = {
-			"INVENTORY": open_inventory_page,
-			"FILLING": open_filling_page,
-			"RECEIVING": open_receiving_page,
-			"RECONCILIATION": open_reconciliation_page,
-			"REPORT": open_report_page,
-			"SETTINGS": open_settings_page
-		}
-
 		create_nav_bar(
 			self.root,
 			self.nav_frame,
 			"REPORT",
-			pages,
 			self.button_color,
 			self.button_corner_radius,
 			self.button_hover_color,
