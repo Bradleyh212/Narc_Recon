@@ -14,17 +14,13 @@ class ReceivingPage(BaseNarcoticPage):
 	store_search_input = True
 	search_error_focus_attr = "add_qty_ent"
 
-	def __init__(self, app=None, parent=None):
+	def __init__(self, app, parent):
 		super().__init__(app=app, parent=parent)
-		if self.is_standalone:
-			self.configure_root()
 		self.create_shell_frames()
 		self.root.bind('<Return>', lambda event: self.search_narcs())
 
 	def run(self):
 		self.refresh_page()
-		if self.is_standalone:
-			self.root.mainloop()
 
 	def refresh_page(self):
 		self.create_title_label("RECEIVING")

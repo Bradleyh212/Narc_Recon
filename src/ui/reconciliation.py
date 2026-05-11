@@ -16,10 +16,8 @@ class ReconciliationPage(BaseNarcoticPage):
 	store_search_input = True
 	search_error_focus_attr = "set_qty_ent"
 
-	def __init__(self, app=None, parent=None):
+	def __init__(self, app, parent):
 		super().__init__(app=app, parent=parent)
-		if self.is_standalone:
-			self.configure_root()
 		self.create_shell_frames()
 		self.header_frame.columnconfigure(0, weight=1)
 		self.btn_frame = ctk.CTkFrame(self.right_body_frame, fg_color="transparent")
@@ -28,8 +26,6 @@ class ReconciliationPage(BaseNarcoticPage):
 
 	def run(self):
 		self.refresh_page()
-		if self.is_standalone:
-			self.root.mainloop()
 
 	def refresh_page(self):
 		self.create_title_label("RECONCILIATION")

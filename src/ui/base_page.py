@@ -14,29 +14,10 @@ class BasePage:
 	header_font = ("Inter", 40)
 	font = ("Inter", 30)
 
-	def __init__(self, app=None, parent=None):
+	def __init__(self, app, parent):
 		self.app = app
-		self.is_standalone = app is None
-		if self.is_standalone:
-			self.root = ctk.CTk()
-			self.root.title("Narc Recon")
-		else:
-			self.root = app.root
-		self.parent = parent if parent is not None else self.root
-
-	def configure_root(self):
-		ctk.set_appearance_mode("dark")
-		ctk.set_default_color_theme("dark-blue")
-		self.root.configure(fg_color=self.main_background_color)
-		self.center_window()
-		self.root.resizable(False, False)
-
-	def center_window(self):
-		window_width = self.root.winfo_screenwidth()
-		window_height = self.root.winfo_screenheight()
-		x = (window_width / 2) - (self.window_width / 2)
-		y = (window_height / 2) - (self.window_height / 2)
-		self.root.geometry(f'{self.window_width}x{self.window_height}+{int(x)}+{int(y)}')
+		self.root = app.root
+		self.parent = parent
 
 	def create_shell_frames(self):
 		self.header_frame = tk.Frame(

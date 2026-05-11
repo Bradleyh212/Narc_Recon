@@ -11,10 +11,8 @@ from ui.ui_helpers import create_nav_bar
 
 
 class SettingsPage(BasePage):
-	def __init__(self, app=None, parent=None):
+	def __init__(self, app, parent):
 		super().__init__(app=app, parent=parent)
-		if self.is_standalone:
-			self.configure_root()
 		self.create_settings_shell_frames()
 
 	def run(self):
@@ -23,8 +21,6 @@ class SettingsPage(BasePage):
 		self.create_user_list()
 		self.refresh_user_list()
 		self.create_controls()
-		if self.is_standalone:
-			self.root.mainloop()
 
 	def create_settings_shell_frames(self):
 		self.header_frame = tk.Frame(

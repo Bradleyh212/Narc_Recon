@@ -13,21 +13,17 @@ from ui.ui_helpers import create_nav_bar
 
 
 class ReportPage(BasePage):
-	def __init__(self, app=None, parent=None):
+	def __init__(self, app, parent):
 		super().__init__(app=app, parent=parent)
 		self.con = get_conn()
 		self.cur = self.con.cursor()
 		self.font = ("Inter", 20)
-		if self.is_standalone:
-			self.configure_root()
 		self.configure_table_style()
 		self.create_report_shell_frames()
 		self.create_report_table()
 
 	def run(self):
 		self.refresh_page()
-		if self.is_standalone:
-			self.root.mainloop()
 
 	def configure_table_style(self):
 		self.style = ttk.Style(self.root)
