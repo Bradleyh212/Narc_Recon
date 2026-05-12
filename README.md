@@ -167,6 +167,22 @@ Manual smoke tests before release:
 - settings/user management
 - app close/reopen with persisted quantities and audit rows
 
+## Backup
+
+Create a verified SQLite backup with:
+
+```bash
+python3 scripts/backup_db.py
+```
+
+By default, backups are written to:
+
+```text
+~/NarcReconBackups/
+```
+
+The script resolves the database path using the same config rules as the app, uses SQLite's backup API, runs `PRAGMA integrity_check`, and prints row counts for the required tables. It is backup-only; restore should be tested manually before pharmacy deployment.
+
 ## Never Commit
 
 Do not commit:
@@ -187,7 +203,7 @@ Do not commit:
 
 - Use a stable `~/NarcReconData/config.env` for packaged app launches.
 - Set and preserve `NARC_RECON_PEPPER` before creating real accounts.
-- Back up SQLite with the app closed, including any `-wal` and `-shm` files if present.
+- Back up SQLite with the app closed when practical, using `python3 scripts/backup_db.py`.
 - Test restore before pharmacy deployment.
 - Keep app data outside the app bundle.
 - Do not overwrite or delete `~/NarcReconData/` during app updates.
@@ -197,5 +213,5 @@ Do not commit:
 
 - Windows packaging.
 - Optional admin Excel import tooling.
-- Backup/restore procedure.
+- Restore drill procedure.
 - Production deployment checklist.

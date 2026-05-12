@@ -45,19 +45,35 @@ Preferred backup procedure:
 
 1. Close Narc Recon on all workstations.
 2. Confirm no staff member is using the app.
-3. Copy all existing database files:
-   - `narc_recon.db`
-   - `narc_recon.db-wal`, if present
-   - `narc_recon.db-shm`, if present
-4. Store the backup with a timestamp, for example:
-   - `narc_recon_2026-05-03_1800.db`
-5. Verify the copied backup opens in SQLite.
-6. Confirm key tables exist:
-   - `narcs`
-   - `narcs_details`
-   - `audit_log`
-   - `users`
-   - `app_account`
+3. Run the non-destructive SQLite backup script:
+
+   ```bash
+   python3 scripts/backup_db.py
+   ```
+
+4. Confirm the script prints:
+   - `Backup created: ...`
+   - `Integrity check: ok`
+   - row counts for `app_account`, `users`, `narcs`, `narcs_details`, and `audit_log`
+5. Store the timestamped backup securely. By default backups are written to:
+
+   ```text
+   ~/NarcReconBackups/
+   ```
+
+The script uses SQLite's backup API rather than raw file copy, does not modify the live database, and does not restore or delete anything.
+
+For a test or alternate database path:
+
+```bash
+python3 scripts/backup_db.py --db-path /path/to/narc_recon.db
+```
+
+For an alternate backup folder:
+
+```bash
+python3 scripts/backup_db.py --output-dir /path/to/backups
+```
 
 Minimum backup frequency:
 
@@ -69,6 +85,8 @@ Minimum backup frequency:
 ## 3. Restore Procedure
 
 Use restore only while Narc Recon is closed.
+
+The backup script is backup-only. Restore remains a manual procedure and must be tested before real deployment.
 
 1. Close Narc Recon on all workstations.
 2. Move the current database files into a dated rollback folder:
