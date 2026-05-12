@@ -208,6 +208,47 @@ sudo rm -rf "/Applications/Narc Recon.app"
 
 Do not remove `~/NarcReconData/` unless you intentionally want to delete local database files and supporting data.
 
+## Windows Local Install/Update Script
+
+Windows deployment is currently folder/zip based. Build on Windows with the existing spec:
+
+```powershell
+pyinstaller --clean --noconfirm build\narc_recon.spec
+```
+
+Expected output:
+
+```text
+dist\Narc Recon\Narc Recon.exe
+```
+
+Install or update from the local build output:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\install_windows.ps1
+```
+
+The script installs to:
+
+```text
+%LOCALAPPDATA%\Programs\Narc Recon\
+```
+
+It creates but does not delete:
+
+```text
+%USERPROFILE%\NarcReconData\
+%USERPROFILE%\NarcReconBackups\
+```
+
+To install/update and launch afterward:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\install_windows.ps1 -Open
+```
+
+See [windows-deployment.md](windows-deployment.md) for the full Windows deployment checklist.
+
 ## Bundled Files
 
 The spec bundles:
@@ -323,7 +364,7 @@ Use a test database path first.
 16. Close and reopen the app.
 17. Confirm catalog rows did not duplicate and quantities/audit rows persisted.
 18. On macOS, drag `dist/Narc Recon.app` to Applications, launch it, and use Dock `Options > Keep in Dock` if the workstation needs a persistent launcher.
-19. On Windows, copy the full `dist/Narc Recon/` folder to the install location, create a desktop shortcut to `Narc Recon.exe`, and pin the running app to the taskbar if needed.
+19. On Windows, run `scripts\install_windows.ps1`, launch from the Desktop shortcut, and pin the running app to the taskbar if needed.
 
 ## Deployment Notes
 

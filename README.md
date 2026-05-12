@@ -146,6 +146,29 @@ To build and open immediately:
 scripts/install_mac.sh --open
 ```
 
+## Windows Build And Install
+
+Windows deployment is currently zip/folder based, not a full installer. Build on Windows with PyInstaller, then install from the local build output:
+
+```powershell
+pyinstaller --clean --noconfirm build\narc_recon.spec
+powershell -ExecutionPolicy Bypass -File scripts\install_windows.ps1
+```
+
+The Windows install script installs to:
+
+```text
+%LOCALAPPDATA%\Programs\Narc Recon\
+```
+
+It keeps data outside the app folder:
+
+```text
+%USERPROFILE%\NarcReconData\
+```
+
+See [docs/windows-deployment.md](docs/windows-deployment.md) for the full Windows build, install, update, and smoke-test checklist.
+
 ## Testing
 
 Run automated tests:
@@ -213,6 +236,6 @@ Do not commit:
 
 ## Roadmap
 
-- Windows packaging.
+- Windows deployment validation and optional full installer.
 - Optional admin Excel import tooling.
 - Production deployment checklist.
