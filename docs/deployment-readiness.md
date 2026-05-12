@@ -88,6 +88,8 @@ Use restore only while Narc Recon is closed.
 
 The backup script is backup-only. Restore remains a manual procedure and must be tested before real deployment.
 
+Before any production restore, run the non-destructive drill in [restore-drill.md](restore-drill.md). The drill copies a backup into `~/NarcReconRestoreTest/` and launches Narc Recon against that copied test database with `NARC_RECON_DB_PATH`, without touching `~/NarcReconData/narc_recon.db`.
+
 1. Close Narc Recon on all workstations.
 2. Move the current database files into a dated rollback folder:
    - `narc_recon.db`

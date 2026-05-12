@@ -183,6 +183,8 @@ By default, backups are written to:
 
 The script resolves the database path using the same config rules as the app, uses SQLite's backup API, runs `PRAGMA integrity_check`, and prints row counts for the required tables. It is backup-only; restore should be tested manually before pharmacy deployment.
 
+Run the non-destructive restore drill in [docs/restore-drill.md](docs/restore-drill.md) before any real deployment or production restore. The drill uses `~/NarcReconRestoreTest/` and must not overwrite `~/NarcReconData/narc_recon.db`.
+
 ## Never Commit
 
 Do not commit:
@@ -213,5 +215,4 @@ Do not commit:
 
 - Windows packaging.
 - Optional admin Excel import tooling.
-- Restore drill procedure.
 - Production deployment checklist.
