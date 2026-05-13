@@ -60,6 +60,12 @@ Expected build output:
 dist\Narc Recon\Narc Recon.exe
 ```
 
+The Windows executable uses:
+
+```text
+src\others\logo_nr.ico
+```
+
 ## Install Or Update Locally
 
 From the repository root, run:

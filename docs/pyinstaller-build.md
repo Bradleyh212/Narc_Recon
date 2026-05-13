@@ -261,11 +261,11 @@ The spec also uses these desktop icon files when they exist:
 - `src/others/logo_nr.ico` for Windows `.exe` builds
 - `src/others/logo_nr.icns` for macOS `.app` builds
 
-At the moment, the project includes `src/others/logo_nr.png` and `src/others/logo_nr.icns`. Windows icon support still needs `src/others/logo_nr.ico` generated from the approved PNG before a Windows release.
+The project includes `src/others/logo_nr.png`, `src/others/logo_nr.ico`, and `src/others/logo_nr.icns`. PyInstaller uses the `.ico` on Windows and the `.icns` on macOS.
 
 ## Generate Desktop Icons
 
-Create a Windows `.ico` from the PNG:
+If the approved PNG changes, recreate the Windows `.ico` from the PNG:
 
 ```bash
 python - <<'PY'

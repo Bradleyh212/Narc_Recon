@@ -10,6 +10,8 @@ ROOT_DIR = Path(SPECPATH).resolve().parent
 SRC_DIR = ROOT_DIR / "src"
 WINDOWS_ICON = SRC_DIR / "others" / "logo_nr.ico"
 MAC_ICON = SRC_DIR / "others" / "logo_nr.icns"
+EXE_ICON = str(WINDOWS_ICON) if sys.platform == "win32" and WINDOWS_ICON.exists() else None
+APP_ICON = str(MAC_ICON) if sys.platform == "darwin" and MAC_ICON.exists() else None
 
 
 def collect_optional_submodules(package_name):
@@ -67,7 +69,7 @@ exe = EXE(
 	target_arch=None,
 	codesign_identity=None,
 	entitlements_file=None,
-	icon=str(WINDOWS_ICON) if WINDOWS_ICON.exists() else None,
+	icon=EXE_ICON,
 )
 
 coll = COLLECT(
@@ -84,6 +86,6 @@ if sys.platform == "darwin":
 	app = BUNDLE(
 		coll,
 		name="Narc Recon.app",
-		icon=str(MAC_ICON) if MAC_ICON.exists() else None,
+		icon=APP_ICON,
 		bundle_identifier=None,
 	)
