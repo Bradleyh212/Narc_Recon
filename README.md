@@ -23,6 +23,7 @@ This project does not claim regulatory compliance by itself. It is intended for 
 - Audit log tracking for inventory changes.
 - PDF report generation.
 - User management and role checks.
+- Settings-based medication catalog additions.
 - First-run setup with an initial `Pharmacist` user.
 - Local config file support for stable Finder/Dock launches.
 
@@ -188,6 +189,7 @@ Manual smoke tests before release:
 - expired quantity
 - report export
 - settings/user management
+- settings/add medication catalog item
 - app close/reopen with persisted quantities and audit rows
 
 ## Backup

@@ -5,6 +5,7 @@ from tkinter import messagebox
 import customtkinter as ctk
 
 from db.connection import get_conn
+from services.catalog_management_service import CatalogManagementService, DuplicateMedicationDetailError
 from services import user_service
 from ui.base_page import BasePage
 from ui.ui_helpers import create_nav_bar
@@ -49,17 +50,21 @@ class SettingsPage(BasePage):
 			height=500,
 			fg_color=self.main_background_color,
 		)
-		self.body_frame.grid(row=1, column=0, pady=(40, 0))
+		self.body_frame.grid(row=1, column=0, pady=(25, 0))
 		self.body_frame.columnconfigure(0, weight=1)
 		self.body_frame.columnconfigure(1, weight=1)
 		self.body_frame.grid_propagate(False)
 
-		self.left_body_frame = ctk.CTkFrame(self.body_frame, width=500, height=400, corner_radius=20)
-		self.left_body_frame.grid(row=0, column=0, sticky="nsew", padx=(60, 20), pady=(0, 40))
+		self.left_body_frame = ctk.CTkFrame(self.body_frame, width=500, height=460, corner_radius=20)
+		self.left_body_frame.grid(row=0, column=0, sticky="nsew", padx=(60, 20), pady=(0, 20))
+		self.left_body_frame.columnconfigure(0, weight=1)
+		self.left_body_frame.columnconfigure(1, weight=1)
 		self.left_body_frame.grid_propagate(False)
 
-		self.right_body_frame = ctk.CTkFrame(self.body_frame, width=400, height=400, corner_radius=20)
-		self.right_body_frame.grid(row=0, column=1, sticky="nsew", padx=(20, 60), pady=(0, 40))
+		self.right_body_frame = ctk.CTkFrame(self.body_frame, width=400, height=460, corner_radius=20)
+		self.right_body_frame.grid(row=0, column=1, sticky="nsew", padx=(20, 60), pady=(0, 20))
+		self.right_body_frame.columnconfigure(0, weight=0)
+		self.right_body_frame.columnconfigure(1, weight=1)
 		self.right_body_frame.grid_propagate(False)
 
 	def create_nav(self):
@@ -74,8 +79,14 @@ class SettingsPage(BasePage):
 		)
 
 	def create_user_list(self):
-		self.user_listbox = tk.Listbox(self.left_body_frame, font=("Inter", 14), height=16, width=40)
-		self.user_listbox.pack(padx=20, pady=20, fill="both", expand=True)
+		ctk.CTkLabel(self.left_body_frame, text="Users", font=("Inter", 20)).grid(
+			row=0,
+			column=0,
+			columnspan=2,
+			pady=(20, 8),
+		)
+		self.user_listbox = tk.Listbox(self.left_body_frame, font=("Inter", 14), height=9, width=40)
+		self.user_listbox.grid(row=1, column=0, columnspan=2, padx=20, pady=(0, 12), sticky="ew")
 
 	def refresh_user_list(self):
 		self.user_listbox.delete(0, "end")
@@ -83,39 +94,96 @@ class SettingsPage(BasePage):
 			self.user_listbox.insert("end", f"{row[1]} ({row[2]})")  # user_id (role)
 
 	def create_controls(self):
-		ctk.CTkLabel(self.right_body_frame, text="User ID", font=("Inter", 18)).pack(pady=(30, 5))
-		self.user_id_entry = ctk.CTkEntry(self.right_body_frame, width=250, corner_radius=20)
-		self.user_id_entry.pack(pady=5)
+		self.create_user_controls()
+		self.create_medication_controls()
 
-		ctk.CTkLabel(self.right_body_frame, text="Role", font=("Inter", 18)).pack(pady=(20, 5))
+	def create_user_controls(self):
+		ctk.CTkLabel(self.left_body_frame, text="User ID", font=("Inter", 16)).grid(
+			row=2,
+			column=0,
+			columnspan=2,
+			pady=(4, 4),
+		)
+		self.user_id_entry = ctk.CTkEntry(self.left_body_frame, width=250, corner_radius=20)
+		self.user_id_entry.grid(row=3, column=0, columnspan=2, pady=(0, 8))
+
+		ctk.CTkLabel(self.left_body_frame, text="Role", font=("Inter", 16)).grid(
+			row=4,
+			column=0,
+			columnspan=2,
+			pady=(4, 4),
+		)
 		self.role_entry = ctk.CTkEntry(
-			self.right_body_frame,
+			self.left_body_frame,
 			width=250,
 			corner_radius=20,
 			placeholder_text="e.g. Pharmacist, Technician, Assistant",
 		)
-		self.role_entry.pack(pady=5)
+		self.role_entry.grid(row=5, column=0, columnspan=2, pady=(0, 10))
 
-		# Buttons
 		add_btn = ctk.CTkButton(
-			self.right_body_frame,
+			self.left_body_frame,
 			text="Add User",
 			command=self.add_user_handler,
 			fg_color=self.button_color,
 			hover_color=self.button_hover_color,
 			corner_radius=20,
 		)
-		add_btn.pack(pady=(30, 10))
+		add_btn.grid(row=6, column=0, padx=(40, 8), pady=(8, 0), sticky="ew")
 
 		remove_btn = ctk.CTkButton(
-			self.right_body_frame,
+			self.left_body_frame,
 			text="Remove Selected",
 			command=self.remove_user_handler,
 			fg_color="#B33A3A",
 			hover_color="#D64545",
 			corner_radius=20,
 		)
-		remove_btn.pack(pady=10)
+		remove_btn.grid(row=6, column=1, padx=(8, 40), pady=(8, 0), sticky="ew")
+
+	def create_medication_controls(self):
+		ctk.CTkLabel(self.right_body_frame, text="Add Medication", font=("Inter", 20)).grid(
+			row=0,
+			column=0,
+			columnspan=2,
+			pady=(20, 12),
+		)
+
+		self.medication_entries = {}
+		fields = [
+			("Drug Name", "name", "e.g. ADDERALL XR"),
+			("DIN", "din", "8 digits"),
+			("UPC", "upc", "12 digits"),
+			("Strength", "strength", "Optional"),
+			("Form", "form", "e.g. TAB, CAP"),
+			("Pack Size", "pack_size", "Optional"),
+		]
+		for row_number, (label_text, field_name, placeholder) in enumerate(fields, start=1):
+			ctk.CTkLabel(self.right_body_frame, text=label_text, font=("Inter", 14), anchor="w").grid(
+				row=row_number,
+				column=0,
+				padx=(28, 8),
+				pady=5,
+				sticky="w",
+			)
+			entry = ctk.CTkEntry(
+				self.right_body_frame,
+				width=215,
+				corner_radius=20,
+				placeholder_text=placeholder,
+			)
+			entry.grid(row=row_number, column=1, padx=(0, 28), pady=5, sticky="ew")
+			self.medication_entries[field_name] = entry
+
+		add_medication_btn = ctk.CTkButton(
+			self.right_body_frame,
+			text="Add Medication",
+			command=self.add_medication_handler,
+			fg_color=self.button_color,
+			hover_color=self.button_hover_color,
+			corner_radius=20,
+		)
+		add_medication_btn.grid(row=7, column=0, columnspan=2, padx=80, pady=(16, 0), sticky="ew")
 
 	def add_user_handler(self):
 		uid = self.user_id_entry.get().strip()
@@ -131,6 +199,38 @@ class SettingsPage(BasePage):
 		self.user_id_entry.delete(0, "end")
 		self.role_entry.delete(0, "end")
 		self.refresh_user_list()
+
+	def add_medication_handler(self):
+		values = {
+			field_name: entry.get()
+			for field_name, entry in self.medication_entries.items()
+		}
+		connection = None
+		try:
+			connection = get_conn()
+			result = CatalogManagementService(connection).add_medication(**values)
+		except DuplicateMedicationDetailError as exc:
+			messagebox.showerror("Duplicate medication detail", str(exc))
+		except ValueError as exc:
+			messagebox.showerror("Invalid medication", str(exc))
+		except Exception as exc:
+			messagebox.showerror("Error", f"Unable to add medication: {exc}")
+		else:
+			if result["created_narc"]:
+				message = f"Medication '{values['name'].strip()}' added."
+			else:
+				message = "Medication detail added."
+				if result["updated_name"]:
+					message += " Existing catalog name updated."
+			messagebox.showinfo("Success", message)
+			self.clear_medication_entries()
+		finally:
+			if connection is not None:
+				connection.close()
+
+	def clear_medication_entries(self):
+		for entry in self.medication_entries.values():
+			entry.delete(0, "end")
 
 	def remove_user_handler(self):
 		try:
