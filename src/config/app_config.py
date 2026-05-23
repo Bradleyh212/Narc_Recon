@@ -15,12 +15,25 @@ def _strip_optional_quotes(value: str) -> str:
 	return value
 
 
+def _read_config_lines(config_path: Path):
+	content = config_path.read_bytes()
+	for encoding in ("utf-8-sig", "utf-16"):
+		try:
+			text = content.decode(encoding)
+		except UnicodeError:
+			continue
+		if encoding == "utf-8-sig" and "\x00" in text:
+			continue
+		return text.splitlines()
+	return content.decode("utf-8", errors="replace").splitlines()
+
+
 def read_local_config(config_path=None):
 	config_path = Path(config_path) if config_path is not None else get_config_path()
 	config = {}
 
 	try:
-		lines = config_path.read_text(encoding="utf-8").splitlines()
+		lines = _read_config_lines(config_path)
 	except FileNotFoundError:
 		return config
 

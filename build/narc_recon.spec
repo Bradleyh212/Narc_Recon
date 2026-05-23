@@ -42,6 +42,7 @@ a = Analysis(
 	datas=[
 		(str(SRC_DIR / "med_sheet.xlsx"), "."),
 		(str(SRC_DIR / "others" / "logo_nr.png"), "others"),
+		(str(SRC_DIR / "others" / "logo_nr.ico"), "others"),
 	],
 	hiddenimports=hiddenimports,
 	hookspath=[],

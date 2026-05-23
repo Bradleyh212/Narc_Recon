@@ -24,6 +24,26 @@ def test_read_local_config_parses_supported_key_value_lines(tmp_path):
 	}
 
 
+def test_read_local_config_accepts_utf8_bom(tmp_path):
+	app_config = import_app_config()
+	config_path = tmp_path / "config.env"
+	config_path.write_bytes("NARC_RECON_DB_PATH=/from/windows-installer.db\n".encode("utf-8-sig"))
+
+	assert app_config.read_local_config(config_path) == {
+		"NARC_RECON_DB_PATH": "/from/windows-installer.db",
+	}
+
+
+def test_read_local_config_accepts_utf16_from_windows_powershell(tmp_path):
+	app_config = import_app_config()
+	config_path = tmp_path / "config.env"
+	config_path.write_text("NARC_RECON_PEPPER=fake-config-pepper\n", encoding="utf-16")
+
+	assert app_config.read_local_config(config_path) == {
+		"NARC_RECON_PEPPER": "fake-config-pepper",
+	}
+
+
 def test_get_config_value_uses_environment_before_config_file(monkeypatch, tmp_path):
 	home_path = tmp_path / "home"
 	config_dir = home_path / "NarcReconData"

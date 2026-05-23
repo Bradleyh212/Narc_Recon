@@ -147,14 +147,16 @@ To build and open immediately:
 scripts/install_mac.sh --open
 ```
 
-## Windows Build And Install
+## Windows Build And Release
 
-Windows deployment is currently zip/folder based, not a full installer. Build on Windows with PyInstaller, then install from the local build output:
+Windows deployment is currently zip/folder based, not a full installer. Build on Windows with PyInstaller, then package the release zip:
 
 ```powershell
 pyinstaller --clean --noconfirm build\narc_recon.spec
-powershell -ExecutionPolicy Bypass -File scripts\install_windows.ps1
+powershell -ExecutionPolicy Bypass -File scripts\package_windows_release.ps1
 ```
+
+The release artifact is `dist\Narc_Recon_windows_release.zip`. Extract it on the workstation and run the root `install_windows.ps1`; the installer creates the per-user data/config folders, preserves existing data, creates the Desktop shortcut, and launches Narc Recon.
 
 The Windows install script installs to:
 
@@ -229,7 +231,7 @@ Do not commit:
 ## Deployment Notes
 
 - Use a stable `~/NarcReconData/config.env` for packaged app launches.
-- Set and preserve `NARC_RECON_PEPPER` before creating real accounts.
+- Preserve `NARC_RECON_PEPPER` after creating real accounts. The Windows installer creates it when `config.env` is missing.
 - Back up SQLite with the app closed when practical, using `python3 scripts/backup_db.py`.
 - Test restore before pharmacy deployment.
 - Keep app data outside the app bundle.

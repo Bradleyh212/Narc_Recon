@@ -1,24 +1,37 @@
 # Narc Recon Windows Deployment
 
-This guide describes the first Windows deployment model for Narc Recon. It is zip/folder based for now, not a full installer.
+This is the supported Windows release flow for the current zip/folder deployment model.
 
-The app folder can be replaced during updates. The database, config file, and backups must stay outside the app folder.
+The pharmacy user should be able to download `Narc_Recon_windows_release.zip`, extract it, run `install_windows.ps1`, and land in Narc Recon first-run setup without copying assets or editing files by hand.
 
-## Locations
+## Release Layout
 
-Recommended per-user app install location:
+The release zip contains:
+
+```text
+install_windows.ps1
+dist\Narc Recon\
+docs\windows-deployment.md
+scripts\install_windows.ps1
+```
+
+The root `install_windows.ps1` is the script users should run after extracting the zip. The copy under `scripts\` is included so the same script also works from a repository checkout.
+
+## Installed Locations
+
+Per-user app install location:
 
 ```text
 %LOCALAPPDATA%\Programs\Narc Recon\
 ```
 
-Expected executable:
+Executable:
 
 ```text
 %LOCALAPPDATA%\Programs\Narc Recon\Narc Recon.exe
 ```
 
-Recommended data folder:
+Data folder:
 
 ```text
 %USERPROFILE%\NarcReconData\
@@ -30,7 +43,7 @@ Default database path:
 %USERPROFILE%\NarcReconData\narc_recon.db
 ```
 
-Config file path:
+Config file:
 
 ```text
 %USERPROFILE%\NarcReconData\config.env
@@ -44,11 +57,11 @@ Backup folder:
 
 ## Build On Windows
 
-Build the Windows package on a Windows machine:
+Build the PyInstaller folder on a Windows machine:
 
 ```powershell
 python -m venv .venv
-.venv\Scripts\Activate.ps1
+.\.venv\Scripts\Activate.ps1
 pip install -r src\requirements.txt
 pip install pyinstaller
 pyinstaller --clean --noconfirm build\narc_recon.spec
@@ -60,112 +73,114 @@ Expected build output:
 dist\Narc Recon\Narc Recon.exe
 ```
 
-The Windows executable uses:
+The spec bundles these required resources:
 
 ```text
-src\others\logo_nr.ico
+med_sheet.xlsx
+others\logo_nr.png
+others\logo_nr.ico
 ```
 
-## Install Or Update Locally
+## Package The Release Zip
 
-From the repository root, run:
+After the PyInstaller build succeeds, run:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\install_windows.ps1
+powershell -ExecutionPolicy Bypass -File scripts\package_windows_release.ps1
 ```
 
-The script:
+Expected release artifact:
+
+```text
+dist\Narc_Recon_windows_release.zip
+```
+
+The packaging script verifies the executable and bundled resources, refuses to package `narc_recon.db`, SQLite sidecar files, or `config.env`, and stages the simple release layout before zipping it.
+
+## Install From The Release Zip
+
+On the pharmacy workstation:
+
+1. Extract `Narc_Recon_windows_release.zip`.
+2. Open PowerShell in the extracted folder.
+3. Run:
+
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File .\install_windows.ps1
+   ```
+
+The installer:
 
 - installs from `dist\Narc Recon\`
-- verifies `dist\Narc Recon\Narc Recon.exe` exists
 - creates `%LOCALAPPDATA%\Programs\Narc Recon\`
 - creates `%USERPROFILE%\NarcReconData\`
 - creates `%USERPROFILE%\NarcReconBackups\`
-- closes or prompts to stop a running Narc Recon process before replacement
-- copies the app to a temporary folder first
-- replaces only `%LOCALAPPDATA%\Programs\Narc Recon\`
-- creates or updates a Desktop shortcut named `Narc Recon.lnk`
+- creates `%USERPROFILE%\NarcReconData\config.env` only if it is missing
+- never overwrites an existing `config.env`
+- never deletes or overwrites `%USERPROFILE%\NarcReconData\narc_recon.db`
+- refuses to install from or replace an app folder that contains `narc_recon.db`, SQLite sidecar files, or `config.env`
+- closes or prompts to stop a running Narc Recon process before replacing app files
+- replaces only the app install folder
+- creates or updates the Desktop shortcut `Narc Recon.lnk`
+- launches Narc Recon by default
 - does not require administrator rights
 
-To install/update and launch the app afterward:
+Use `-NoOpen` when you need to install or update without launching afterward:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\install_windows.ps1 -Open
+powershell -ExecutionPolicy Bypass -File .\install_windows.ps1 -NoOpen
 ```
 
-## Config File
+## First-Run Setup
 
-Create a stable local config file before creating real accounts:
+On a fresh workstation, the installer creates `config.env` with:
 
-```powershell
-New-Item -ItemType Directory -Force "$env:USERPROFILE\NarcReconData"
-@"
-NARC_RECON_DB_PATH=$env:USERPROFILE\NarcReconData\narc_recon.db
-NARC_RECON_PEPPER=replace-with-a-long-random-secret
-"@ | Set-Content "$env:USERPROFILE\NarcReconData\config.env"
+```text
+NARC_RECON_DB_PATH=%USERPROFILE%\NarcReconData\narc_recon.db
+NARC_RECON_PEPPER=<generated-secret>
 ```
 
-Do not use the fake pepper above for real deployment. Choose one long random secret and preserve it. Changing `NARC_RECON_PEPPER` after account creation can break password verification.
+The generated pepper must be preserved after accounts are created. The installer never changes it once `config.env` exists.
 
-Use `NARC_RECON_EXCEL_PATH` only if the initial catalog seed should come from an external Excel file instead of the bundled `med_sheet.xlsx`.
+When Narc Recon launches and no app account exists, first-run setup opens. Create the pharmacy app account and the initial Pharmacist user there. The database is created under `%USERPROFILE%\NarcReconData\`.
 
-## Zip Package
+Use `NARC_RECON_EXCEL_PATH` only if a deployment intentionally needs an external Excel catalog file instead of the bundled `med_sheet.xlsx`.
 
-After building, create a zip from the full output folder:
+## Update Procedure
 
-```powershell
-Compress-Archive -Path "dist\Narc Recon\*" -DestinationPath "dist\Narc_Recon_windows.zip" -Force
-```
+1. Finish any active workflow in Narc Recon.
+2. Close Narc Recon, or let the installer prompt to close it.
+3. Confirm there is a current backup.
+4. Extract the new `Narc_Recon_windows_release.zip`.
+5. Run:
 
-The zip should contain app files only. It must not contain:
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File .\install_windows.ps1
+   ```
 
-- real `narc_recon.db`
-- `narc_recon.db-wal`
-- `narc_recon.db-shm`
-- real `config.env`
-- backups
-- real secrets
+6. Run the smoke tests below.
+
+The update replaces app files only. It must not touch `%USERPROFILE%\NarcReconData\` or `%USERPROFILE%\NarcReconBackups\`.
 
 ## GitHub Releases
 
-GitHub Releases is a reasonable hosting option for controlled early Windows deployment.
-
 Upload:
 
-- `Narc_Recon_windows.zip`
+- `dist\Narc_Recon_windows_release.zip`
 - release notes
 - optional SHA256 checksum
 
 Do not upload database files, `config.env`, backups, or secrets.
 
-## Update Procedure
-
-1. Finish any active workflow in Narc Recon.
-2. Close Narc Recon.
-3. Run a verified backup:
-
-   ```powershell
-   python scripts\backup_db.py
-   ```
-
-4. Build or extract the new app version so `dist\Narc Recon\Narc Recon.exe` exists.
-5. Run:
-
-   ```powershell
-   powershell -ExecutionPolicy Bypass -File scripts\install_windows.ps1
-   ```
-
-6. Launch Narc Recon from the Desktop shortcut or Start menu pin.
-7. Run the manual smoke tests below.
-
 ## Manual Smoke Tests
 
 Run these on the target Windows workstation account:
 
-- Fresh install opens.
-- First-run setup creates app account and initial Pharmacist user.
+- Fresh install opens without manual asset copying.
+- Logo renders on the login window.
+- First-run setup creates the app account and initial Pharmacist user.
 - Login works after app restart.
-- `config.env` is respected.
+- `config.env` is respected and remains unchanged after rerunning the installer.
 - Database is created under `%USERPROFILE%\NarcReconData`.
 - Inventory search works by DIN and UPC.
 - Receiving writes quantity and audit log row.
@@ -180,7 +195,7 @@ Run these on the target Windows workstation account:
 
 ## What Must Never Be Overwritten
 
-The install/update script must never delete or overwrite:
+The install/update flow must never delete or overwrite:
 
 ```text
 %USERPROFILE%\NarcReconData\
@@ -193,4 +208,4 @@ The install/update script must never delete or overwrite:
 
 ## Full Installer
 
-A full Windows installer should wait until the zip/folder deployment has been validated on the target workstation. The first Windows deployment should stay simple: PyInstaller output, zip package, per-user install script, external data folder, and manual smoke tests.
+A full Windows installer can wait until the zip deployment has been validated on the target workstation. The current release flow is intentionally simple: PyInstaller folder, release zip, per-user install script, external data folder, and manual smoke tests.

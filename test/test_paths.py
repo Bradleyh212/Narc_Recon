@@ -93,3 +93,25 @@ def test_bundled_resource_paths_use_pyinstaller_resource_directory(monkeypatch, 
 
 	assert paths.get_excel_path() == tmp_path / "med_sheet.xlsx"
 	assert paths.LOGO_PATH == tmp_path / "others" / "logo_nr.png"
+
+
+def test_bundled_resource_paths_fall_back_to_executable_internal_dir(monkeypatch, tmp_path, fresh_app_modules):
+	home_path = tmp_path / "home"
+	exe_dir = tmp_path / "dist" / "Narc Recon"
+	internal_dir = exe_dir / "_internal"
+	(internal_dir / "others").mkdir(parents=True)
+	(internal_dir / "med_sheet.xlsx").write_text("", encoding="utf-8")
+	(internal_dir / "others" / "logo_nr.png").write_text("", encoding="utf-8")
+	empty_meipass = tmp_path / "empty_meipass"
+	empty_meipass.mkdir()
+
+	monkeypatch.setenv("HOME", str(home_path))
+	monkeypatch.delenv("NARC_RECON_EXCEL_PATH", raising=False)
+	monkeypatch.setattr(sys, "frozen", True, raising=False)
+	monkeypatch.setattr(sys, "_MEIPASS", str(empty_meipass), raising=False)
+	monkeypatch.setattr(sys, "executable", str(exe_dir / "Narc Recon.exe"))
+
+	paths = importlib.import_module("config.paths")
+
+	assert paths.get_excel_path() == internal_dir / "med_sheet.xlsx"
+	assert paths.LOGO_PATH == internal_dir / "others" / "logo_nr.png"

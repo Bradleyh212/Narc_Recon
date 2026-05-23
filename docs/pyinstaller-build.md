@@ -208,7 +208,7 @@ sudo rm -rf "/Applications/Narc Recon.app"
 
 Do not remove `~/NarcReconData/` unless you intentionally want to delete local database files and supporting data.
 
-## Windows Local Install/Update Script
+## Windows Release Package
 
 Windows deployment is currently folder/zip based. Build on Windows with the existing spec:
 
@@ -222,13 +222,25 @@ Expected output:
 dist\Narc Recon\Narc Recon.exe
 ```
 
-Install or update from the local build output:
+Package the release zip:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\install_windows.ps1
+powershell -ExecutionPolicy Bypass -File scripts\package_windows_release.ps1
 ```
 
-The script installs to:
+Expected release artifact:
+
+```text
+dist\Narc_Recon_windows_release.zip
+```
+
+Extract the zip on the workstation and run the root installer:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\install_windows.ps1
+```
+
+The installer installs to:
 
 ```text
 %LOCALAPPDATA%\Programs\Narc Recon\
@@ -241,10 +253,10 @@ It creates but does not delete:
 %USERPROFILE%\NarcReconBackups\
 ```
 
-To install/update and launch afterward:
+It also creates `%USERPROFILE%\NarcReconData\config.env` if missing, leaves existing config and database files untouched, refuses to replace an app folder that contains user data files, creates the Desktop shortcut, and launches Narc Recon by default. Use `-NoOpen` to install/update without launching:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\install_windows.ps1 -Open
+powershell -ExecutionPolicy Bypass -File .\install_windows.ps1 -NoOpen
 ```
 
 See [windows-deployment.md](windows-deployment.md) for the full Windows deployment checklist.
@@ -255,6 +267,7 @@ The spec bundles:
 
 - `src/med_sheet.xlsx`
 - `src/others/logo_nr.png`
+- `src/others/logo_nr.ico`
 
 The spec also uses these desktop icon files when they exist:
 
